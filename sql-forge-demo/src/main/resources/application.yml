@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:file:./data/testdb;AUTO_SERVER=TRUE
+    username: sa
+  flyway:
+    placeholder-replacement: false
+
+sql:
+  forge:
+    schemata:
+      - PUBLIC
+    calcite:
+      enabled: false
+      configuration: classpath:model.json
+      schemata:
+        - MYSQL
+        - POSTGRES
+    api:
+      database:
+        enabled: true
+        select-only: true
+
+
+server:
+  port: 8081
