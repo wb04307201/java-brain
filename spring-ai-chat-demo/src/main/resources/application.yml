@@ -69,6 +69,10 @@ spring:
             description: 从订单系统数据库中查询用户、订单、商品、数据字典等信息
             preloading: true
             skill: classpath:skills/nl2sql.st
+          - name: 创建订单系统页面
+            description: 根据需要自动生成百度Amis低代码平台CRUD单表维护界面的JSON配置
+            preloading: true
+            skill: classpath:skills/web.st
   servlet:
     multipart:
       max-file-size: 10MB
