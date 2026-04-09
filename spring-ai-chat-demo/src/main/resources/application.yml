@@ -60,8 +60,15 @@ spring:
             The user query is outside your knowledge base.
             Politely inform the user that you can't answer it.
         tools:
+          - name: spring-ai-mcp-client - sql-forge
+            label: java大脑🧠MCP
+            description: 一个帮你打通业务、系统与数据的服务
+            default-selected:  true
         skills:
-
+          - name: 查询订单系统数据库
+            description: 从订单系统数据库中查询用户、订单、商品、数据字典等信息
+            preloading: true
+            skill: classpath:skills/nl2sql.st
   servlet:
     multipart:
       max-file-size: 10MB
