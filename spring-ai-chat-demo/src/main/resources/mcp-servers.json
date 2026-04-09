@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "us-weather": {
+    "sql-forge": {
       "args": [
         "-jar",
         "./sql-forge-mcp-0.0.1-SNAPSHOT.jar"
