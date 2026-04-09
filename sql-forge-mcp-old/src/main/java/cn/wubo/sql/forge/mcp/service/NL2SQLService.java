@@ -6,13 +6,10 @@ import cn.wubo.sql.forge.mcp.model.ConversationContext.DialogueTurn;
 import cn.wubo.sql.forge.mcp.model.QueryIntent;
 import cn.wubo.sql.forge.mcp.model.SqlValidationResult;
 import cn.wubo.sql.forge.mcp.model.TableSelection;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.prompt.PromptTemplate;
-import org.springframework.ai.template.st.StTemplateRenderer;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -113,28 +113,14 @@ public class NL2SQLService {
         // 构建RestClient
         this.restClient = restClient;
 
-        // 优先从数据库元数据接口检测方言
-        DialectType detectedDialect = null;
-        if (restClient != null) {
-            detectedDialect = detectDialectFromDatabaseInfo();
-        }
-        
-        // 如果接口检测成功，使用检测到的方言；否则使用配置文件中的方言
-        if (detectedDialect != null) {
-            this.currentDialect = detectedDialect;
-            log.info("成功从数据库元数据接口检测到方言: {}, 将使用该方言生成SQL", detectedDialect.getDisplayName());
-        } else {
-            // 解析配置文件中的方言作为回退
-            this.currentDialect = DialectType.fromDatabaseType(dialect);
-            log.info("无法从接口检测方言，使用配置文件中的方言: {}", currentDialect.getDisplayName());
-        }
+        // 解析方言配置
+        this.currentDialect = DialectType.fromDatabaseType(dialect);
 
-        log.info("NL2SQLService初始化完成，最终方言: {}, 模糊阈值: {}, 默认限制: {}, 默认排序: {} {}",
+        log.info("NL2SQLService初始化完成，默认方言: {}, 模糊阈值: {}, 默认限制: {}, 默认排序: {} {}",
                 currentDialect.getDisplayName(), ambiguityThreshold, defaultLimit, defaultSortField, defaultSortDirection);
     }
 
     // ==================== 核心工具方法 ====================
-
 
     /**
      * 将自然语言转换为SQL（标准入口）
@@ -144,18 +130,17 @@ public class NL2SQLService {
      */
     @Tool(name = "NL2SQL", description = "将自然语言描述的需求转换成SQL查询语句，支持复杂查询、聚合、分组、多表关联等场景")
     public String NL2SQL(@ToolParam(description = "自然语言描述的需求，例如：查询所有年龄大于30岁的用户，按姓名升序排列") String content) {
-        String sessionId = UUID.randomUUID().toString();
-        return String.format("【sessionId】:%s%n%s",sessionId,nl2sqlWithContext(content,sessionId));
+        return nl2sqlWithContext(content, null);
     }
 
     /**
      * 将自然语言转换为SQL（带会话上下文）
      *
      * @param content   自然语言查询描述
-     * @param sessionId 会话ID，用于多轮对话
+     * @param sessionId 会话ID，用于多轮对话（可为空）
      * @return 生成的SQL语句或澄清提示
      */
-//    @Tool(name = "NL2SQLWithContext", description = "使用会话上下文将自然语言转换成SQL，支持多轮对话记忆")
+    @Tool(name = "NL2SQLWithContext", description = "使用会话上下文将自然语言转换成SQL，支持多轮对话记忆")
     public String nl2sqlWithContext(
             @ToolParam(description = "自然语言描述的需求") String content,
             @ToolParam(description = "会话ID，用于保持对话上下文（可选）") String sessionId) {
@@ -383,30 +368,6 @@ public class NL2SQLService {
     }
 
     /**
-     * 手动刷新方言配置（从数据库元数据接口重新检测）
-     * 当数据库切换或配置变更时调用
-     */
-    @Tool(name = "RefreshDialect", description = "从数据库元数据接口重新检测并刷新SQL方言配置")
-    public String refreshDialect() {
-        if (restClient == null) {
-            return "❌ 无法刷新方言：RestClient 未配置";
-        }
-        
-        DialectType oldDialect = this.currentDialect;
-        DialectType detectedDialect = detectDialectFromDatabaseInfo();
-        
-        if (detectedDialect != null) {
-            this.currentDialect = detectedDialect;
-            String message = String.format("✓ 方言已刷新：%s → %s", 
-                    oldDialect.getDisplayName(), detectedDialect.getDisplayName());
-            log.info(message);
-            return message;
-        } else {
-            return String.format("⚠️ 无法从接口检测方言，当前方言保持不变：%s", oldDialect.getDisplayName());
-        }
-    }
-
-    /**
      * 清除会话上下文
      */
     @Tool(name = "ClearSession", description = "清除指定会话的上下文")
@@ -433,53 +394,7 @@ public class NL2SQLService {
     // ==================== 私有辅助方法 ====================
 
     /**
-     * 从API获取数据库元数据（优先用于确定方言）
-     */
-    private String getDatabaseInfoFromApi() {
-        try {
-            return restClient.get()
-                    .uri("/sql/forge/api/database/getMetaDataDatabase?executorName={executor}", executorName)
-                    .retrieve()
-                    .body(String.class);
-        } catch (HttpClientErrorException e) {
-            log.warn("获取数据库元数据失败，状态码: {}，将使用配置或默认方言", e.getStatusCode());
-            return null;
-        } catch (Exception e) {
-            log.warn("调用数据库元数据API失败，将使用配置或默认方言", e);
-            return null;
-        }
-    }
-
-    /**
-     * 从数据库元数据解析方言类型
-     */
-    private DialectType detectDialectFromDatabaseInfo() {
-        String dbInfoJson = getDatabaseInfoFromApi();
-        if (dbInfoJson == null || dbInfoJson.trim().isEmpty() || "[]".equals(dbInfoJson)) {
-            return null;
-        }
-
-        try {
-            // 解析JSON获取数据库类型
-            // 假设返回格式: {"databaseProductName":"MySQL","databaseVersion":"8.0.28"}
-            Map<String, Object> dbInfo = objectMapper.readValue(dbInfoJson, Map.class);
-            
-            String productName = (String) dbInfo.get("databaseProductName");
-            String version = (String) dbInfo.get("databaseVersion");
-            
-            if (productName != null && !productName.trim().isEmpty()) {
-                log.info("从数据库元数据检测到数据库类型: {} {}, 将自动配置方言", productName, version != null ? version : "");
-                return DialectType.fromProductName(productName);
-            }
-        } catch (Exception e) {
-            log.warn("解析数据库元数据失败，将使用配置或默认方言: {}", e.getMessage());
-        }
-        
-        return null;
-    }
-
-    /**
-     * 从API获取表元数据信息
+     * 从API获取元数据信息
      */
     private String getMetaDataFromApi() {
         try {
