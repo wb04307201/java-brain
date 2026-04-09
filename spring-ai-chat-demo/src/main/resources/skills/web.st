@@ -465,8 +465,8 @@ WHERE (id = ?)
 # 示例参考（Few-Shot Learning）
 
 ## 输入示例
-```text
-用户单表维护功能
+```markdown
+帮我创建用户单表维护功能
 
 用户表:
 
@@ -932,5 +932,5 @@ WHERE (id = ?)
 7. 生成的JSON必须通过JSON语法校验
 
 
-如果生成成功，生成随机模板id，并调用 @amisTemplateSave 保存生成的模板
+如果生成成功，生成随机模板id，并调用 @amisTemplateSave 保存生成的模板，保存成功返回的url，格式为存后返回下载地址，格式为 http://localhost:8081/sql/forge/console?id=模板id ，使用a标签展示，点击后打开新标签页
 
