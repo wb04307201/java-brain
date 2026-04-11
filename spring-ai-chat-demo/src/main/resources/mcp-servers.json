@@ -7,6 +7,21 @@
         "./sql-forge-mcp-0.0.1-SNAPSHOT.jar"
       ],
       "command": "java"
+    },
+    "mcp-server-chart": {
+      "args": [
+        "-y",
+        "@antv/mcp-server-chart"
+      ],
+      "command": "npx.cmd"
+    },
+    "filesystem": {
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "./temp"
+      ],
+      "command": "npx.cmd"
     }
   }
 }
