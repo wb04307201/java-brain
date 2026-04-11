@@ -64,6 +64,16 @@ spring:
             label: java大脑🧠MCP
             description: 一个帮你打通业务、系统与数据的服务
             default-selected:  true
+          - name: spring-ai-mcp-client - mcp-server-chart
+            label: 图表
+            description:
+              这是一个基于 TypeScript 的 MCP 服务器，提供图表生成功能。它允许您通过 MCP 工具创建各种类型的图表。
+            default-selected:  true
+          - name: spring-ai-mcp-client - filesystem
+            label: 文件系统
+            description:
+              用于文件系统操作的模型上下文协议（MCP）的 Node.js 服务。
+            default-selected:  true
         skills:
           - name: 查询订单系统数据库
             description: 从订单系统数据库中查询用户、订单、商品、数据字典等信息
@@ -73,6 +83,10 @@ spring:
             description: 根据需要自动生成百度Amis低代码平台CRUD单表维护界面的JSON配置
             preloading: true
             skill: classpath:skills/web.st
+          - name: 保存文件
+            description: 保存文件到服务器，并返回保存后的文件下载url
+            preloading: true
+            skill: classpath:skills/file.st
   servlet:
     multipart:
       max-file-size: 10MB
