@@ -10,7 +10,7 @@
 
 ## 使用
 1. 启动sql-forge-demo项目，内涵测试用H2数据库，与初始化脚本，数据库包含用户、商品、订单、订单明细，以及字典，字典项数据
-   可访问`http://localhost:8081/sql/forge/console`查看sql-forge库控制台
+   可访问`http://localhost:8081/sql/forge/console` 查看sql-forge库控制台
 2. sql-forge-mcp需要编译成成jar，通过stdio提供给spring-ai-chat-demo,目前spring-ai-chat-demo内已包含编译好的jar，并配置好stdio  
    运行环境需要jbang(类似于python的uv，或者node的npx),安装命令可参考  
    > Windows (PowerShell)
@@ -21,8 +21,10 @@
    > ```shell
    > curl -Ls https://sh.jbang.dev | bash -s - app setup
    > ```
-3. 启动spring-ai-chat-demo，作为聊天界面，也可以使用其他聊天界面，但需配置自行配置mcps、skill
-   可访问`http://localhost:8080/spring/ai/chat`查看聊天界面
+3. 启动spring-ai-chat-demo，作为聊天界面，也可以使用其他聊天界面，但需配置自行配置mcps、skill  
+   可访问`http://localhost:8080/spring/ai/chat` 查看聊天界面  
+   spring-ai-chat-demo目前使用通过阿里云百炼调用qwen-plus大，key配置在环境变量中，变量名为DASHSCOPE_API_KEY  
+   如需使用其他模型，请自行更换模型配置与依赖库
 
 
 ## 测试
@@ -33,7 +35,11 @@
 
 也可以配合其他mcp工具例如继续对话：
 ```text
-请
+请更详细的分析各种商品订购数量与销售额，并保存分析报告
+```
+
+```text
+请根据各种商品的销售额占比使用 @generate_pie_chart 绘制饼图
 ```
 
 ### 自然语言生成页面

@@ -87,6 +87,10 @@ spring:
             description: 保存文件到服务器，并返回保存后的文件下载url
             preloading: true
             skill: classpath:skills/file.st
+          - name: 图表展示
+            description: 返回的图表url如何展示
+            preloading: true
+            skill: classpath:skills/chart.st
   servlet:
     multipart:
       max-file-size: 10MB
