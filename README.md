@@ -8,7 +8,7 @@
 2. [sql-forge-mcp](sql-forge-mcp): 连接系统与AI
 3. [spring-ai-chat-demo](spring-ai-chat-demo): 聊天界面，对接AI，并包含调用系统的Skill
 
-## 使用
+## 启动
 1. 启动sql-forge-demo项目，内涵测试用H2数据库，与初始化脚本，数据库包含用户、商品、订单、订单明细，以及字典，字典项数据
    可访问`http://localhost:8081/sql/forge/console` 查看sql-forge库控制台
 2. sql-forge-mcp需要编译成成jar，通过stdio提供给spring-ai-chat-demo,目前spring-ai-chat-demo内已包含编译好的jar，并配置好stdio  
@@ -27,7 +27,7 @@
    如需使用其他模型，请自行更换模型配置与依赖库
 
 
-## 测试
+## 使用
 ### 自然语言调用数据库
 ```text
 请帮我查询数据库里有哪些商品？哪个商品在订单表里订购数量最多？哪个商品在订单表里订购价格合计最多？
