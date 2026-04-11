@@ -83,8 +83,8 @@ spring:
             description: 根据需要自动生成百度Amis低代码平台CRUD单表维护界面的JSON配置
             preloading: true
             skill: classpath:skills/web.st
-          - name: 保存文件
-            description: 保存文件到服务器，并返回保存后的文件下载url
+          - name: 保存分析报告文件
+            description: 保存分析报告文件到服务器，并拼接保存后的文件下载url，点击下载
             preloading: true
             skill: classpath:skills/file.st
           - name: 图表展示
