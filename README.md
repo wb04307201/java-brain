@@ -22,7 +22,7 @@
    > curl -Ls https://sh.jbang.dev | bash -s - app setup
    > ```
 3. 启动spring-ai-chat-demo，作为聊天界面，也可以使用其他聊天界面，但需配置自行配置mcps、skill  
-   可访问`http://localhost:8080/spring/ai/chat` 查看聊天界面  
+   可访问`http://localhost:8080/spring/ai/loom` 查看聊天界面  
    spring-ai-chat-demo目前使用通过阿里云百炼调用qwen-plus大，key配置在环境变量中，变量名为DASHSCOPE_API_KEY  
    如需使用其他模型，请自行更换模型配置与依赖库
 
