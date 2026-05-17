@@ -112,6 +112,8 @@ spring:
             title: HTTP 客户端
             description:
               HTTP客户端 MCP 服务 - 提供通用HTTP请求功能（GET/POST/PUT/DELETE）
+          - name: spring-ai-mcp-client - sql-forge
+            title: SQL工坊
         skills:
           - name: 查询订单系统数据库
             description: 从订单系统数据库中查询用户、订单、商品、数据字典等信息
@@ -119,9 +121,6 @@ spring:
           - name: 创建订单系统页面
             description: 根据需要自动生成百度Amis低代码平台CRUD单表维护界面的JSON配置
             content: classpath:skills/web.st
-          - name: 图表展示
-            description: 返回的图表url如何展示
-            content: classpath:skills/chart.st
 
   servlet:
     multipart:

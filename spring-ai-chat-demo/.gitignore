@@ -31,3 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+/.local/jvector-index/
+/.local/datasource/

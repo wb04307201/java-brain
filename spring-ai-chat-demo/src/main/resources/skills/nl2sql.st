@@ -9,4 +9,5 @@
 7. 如果生成并保存分析报告
    1. 使用 @list_allowed_directories 获取允许访问的目录
    2. 使用 @write_file 在允许访问的目录里保存报告为*.md，
-   3. 保存后返回下载地址，格式为 http://localhost:8080/spring/ai/chat/file/download/文件名 ，使用a标签展示，点击进行下载
+   3. 使用 @addFile:{path:文件路径} 添加问价到文件管理，获取文件id
+   4. 使用 @downloadFileUrl:{fileId:文件id} 获取下载地址
