@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:file:./data/testdb;AUTO_SERVER=TRUE
+    url: jdbc:h2:file:./sql-forge-test/data/testdb;AUTO_SERVER=TRUE
     username: sa
   flyway:
     placeholder-replacement: false
@@ -11,7 +11,7 @@ sql:
     schemata:
       - PUBLIC
     calcite:
-      enabled: false
+      enabled: true
       configuration: classpath:model.json
       schemata:
         - MYSQL
@@ -19,7 +19,9 @@ sql:
     api:
       database:
         enabled: true
-        select-only: true
+        select-only: false
+    apiKeys:
+      - test
 
 
 server:
