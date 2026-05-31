@@ -31,5 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
-/.local/jvector-index/
-/.local/datasource/
+/.playwright-mcp/
+/.local/
+/mcp/
