@@ -5,8 +5,8 @@
 
 
 ## 代码包含如下三个项目
-1. [sql-forge-demo](sql-forge-demo): 在系统上增加数据库元数据、低代码功能，提供给智能体调用
-2. [spring-ai-chat-demo](spring-ai-chat-demo): 聊天界面，对接AI，并包含调用系统的Skill
+1. [sql-forge-demo](oms): 在系统上增加数据库元数据、低代码功能，提供给智能体调用
+2. [spring-ai-chat-demo](loom-agent): 聊天界面，对接AI，并包含调用系统的Skill
 
 ## 启动
 1. 启动sql-forge-demo项目，内涵测试用H2数据库，与初始化脚本，数据库包含用户、商品、订单、订单明细，以及字典，字典项数据
