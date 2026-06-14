@@ -81,7 +81,48 @@ spring:
             description: 自研中国城市实时天气服务
           - name: spring-ai-mcp-client - http-mcp
             title: HTTP 客户端
-            description: HTTP客户端MCP服务，提供通用HTTP请求功能
+            description: HTTP客户端MCP服务，提供通用HTTP请求功能，也提供本地文件读写与下载/预览链接（listAllowedDirectories/writeFile/readFile/downloadFileUrl/viewFileUrl）
+            default-selected: true
+          - name: spring-ai-mcp-client - mcp-server-chart
+            title: 图表生成
+            description: 基于 AntV 的图表生成 MCP 服务（饼图/柱状图/折线图等），返回图片 URL
+            default-selected: true
+            tools:
+              - name: generate_pie_chart
+                description: 生成饼图，返回图片 URL（数据用 name+value 数组）
+              - name: generate_column_chart
+                description: 生成柱状图
+              - name: generate_bar_chart
+                description: 生成条形图
+              - name: generate_line_chart
+                description: 生成折线图
+              - name: generate_area_chart
+                description: 生成面积图
+              - name: generate_histogram_chart
+                description: 生成直方图
+              - name: generate_dual_axes_chart
+                description: 生成双轴对比图
+              - name: generate_radar_chart
+                description: 生成雷达图
+              - name: generate_scatter_chart
+                description: 生成散点图
+          - name: spring-ai-mcp-client - sql-forge-mcp
+            title: 订单系统数据库
+            description: sql-forge-mcp，把 oms 订单系统的数据库元数据/CRUD/SQL/Amis模板能力暴露给 AI（执行 NL2SQL、生成 Amis CRUD 配置）
+            default-selected: true
+            tools:
+              - name: getSystems
+                description: 获取所有已注册的 sql-forge 系统（按 oms 实例返回）
+              - name: sqlForgeMetaDataTables
+                description: 获取某个系统下的所有表与字段元数据
+              - name: getMetaDataTableInfo
+                description: 获取单个表的字段类型、长度、是否可空等详细信息
+              - name: executeSQL
+                description: 在指定系统上执行 SELECT 查询（数据库或 Calcite 联邦），仅允许读
+              - name: getMetaDataDatabase
+                description: 获取指定系统下的数据库/Schema 列表
+              - name: amisTemplateSave
+                description: 保存 Amis 模板到 oms 并返回预览地址 http://localhost:8081/sql/forge/console?id={模板id}
           - name: spring-ai-mcp-client - playwright
             title: Playwright
             description: 通过结构化可访问性快照与网页交互
@@ -114,8 +155,8 @@ spring:
           - name: 测试自动E2E功能验证
             description: 测试使用浏览器对功能进行E2E测试，并生成验证报告
             content: classpath:skills/e2e.st
-          - name: 查询订单系统数据库
-            description: 从订单系统数据库中查询用户、订单、商品、数据字典等信息
+          - name: 查订单系统数据
+            description: 用户问订单系统里用户/会员/订单/商品/分类/字典等数据的查询、统计、排行、汇总，或要求生成图表、保存报告时触发；基于 sql-forge-mcp 的 6 个工具完成 NL2SQL
             content: classpath:skills/nl2sql.st
           - name: 创建订单系统页面
             description: 根据需要自动生成百度Amis低代码平台CRUD单表维护界面的JSON配置
