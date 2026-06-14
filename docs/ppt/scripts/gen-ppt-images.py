@@ -69,14 +69,16 @@ PROMPTS = {
         "积木上分别有清晰 Logo,深色科技背景,极简 3D 渲染,16:9,信息图风格"
     ),
     "page-04-loom": (
-        "Spring AI LoomAgent 架构示意图,中心一个\"Spring AI\"图标,"
-        "周围放射状连接 6 个功能模块卡片(标注 RAG 知识库、MCP 工具、Skill 技能、文件管理、对话 UI、内置工具),"
-        "深色科技背景,信息图风格,16:9"
+        "JavaBrain 灵梭 6 大功能模块架构图,中心是发光的紫色「灵梭 AI 编排」图标,"
+        "周围 6 个圆角矩形功能卡片,中文标签分别是:RAG 知识库 / MCP 工具集成 / Skill 技能库 / 文件管理 / 对话交互 UI / 内置工具,"
+        "其中 MCP 工具集成 和 Skill 技能库 用金色边框并标注 ★ 杀手锏,"
+        "深色科技背景,中文信息图风格,卡片内文字用中文,16:9"
     ),
     "page-05-forge": (
-        "Apache Calcite 跨库联邦查询架构图,中央一个 SQL 查询图标,"
-        "三条彩色数据流向下分别流入 MySQL、PostgreSQL、H2 三个数据库图标,"
-        "然后汇聚到一条 JOIN 结果,蓝色到青色科技调,架构图风格,16:9"
+        "JavaBrain SQL 工坊 架构图,顶部 4 个 starter 模块(中文标签:基础 CRUD / Calcite 跨库联邦 / Amis 低代码 / MCP 5 受限工具),"
+        "中间是 SQL 查询图标,三条彩色数据流分别流向 MySQL、PostgreSQL、H2 三个数据库图标,"
+        "然后汇聚到 JOIN 结果(中文),其中 JSON CRUD 协议、Calcite 跨库联邦、MCP 5 受限工具 三个标 ★ 杀手锏并用金色边框,"
+        "深色科技背景,中文信息图风格,16:9"
     ),
     "page-06-demo1": None,  # 占位:录屏 1 录完视频后用 ffmpeg 截帧
     "page-07-demo2": None,  # 占位:录屏 2 录完视频后用 ffmpeg 截帧
