@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>订单系统各分类商品数统计报告</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: #f5f7fa;
+    color: #333;
+    margin: 0;
+    padding: 24px;
+  }
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    padding: 32px 40px;
+  }
+  h1 {
+    font-size: 24px;
+    color: #1a1a2e;
+    border-bottom: 3px solid #4361ee;
+    padding-bottom: 12px;
+    margin-top: 0;
+  }
+  h2 {
+    font-size: 18px;
+    color: #2d3436;
+    margin-top: 28px;
+  }
+  .summary {
+    background: #eef2ff;
+    border-left: 4px solid #4361ee;
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin: 16px 0 24px 0;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .chart-box {
+    text-align: center;
+    margin: 20px 0 28px 0;
+  }
+  .chart-box img {
+    max-width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px 0;
+    font-size: 15px;
+  }
+  thead th {
+    background: #4361ee;
+    color: #fff;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+  }
+  tbody td {
+    padding: 9px 14px;
+    border-bottom: 1px solid #e9ecef;
+  }
+  tbody tr:nth-child(even) { background: #f8f9fa; }
+  tbody tr:hover { background: #eef2ff; }
+  .total-row td { font-weight: 700; background: #f1f3f5 !important; border-top: 2px solid #4361ee; }
+  .footer {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid #e9ecef;
+    font-size: 13px;
+    color: #868e96;
+    text-align: center;
+  }
+  .badge {
+    display: inline-block;
+    background: #4361ee;
+    color: #fff;
+    border-radius: 12px;
+    padding: 2px 10px;
+    font-size: 13px;
+    margin-left: 6px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>📦 订单系统 — 各分类商品数统计报告</h1>
+
+  <div class="summary">
+    <strong>📌 摘要：</strong>订单系统共有 <strong>4</strong> 个商品分类，商品总数 <strong>15</strong> 件。
+    其中 <strong>电子产品</strong> 分类商品最多（6件，占比 40%），<strong>家居用品</strong> 分类商品最少（2件，占比 13.3%）。
+  </div>
+
+  <h2>📊 柱状图</h2>
+  <div class="chart-box">
+    <img src="https://mdn.alipayobjects.com/one_clip/afts/img/I144RLXqx9oAAAAAQ_AAAAgAoEACAQFr/original" width="100%" />
+  </div>
+
+  <h2>📋 数据明细</h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:60px;">排名</th>
+        <th>商品分类</th>
+        <th style="width:120px;">商品数量</th>
+        <th style="width:120px;">占比</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>🥇 1</td><td>电子产品</td><td>6</td><td>40.0%</td></tr>
+      <tr><td>🥈 2</td><td>图书</td><td>4</td><td>26.7%</td></tr>
+      <tr><td>🥉 3</td><td>服装</td><td>3</td><td>20.0%</td></tr>
+      <tr><td>4</td><td>家居用品</td><td>2</td><td>13.3%</td></tr>
+      <tr class="total-row"><td></td><td>合计</td><td>15</td><td>100.0%</td></tr>
+    </tbody>
+  </table>
+
+  <h2>💡 分析结论</h2>
+  <div class="summary">
+    <ul style="margin:0; padding-left:20px; line-height:2;">
+      <li><strong>电子产品</strong>是商品最丰富的分类，共 6 件，占总量的 40%，是平台核心品类。</li>
+      <li><strong>图书</strong>以 4 件位居第二，占 26.7%，有一定品类深度。</li>
+      <li><strong>服装</strong>与<strong>家居用品</strong>商品数偏少，可考虑扩充 SKU 以丰富平台品类。</li>
+      <li>各分类商品数分布较为均衡，无明显单一品类依赖风险。</li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    报告生成时间：2025年 &nbsp;|&nbsp; 数据来源：order_system 订单管理系统
+  </div>
+
+</div>
+</body>
+</html>
