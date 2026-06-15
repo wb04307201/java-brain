@@ -66,7 +66,12 @@ def add_anim(slide, shape, anim_type, *, delay_ms=0, dur_ms=500, loop=False):
     """注入 PowerPoint 动画节点。
     anim_type: 见 ANIM_PRESETS 的 key
     loop=True: 生成 repeatCount="indefinite"(持续到翻页,转视频核心)
+    fill="hold" 保持动画间形状可见;loop=True 时必需
     """
+    if anim_type not in ANIM_PRESETS:
+        raise ValueError(
+            f"unknown anim_type {anim_type!r}; valid: {list(ANIM_PRESETS)}"
+        )
     preset_class, preset_id = ANIM_PRESETS[anim_type]
     shape_id = shape.shape_id
     repeat_attr = ' repeatCount="indefinite"' if loop else ""
@@ -119,7 +124,34 @@ def iso_lego(slide, x_in, y_in, w_in, h_in, color, *, studs=True, highlight=Fals
         hl.fill.solid()
         hl.fill.fore_color.rgb = WHITE
         hl.line.fill.background()
+        # 设置 30% alpha(spec §4.4 "白色 alpha 30%")
+        from lxml import etree as _etree
+        solidFill = hl._element.spPr.find(qn("a:solidFill"))
+        if solidFill is not None:
+            alpha = _etree.SubElement(solidFill, qn("a:alpha"))
+            alpha.set("val", "30000")  # 30000 = 30%
     return main
+
+
+def styled_text(slide, x, y, w, h, text, *,
+                font=None, size=18, color=None, bold=False, center=True):
+    """创建并配置一个文本框。返回 textbox shape。
+    font/color 默认:font=FONT_CN, color=TEXT_PRIMARY
+    center=True → PP_ALIGN.CENTER
+    """
+    tb = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
+    tf = tb.text_frame
+    tf.word_wrap = True  # 避免自动收缩字号
+    tf.text = text
+    p = tf.paragraphs[0]
+    if center:
+        p.alignment = PP_ALIGN.CENTER
+    run = p.runs[0]
+    run.font.name = font if font else FONT_CN
+    run.font.size = Pt(size)
+    run.font.bold = bold
+    run.font.color.rgb = color if color else TEXT_PRIMARY
+    return tb
 
 
 def slide_1_cover(prs):
@@ -141,46 +173,25 @@ def slide_1_cover(prs):
         legos.append(lego)
 
     # JavaBrain 大字(72pt 居中)
-    tb_title = s.shapes.add_textbox(Inches(1.0), Inches(3.4),
-                                     Inches(11.333), Inches(1.2))
-    tf = tb_title.text_frame
-    tf.text = "JavaBrain"
-    p = tf.paragraphs[0]
-    p.alignment = PP_ALIGN.CENTER
-    run = p.runs[0]
-    run.font.name = FONT_EN
-    run.font.size = Pt(72)
-    run.font.bold = True
-    run.font.color.rgb = TEXT_PRIMARY
+    tb_title = styled_text(s, 1.0, 3.4, 11.333, 1.4,
+                           "JavaBrain",
+                           font=FONT_EN, size=72, color=TEXT_PRIMARY, bold=True)
 
     # 副标"让 Spring Boot 秒变 AI 中枢"
-    tb_sub = s.shapes.add_textbox(Inches(1.0), Inches(4.6),
-                                   Inches(11.333), Inches(0.5))
-    tf2 = tb_sub.text_frame
-    tf2.text = "让 Spring Boot 秒变 AI 中枢"
-    p2 = tf2.paragraphs[0]
-    p2.alignment = PP_ALIGN.CENTER
-    run2 = p2.runs[0]
-    run2.font.name = FONT_CN
-    run2.font.size = Pt(24)
-    run2.font.color.rgb = TEXT_SECONDARY
+    tb_sub = styled_text(s, 1.0, 4.8, 11.333, 0.5,
+                          "让 Spring Boot 秒变 AI 中枢",
+                          font=FONT_CN, size=24, color=TEXT_SECONDARY)
 
-    # 金钩"3 组件 · 1 starter · 0 漂移"
+    # 金钩"3 组件 · 1 starter · 0 漂移"(圆角矩形 + 文字叠加)
     hook_box = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
                                    Inches(4.0), Inches(5.5),
                                    Inches(5.333), Inches(0.6))
     hook_box.fill.solid()
     hook_box.fill.fore_color.rgb = GOLD
     hook_box.line.fill.background()
-    tf3 = hook_box.text_frame
-    tf3.text = "3 组件 · 1 starter · 0 漂移"
-    p3 = tf3.paragraphs[0]
-    p3.alignment = PP_ALIGN.CENTER
-    run3 = p3.runs[0]
-    run3.font.name = FONT_CN
-    run3.font.size = Pt(18)
-    run3.font.bold = True
-    run3.font.color.rgb = WHITE
+    hook_text = styled_text(s, 4.0, 5.55, 5.333, 0.5,
+                             "3 组件 · 1 starter · 0 漂移",
+                             font=FONT_CN, size=18, color=WHITE, bold=True)
 
     # ====== 5 个动画(策略 A 入场群) ======
     add_anim(s, legos[0], "fade_in", delay_ms=0,    dur_ms=500)
