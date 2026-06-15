@@ -680,6 +680,76 @@ def slide_7_demo2_workflow(prs):
     add_anim(s, step_boxes[4], "pulse", delay_ms=4500, dur_ms=1500, loop=True)
 
 
+def slide_8_compare(prs):
+    """P8 实战对比 · 4 ✓ + 5 行对比表 + 杀手锏金脉冲(策略 B)"""
+    s = prs.slides.add_slide(prs.slide_layouts[6])
+    s.background.fill.solid()
+    s.background.fill.fore_color.rgb = BG_LIGHT
+
+    # 标题
+    styled_text(s, 0.5, 0.4, 12.333, 0.6,
+                 "实战测试 · 7 张表 / 0 漂移 / 节省 >80%",
+                 size=28, bold=True)
+
+    # 左半:技术派 4 行 ✓
+    styled_text(s, 0.5, 1.3, 5.5, 0.4,
+                 "技术派 · 4 项测试",
+                 size=18, color=JAVA_BLUE, bold=True)
+
+    items_tech = [
+        "✓ 7 张表测试(简单/字典/自关联/多外键)",
+        "✓ 0 漂移 / 0 错误链接 / 0 中文乱码",
+        "✓ 5/5 AI 字段推断自检通过",
+        "✓ 节省 CRUD 开发时间 >80%",
+    ]
+    tech_boxes = []
+    for i, txt in enumerate(items_tech):
+        is_killer = ">80%" in txt
+        tb = styled_text(s, 0.7, 1.9 + i * 0.7, 6.0, 0.5,
+                          txt, size=16,
+                          color=GOLD if is_killer else TEXT_PRIMARY,
+                          bold=is_killer)
+        tech_boxes.append(tb)
+
+    # 右半:商业派 5 行对比表
+    styled_text(s, 7.0, 1.3, 5.5, 0.4,
+                 "商业派 · 5 项对比",
+                 size=18, color=AI_PURPLE, bold=True)
+
+    rows_biz = ["业务取数", "CRUD 页面", "跨库 JOIN", "私有化", "列名识别"]
+    biz_boxes = []
+    for i, txt in enumerate(rows_biz):
+        # 行背景
+        bg = s.shapes.add_shape(MSO_SHAPE.RECTANGLE,
+                                  Inches(7.0), Inches(1.9 + i * 0.5),
+                                  Inches(5.5), Inches(0.45))
+        bg.fill.solid()
+        bg.fill.fore_color.rgb = GREEN_BG if i % 2 == 0 else WHITE
+        bg.line.color.rgb = DIVIDER
+        bg.line.width = Pt(1)
+        # 行文字
+        row_tb = styled_text(s, 7.2, 1.95 + i * 0.5, 3.5, 0.4,
+                              txt, size=16, center=False)
+        # ✓
+        styled_text(s, 10.8, 1.95 + i * 0.5, 1.5, 0.4,
+                     "✓", font=FONT_EN, size=18, color=SEMANTIC_GREEN, bold=True)
+        biz_boxes.append(row_tb)
+
+    # 底部金句
+    styled_text(s, 0.5, 6.0, 12.333, 0.5,
+                 "★ JavaBrain 在 安全 + 智能 + 私有化 三角都做到",
+                 size=20, color=GOLD, bold=True)
+
+    # 10 动画:策略 B
+    for i in range(4):
+        add_anim(s, tech_boxes[i], "fade_in",
+                 delay_ms=i * 600, dur_ms=500)
+    for i in range(5):
+        add_anim(s, biz_boxes[i], "fade_in",
+                 delay_ms=3000 + i * 700, dur_ms=500)
+    add_anim(s, tech_boxes[3], "pulse", delay_ms=12000, dur_ms=1500, loop=True)
+
+
 def main():
     prs = Presentation()
     prs.slide_width = SLIDE_W
@@ -693,8 +763,9 @@ def main():
     slide_5b_forge_4plus6(prs)
     slide_6_demo1_workflow(prs)
     slide_7_demo2_workflow(prs)
+    slide_8_compare(prs)
     prs.save(str(OUTPUT))
-    print(f"OK: {OUTPUT} (9 pages)")
+    print(f"OK: {OUTPUT} (10 pages)")
 
 
 if __name__ == "__main__":
