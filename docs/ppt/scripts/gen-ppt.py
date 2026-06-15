@@ -255,14 +255,178 @@ def slide_2_pain(prs):
     add_anim(s, hook, "pulse", delay_ms=5000, dur_ms=1500, loop=True)  # ★ 杀手锏持续脉冲
 
 
+def slide_3_position(prs):
+    """P3 定位:3 乐高(带标签)+ 4 行 ✓ + 首行金脉冲(策略 A:4 动画=3 入场 + 1 循环)"""
+    s = prs.slides.add_slide(prs.slide_layouts[6])
+    s.background.fill.solid()
+    s.background.fill.fore_color.rgb = BG_LIGHT
+
+    # 标题
+    tb_t = styled_text(s, 0.5, 0.4, 12.333, 0.7,
+                       "JavaBrain = 灵梭 + SQL工坊 + SQL工坊 MCP",
+                       size=28, bold=True)
+
+    # 3 乐高横排(带标签)
+    lego_y = 1.5
+    lego_size = 0.9
+    lego_gap = 0.6
+    total_w = 3 * lego_size + 2 * lego_gap
+    lego_x0 = (13.333 - total_w) / 2
+    lego_labels = [("灵梭", JAVA_BLUE), ("SQL工坊", AI_PURPLE), ("SQL工坊 MCP", SEMANTIC_GREEN)]
+    legos = []
+    for i, (label, color) in enumerate(lego_labels):
+        x = lego_x0 + i * (lego_size + lego_gap)
+        lego = iso_lego(s, x, lego_y, lego_size, lego_size, color)
+        legos.append(lego)
+        # 标签
+        styled_text(s, x - 0.3, lego_y + lego_size + 0.05, lego_size + 0.6, 0.3,
+                    label, size=12, color=color, bold=True)
+
+    # 4 行 ✓
+    items = [
+        ("✓ 三个都是依赖库,不是产品", GOLD, True),
+        ("✓ 组件化、按需引入,各自独立可用", TEXT_PRIMARY, False),
+        ("✓ ├── 灵梭 / SQL工坊 / SQL工坊 MCP 都可单独用", TEXT_SECONDARY, False),
+        ("✓ 组合起来 = 企业 AI 落地完整闭环", TEXT_PRIMARY, False),
+    ]
+    item_boxes = []
+    for i, (text, color, _) in enumerate(items):
+        tb = styled_text(s, 1.5, 3.5 + i * 0.6, 10.333, 0.5,
+                         text, size=18, color=color, bold=(i == 0))
+        item_boxes.append(tb)
+
+    # 4 动画:策略 A(标题入场 + 1 乐高入场 + 首行金行入场 + 1 循环)
+    add_anim(s, tb_t, "fade_in", delay_ms=0, dur_ms=500)
+    add_anim(s, legos[0], "fade_in", delay_ms=600, dur_ms=500)
+    add_anim(s, item_boxes[0], "fade_in", delay_ms=1200, dur_ms=500)
+    add_anim(s, item_boxes[0], "pulse", delay_ms=2000, dur_ms=1500, loop=True)
+
+
+def slide_4a_loom_intro(prs):
+    """P4-a 灵梭 · 整体定位(策略 A:4 动画=3 入场 + 1 循环)"""
+    s = prs.slides.add_slide(prs.slide_layouts[6])
+    s.background.fill.solid()
+    s.background.fill.fore_color.rgb = BG_LIGHT
+
+    # 小标
+    styled_text(s, 0.5, 0.4, 12.333, 0.4,
+                "灵梭 · LoomAgent",
+                font=FONT_EN, size=16, color=JAVA_BLUE, bold=True)
+
+    # 主标
+    tb_t = styled_text(s, 0.5, 1.0, 12.333, 1.0,
+                       "Spring AI 一键启动 · 改 .st 文件 AI 行为就变",
+                       size=32, bold=True)
+
+    # 4 特性卡(2x2)
+    advs = [
+        ("📦 6 大功能模块\n一站集成", JAVA_BLUE, False),
+        ("🔌 MCP 可热插拔\n8+ 服务", GOLD, True),
+        ("🧠 Skill 模板\n改 .st 即生效", GOLD, True),
+        ("💬 流式对话 + 思维链\nSSE + 可折叠", JAVA_BLUE, False),
+    ]
+    cards = []
+    cw, ch = 5.0, 1.3
+    gap = 0.3
+    cx0 = (13.333 - 2 * cw - gap) / 2
+    cy0 = 2.5
+    for i, (text, color, killer) in enumerate(advs):
+        row, col = i // 2, i % 2
+        x = cx0 + col * (cw + gap)
+        y = cy0 + row * (ch + gap)
+        card = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
+                                  Inches(x), Inches(y), Inches(cw), Inches(ch))
+        card.fill.solid()
+        card.fill.fore_color.rgb = WHITE
+        card.line.color.rgb = GOLD if killer else DIVIDER
+        card.line.width = Pt(3) if killer else Pt(1)
+        # 卡片文字(独立 textbox 因为有 emoji 多行)
+        styled_text(s, x, y + 0.2, cw, ch - 0.4,
+                    text, size=18, color=color, bold=True)
+        cards.append(card)
+
+    # 引导
+    styled_text(s, 0.5, 6.0, 12.333, 0.4,
+                "▼ 下一页 · 6 大功能模块",
+                size=16, color=AI_PURPLE, bold=True)
+
+    # 4 动画:策略 A(标题入场 + 卡片入场 + Skill 金脉冲)
+    add_anim(s, tb_t, "fade_in", delay_ms=0, dur_ms=500)
+    add_anim(s, cards[0], "fade_in", delay_ms=600, dur_ms=500)
+    add_anim(s, cards[2], "fade_in", delay_ms=1200, dur_ms=500)  # Skill 杀手锏
+    add_anim(s, cards[2], "pulse", delay_ms=2000, dur_ms=1500, loop=True)
+
+
+def slide_4b_loom_modules(prs):
+    """P4-b 灵梭 · 6 模块功能 + 2 chase pulse(策略 C:8 动画=6 入场 + 2 chase 循环)"""
+    s = prs.slides.add_slide(prs.slide_layouts[6])
+    s.background.fill.solid()
+    s.background.fill.fore_color.rgb = BG_LIGHT
+
+    # 标题
+    styled_text(s, 0.5, 0.4, 12.333, 0.6,
+                "灵梭 · 6 大功能模块",
+                size=28, bold=True)
+
+    # 6 卡片(2x3)
+    modules = [
+        ("📚 RAG 知识库", "Tika + JVector", JAVA_BLUE, False),
+        ("🔧 MCP ★", "8+ 服务可热插拔", GOLD, True),
+        ("🧠 Skill ★", ".st 模板即提示词", GOLD, True),
+        ("📁 文件管理", "磁盘 + H2 元数据", JAVA_BLUE, False),
+        ("💬 对话 UI", "SSE + 思维链折叠", JAVA_BLUE, False),
+        ("🛠️ 内置工具", "时间 / Git / Maven", JAVA_BLUE, False),
+    ]
+    cards = []
+    cw, ch = 4.0, 1.8
+    gap_x, gap_y = 0.2, 0.2
+    cx0 = (13.333 - 3 * cw - 2 * gap_x) / 2
+    cy0 = 1.3
+    for i, (name, desc, color, killer) in enumerate(modules):
+        col, row = i % 3, i // 3
+        x = cx0 + col * (cw + gap_x)
+        y = cy0 + row * (ch + gap_y)
+        card = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
+                                  Inches(x), Inches(y), Inches(cw), Inches(ch))
+        card.fill.solid()
+        card.fill.fore_color.rgb = WHITE
+        if killer:
+            card.line.color.rgb = GOLD
+            card.line.width = Pt(3)
+        else:
+            card.line.color.rgb = DIVIDER
+            card.line.width = Pt(1)
+        # 名字
+        styled_text(s, x, y + 0.2, cw, 0.6, name, size=20, color=color, bold=True)
+        # 描述
+        styled_text(s, x, y + 0.9, cw, 0.5, desc, size=14, color=TEXT_SECONDARY)
+        cards.append(card)
+
+    # 底部金句
+    styled_text(s, 0.5, 6.5, 12.333, 0.5,
+                "★ 改一个 .st 文件,AI 行为就变",
+                size=20, color=GOLD, bold=True)
+
+    # 8 动画:6 入场 + 2 chase(策略 C,chase 错开 2s)
+    for i in range(6):
+        add_anim(s, cards[i], "fade_in",
+                 delay_ms=i * 200, dur_ms=500)
+    # 2 杀手锏金边 chase(MCP + Skill)
+    add_anim(s, cards[1], "pulse", delay_ms=10000, dur_ms=1500, loop=True)  # MCP
+    add_anim(s, cards[2], "pulse", delay_ms=12000, dur_ms=1500, loop=True)  # Skill
+
+
 def main():
     prs = Presentation()
     prs.slide_width = SLIDE_W
     prs.slide_height = SLIDE_H
     slide_1_cover(prs)
     slide_2_pain(prs)
+    slide_3_position(prs)
+    slide_4a_loom_intro(prs)
+    slide_4b_loom_modules(prs)
     prs.save(str(OUTPUT))
-    print(f"OK: {OUTPUT} (2 pages)")
+    print(f"OK: {OUTPUT} (5 pages)")
 
 
 if __name__ == "__main__":
