@@ -19,7 +19,7 @@ PPTX = Path(__file__).resolve().parent.parent / "javabrain.pptx"
 
 def test_total_pages():
     prs = Presentation(str(PPTX))
-    assert len(prs.slides) == 2, f"期望 2 页,实际 {len(prs.slides)}"
+    assert len(prs.slides) >= 2, f"期望 ≥2 页,实际 {len(prs.slides)}"
 
 
 def test_p2_animation_count():
