@@ -39,7 +39,7 @@ def test_p1_key_text_present():
     # 用 html.unescape 比对
     import html
     decoded = html.unescape(xml)
-    for text in ["JavaBrain", "让 Spring Boot 秒变 AI 中枢", "3 组件"]:
+    for text in ["JavaBrain", "让您的系统瞬间拥有", "思考", "执行", "智能大脑", "3 组件"]:
         assert text in decoded, "missing text: " + text
 
 

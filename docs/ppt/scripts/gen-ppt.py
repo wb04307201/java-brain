@@ -177,9 +177,9 @@ def slide_1_cover(prs):
                            "JavaBrain",
                            font=FONT_EN, size=72, color=TEXT_PRIMARY, bold=True)
 
-    # 副标"让 Spring Boot 秒变 AI 中枢"
+    # 副标"让您的系统瞬间拥有“思考”与“执行”的智能大脑"
     tb_sub = styled_text(s, 1.0, 4.8, 11.333, 0.5,
-                          "让 Spring Boot 秒变 AI 中枢",
+                          "让您的系统瞬间拥有“思考”与“执行”的智能大脑",
                           font=FONT_CN, size=24, color=TEXT_SECONDARY)
 
     # 金钩"3 组件 · 1 starter · 0 漂移"(圆角矩形 + 文字叠加)
