@@ -1,6 +1,6 @@
 """T7 验证:12 页完成,P9+P10 关键内容。
 
-累计动画统计(spec §5.3):
+累计动画统计(P9 重做为'未来目标'页后):
 - P1: 5 fade_in (no pulse)
 - P2: 7 fade_in + 1 pulse_loop = 8
 - P3: 3 fade_in + 1 pulse_loop = 4
@@ -11,10 +11,11 @@
 - P6: 5 fade_in + 1 pulse_loop = 6
 - P7: 5 fade_in + 1 pulse_loop = 6
 - P8: 9 fade_in + 1 pulse_loop = 10
-- P9: 4 fade_in + 1 pulse_loop (V1.0) = 5
+- P9: 12 fade_in + 1 pulse_loop (CDA 金钩) = 13  ← 新增未来目标,内容更密
 - P10: 5 fade_in + 1 pulse_loop (killer) = 6
 
-合计:65 fade_in + 14 pulse_loop = 79 anim,14 indefinite。
+合计:73 fade_in + 14 pulse_loop = 87 anim,14 indefinite。
+(P9 重做前是 79,新增 8 个 fade_in 用于灵梭/SQL工坊各 4 张卡入场)
 """
 import sys
 from pathlib import Path
@@ -34,10 +35,10 @@ def test_total_pages():
 
 
 def test_total_animations():
-    """12 页累计动画总数(spec 给出 63 fade_in + 15 pulse + 5 chase = 83,但 spec 算式将 chase 与 pulse 重叠计数)。
+    """12 页累计动画总数(P9 重做后)。
 
     按实际 add_anim 调用累计:
-    - 65 fade_in + 14 pulse_loop(其中 5 个 chase)= 79 anim,14 indefinite
+    - 73 fade_in + 14 pulse_loop(其中 5 个 chase)= 87 anim,14 indefinite
     """
     prs = Presentation(str(PPTX))
     total = 0
@@ -47,37 +48,42 @@ def test_total_animations():
         total += xml.count("<p:timing")
         total_indefinite += xml.count('repeatCount="indefinite"')
     print(f"  total timings: {total}, indefinites: {total_indefinite}")
-    assert total == 79, f"期望 79 动画,实际 {total}"
+    assert total == 87, f"期望 87 动画,实际 {total}"
     assert total_indefinite == 14, f"期望 14 pulse_loop,实际 {total_indefinite}"
 
 
-def test_p9_3_repos():
+def test_p9_loom_future():
+    """P9 灵梭 4 未来目标(Agentic Workflow / Graph-RAG / 多模态 / Skill 市场)。"""
     prs = Presentation(str(PPTX))
     p9 = prs.slides[10]
     xml = unescape(etree.tostring(p9._element).decode())
-    for text in ["灵梭", "SQL工坊", "spring-ai-loom-agent", "sql-forge"]:
-        assert text in xml, f"P9 缺失仓库: {text}"
+    for text in ["灵梭", "Agentic Workflow", "Graph-RAG",
+                 "多模态", "Skill"]:
+        assert text in xml, f"P9 灵梭缺失: {text}"
 
 
-def test_p9_stars():
-    """3 个仓库的 ★ star 数。"""
+def test_p9_forge_future():
+    """P9 SQL工坊 4 未来目标(Text-to-SQL / HTAP / 数据治理 / Serverless)。"""
     prs = Presentation(str(PPTX))
     p9 = prs.slides[10]
     xml = unescape(etree.tostring(p9._element).decode())
-    for stars in ["★ 124", "★ 89"]:
-        assert stars in xml, f"P9 缺失 stars: {stars}"
+    for text in ["SQL工坊", "Text-to-SQL", "HTAP",
+                 "Serverless", "数据治理"]:
+        assert text in xml, f"P9 SQL工坊缺失: {text}"
 
 
-def test_p9_versions():
+def test_p9_dual_engine_vision():
+    """P9 底部双引擎协同 3 金钩。"""
     prs = Presentation(str(PPTX))
     p9 = prs.slides[10]
     xml = unescape(etree.tostring(p9._element).decode())
-    for v in ["V1.0", "V1.1", "V1.2", "V1.3"]:
-        assert v in xml, f"P9 缺失版本: {v}"
+    for text in ["AI 懂数据", "数据懂 AI", "CDA",
+                 "零代码 AI 应用工厂"]:
+        assert text in xml, f"P9 双引擎金钩缺失: {text}"
 
 
 def test_p9_pulse_indefinite():
-    """V1.0 金脉冲。"""
+    """CDA 金钩脉冲。"""
     prs = Presentation(str(PPTX))
     p9 = prs.slides[10]
     xml = etree.tostring(p9._element).decode()
@@ -85,19 +91,19 @@ def test_p9_pulse_indefinite():
 
 
 def test_p9_animation_count():
-    """P9:5 动画(3 仓库 fade + V1.0 fade + V1.0 pulse)。"""
+    """P9:13 动画(1 标题 + 4 灵梭 + 4 SQL工坊 + 3 金钩 fade + 1 金钩 pulse)。"""
     prs = Presentation(str(PPTX))
     p9 = prs.slides[10]
     xml = etree.tostring(p9._element).decode()
     tc = xml.count("<p:timing")
-    assert tc == 5, f"P9 期望 5 动画,实际 {tc}"
+    assert tc == 13, f"P9 期望 13 动画,实际 {tc}"
 
 
 def test_p10_key_text():
     prs = Presentation(str(PPTX))
     p10 = prs.slides[11]
     xml = unescape(etree.tostring(p10._element).decode())
-    for text in ["JavaBrain", "开箱即用", "不再是 Demo",
+    for text in ["JavaBrain", "开箱即用", "AI 懂数据",
                  "LoomAgentApplication", "25.394",
                  "github.com/wb04307201"]:
         assert text in xml, f"P10 缺失: {text}"
@@ -134,17 +140,17 @@ if __name__ == "__main__":
     test_total_pages()
     print("OK 12 pages")
     test_total_animations()
-    print("OK 79 animations + 14 indefinite")
-    test_p9_3_repos()
-    print("OK P9 3 repos")
-    test_p9_stars()
-    print("OK P9 stars")
-    test_p9_versions()
-    print("OK P9 V1.0-V1.3")
+    print("OK 87 animations + 14 indefinite")
+    test_p9_loom_future()
+    print("OK P9 灵梭 4 future")
+    test_p9_forge_future()
+    print("OK P9 SQL工坊 4 future")
+    test_p9_dual_engine_vision()
+    print("OK P9 双引擎金钩")
     test_p9_pulse_indefinite()
-    print("OK P9 V1.0 pulse")
+    print("OK P9 CDA pulse")
     test_p9_animation_count()
-    print("OK P9 5 anim")
+    print("OK P9 13 anim")
     test_p10_key_text()
     print("OK P10 key text")
     test_p10_three_sentences()

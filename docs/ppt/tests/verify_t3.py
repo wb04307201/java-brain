@@ -40,10 +40,12 @@ def test_p3_pulse_indefinite():
 
 
 def test_p3_key_text():
+    """P3 4 行 ✓ 改为 README 营销句压缩版:灵梭 / SQL工坊 / SQL工坊 MCP / 单独服务。"""
     prs = Presentation(str(PPTX))
     p3 = prs.slides[2]
     xml = unescape(etree.tostring(p3._element).decode())
-    for text in ["JavaBrain", "灵梭", "SQL工坊", "依赖库", "组合起来"]:
+    for text in ["JavaBrain", "灵梭", "SQL工坊", "SQL工坊 MCP",
+                 "Calcite", "Amis", "依赖库", "单独服务"]:
         assert text in xml, f"P3 缺失: {text}"
 
 

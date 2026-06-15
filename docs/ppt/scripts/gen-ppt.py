@@ -282,17 +282,17 @@ def slide_3_position(prs):
         styled_text(s, x - 0.3, lego_y + lego_size + 0.05, lego_size + 0.6, 0.3,
                     label, size=12, color=color, bold=True)
 
-    # 4 行 ✓
+    # 4 行 ✓ (从 README 营销句压缩:灵梭 / SQL工坊 / SQL工坊 MCP / 可单独服务)
     items = [
-        ("✓ 三个都是依赖库,不是产品", GOLD, True),
-        ("✓ 组件化、按需引入,各自独立可用", TEXT_PRIMARY, False),
-        ("✓ ├── 灵梭 / SQL工坊 / SQL工坊 MCP 都可单独用", TEXT_SECONDARY, False),
-        ("✓ 组合起来 = 企业 AI 落地完整闭环", TEXT_PRIMARY, False),
+        ("✓ 灵梭:Spring Boot AI 加速器,零配置接入 RAG / MCP / Skill", GOLD, True),
+        ("✓ SQL工坊:JSON CRUD + Calcite 联邦 + Amis 低代码,数据开发效率 +300%", TEXT_PRIMARY, False),
+        ("✓ SQL工坊 MCP:打通 AI ↔ 业务数据库,数据不出企业", TEXT_SECONDARY, False),
+        ("✓ 3 个依赖库可单独引入;SQL工坊还可单独服务对接外部项目", TEXT_PRIMARY, False),
     ]
     item_boxes = []
     for i, (text, color, _) in enumerate(items):
-        tb = styled_text(s, 1.5, 3.5 + i * 0.6, 10.333, 0.5,
-                         text, size=18, color=color, bold=(i == 0))
+        tb = styled_text(s, 0.7, 3.5 + i * 0.55, 11.9, 0.5,
+                         text, size=16, color=color, bold=(i == 0))
         item_boxes.append(tb)
 
     # 4 动画:策略 A(标题入场 + 1 乐高入场 + 首行金行入场 + 1 循环)
@@ -751,89 +751,97 @@ def slide_8_compare(prs):
 
 
 def slide_9_roadmap(prs):
-    """P9 路线图 · 3 仓库 + V1.0-V1.3 时间线 + V1.0 金脉冲(策略 A)"""
+    """P9 路线图 · 2 列未来目标(灵梭 4 + SQL工坊 4) + 双引擎协同 3 金钩(策略 A:13 动画=12 入场 + 1 循环)"""
     s = prs.slides.add_slide(prs.slide_layouts[6])
     s.background.fill.solid()
     s.background.fill.fore_color.rgb = BG_LIGHT
 
-    styled_text(s, 0.5, 0.4, 12.333, 0.6,
-                 "3 组件 · 2 仓库 · 路线图",
-                 size=28, bold=True)
+    # 标题
+    tb_t = styled_text(s, 0.5, 0.3, 12.333, 0.6,
+                       "JavaBrain 未来 12 个月路线图",
+                       size=28, bold=True)
 
-    # 3 仓库卡
-    repos = [
-        ("灵梭", "★ 124", "spring-ai-loom-agent", JAVA_BLUE),
-        ("SQL工坊", "★ 89", "sql-forge", AI_PURPLE),
-        ("SQL工坊 MCP", "★ 89", "sql-forge", SEMANTIC_GREEN),
+    # 左列:灵梭 (Java 蓝)
+    loom_items = [
+        ("1. Agentic Workflow", "智能体工作流:自动拆解 + 多步推理 + 反思重试"),
+        ("2. Graph-RAG + 实时认知", "知识图谱融合 + 毫秒级增量更新"),
+        ("3. 多模态交互", "语音 / 图像 / AI 悬浮球"),
+        ("4. Skill 插件生态市场", "标准化打包 + 私有 Skill 市场"),
     ]
-    repo_boxes = []
-    cw, ch = 3.8, 1.8
-    gap = 0.3
-    cx0 = (13.333 - 3 * cw - 2 * gap) / 2
-    cy0 = 1.3
-    for i, (name, stars, repo, color) in enumerate(repos):
-        x = cx0 + i * (cw + gap)
+    styled_text(s, 0.3, 1.05, 6.2, 0.4,
+                "灵梭 · AI 赋能中心",
+                size=18, color=JAVA_BLUE, bold=True)
+    loom_boxes = []
+    for i, (title, desc) in enumerate(loom_items):
+        y = 1.6 + i * 0.95
         card = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
-                                    Inches(x), Inches(cy0), Inches(cw), Inches(ch))
+                                    Inches(0.3), Inches(y),
+                                    Inches(6.2), Inches(0.8))
         card.fill.solid()
         card.fill.fore_color.rgb = WHITE
-        card.line.color.rgb = color
-        card.line.width = Pt(2)
-        # 名称
-        styled_text(s, x, cy0 + 0.1, cw, 0.4,
-                     name, size=20, color=color, bold=True)
-        # stars
-        styled_text(s, x, cy0 + 0.6, cw, 0.4,
-                     stars, font=FONT_EN, size=16, color=GOLD, bold=True)
-        # repo
-        styled_text(s, x, cy0 + 1.1, cw, 0.4,
-                     repo, font=FONT_MONO, size=12, color=TEXT_SECONDARY)
-        repo_boxes.append(card)
+        card.line.color.rgb = JAVA_BLUE
+        card.line.width = Pt(1.5)
+        styled_text(s, 0.5, y + 0.05, 6.0, 0.35,
+                    title, size=14, color=JAVA_BLUE, bold=True)
+        styled_text(s, 0.5, y + 0.42, 6.0, 0.35,
+                    desc, size=11, color=TEXT_SECONDARY)
+        loom_boxes.append(card)
 
-    # 4 节点时间线
-    versions = [("V1.0 当前", True), ("V1.1 多租户", False),
-                ("V1.2 移动端", False), ("V1.3 工作流", False)]
-    node_boxes = []
-    nw, nh = 2.5, 0.8
-    gap = 0.4
-    total_w = 4 * nw + 3 * gap
-    nx0 = (13.333 - total_w) / 2
-    ny = 4.5
-    for i, (label, is_current) in enumerate(versions):
-        x = nx0 + i * (nw + gap)
-        node = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
-                                    Inches(x), Inches(ny), Inches(nw), Inches(nh))
-        node.fill.solid()
-        if is_current:
-            node.fill.fore_color.rgb = GOLD
-        else:
-            node.fill.fore_color.rgb = WHITE
-        node.line.color.rgb = GOLD if is_current else DIVIDER
-        node.line.width = Pt(2)
-        styled_text(s, x, ny + 0.15, nw, 0.5,
-                     label, size=14,
-                     color=WHITE if is_current else TEXT_PRIMARY,
-                     bold=is_current)
-        node_boxes.append(node)
-        # 连线
-        if i < 3:
-            line = s.shapes.add_connector(1,  # STRAIGHT
-                                           Inches(x + nw), Inches(ny + nh/2),
-                                           Inches(x + nw + gap), Inches(ny + nh/2))
-            line.line.color.rgb = TEXT_SECONDARY
-            line.line.width = Pt(1)
+    # 右列:SQL工坊 (AI 紫)
+    forge_items = [
+        ("1. Text-to-SQL 终极形态", "准确率 >95% + 本地代码大模型 + Explain 优化"),
+        ("2. HTAP 湖仓一体", "Flink 实时流 + Iceberg / Hudi 湖仓格式"),
+        ("3. 智能数据治理", "血缘分析 + 动态脱敏 + 自动化审计"),
+        ("4. Serverless 弹性", "计算/存储分离 + 自动扩缩容"),
+    ]
+    styled_text(s, 6.833, 1.05, 6.2, 0.4,
+                "SQL工坊 · 数据管理引擎",
+                size=18, color=AI_PURPLE, bold=True)
+    forge_boxes = []
+    for i, (title, desc) in enumerate(forge_items):
+        y = 1.6 + i * 0.95
+        card = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
+                                    Inches(6.833), Inches(y),
+                                    Inches(6.2), Inches(0.8))
+        card.fill.solid()
+        card.fill.fore_color.rgb = WHITE
+        card.line.color.rgb = AI_PURPLE
+        card.line.width = Pt(1.5)
+        styled_text(s, 7.033, y + 0.05, 6.0, 0.35,
+                    title, size=14, color=AI_PURPLE, bold=True)
+        styled_text(s, 7.033, y + 0.42, 6.0, 0.35,
+                    desc, size=11, color=TEXT_SECONDARY)
+        forge_boxes.append(card)
 
-    # 底部
-    styled_text(s, 0.5, 6.0, 12.333, 0.4,
-                 "3 个组件 · 2 个仓库 · 各自独立维护 · 按需组合",
-                 size=14, color=TEXT_SECONDARY)
+    # 底部 3 金钩:双引擎协同愿景
+    hooks = [
+        "★ 让 AI 懂数据,让数据懂 AI",
+        "★ 终极形态:对话式数据分析 (CDA) 标杆",
+        "★ 零代码 AI 应用工厂 (Amis + Skill 绑定)",
+    ]
+    hook_boxes = []
+    for i, txt in enumerate(hooks):
+        y = 5.6 + i * 0.42
+        box = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
+                                  Inches(2.0), Inches(y),
+                                  Inches(9.333), Inches(0.35))
+        box.fill.solid()
+        box.fill.fore_color.rgb = GOLD_BG
+        box.line.color.rgb = GOLD
+        box.line.width = Pt(1.5)
+        styled_text(s, 2.0, y + 0.02, 9.333, 0.33,
+                    txt, size=14, color=GOLD, bold=True, center=True)
+        hook_boxes.append(box)
 
-    # 5 动画:策略 A(3 仓库入场 + V1.0 入场 + V1.0 脉冲)
-    add_anim(s, repo_boxes[0], "fade_in", delay_ms=0, dur_ms=500)
-    add_anim(s, repo_boxes[1], "fade_in", delay_ms=300, dur_ms=500)
-    add_anim(s, repo_boxes[2], "fade_in", delay_ms=600, dur_ms=500)
-    add_anim(s, node_boxes[0], "fade_in", delay_ms=1200, dur_ms=500)
-    add_anim(s, node_boxes[0], "pulse", delay_ms=2000, dur_ms=1500, loop=True)
+    # 13 动画:1 标题 + 4 灵梭 + 4 SQL工坊 + 3 金钩 + 1 金钩[1] 脉冲
+    add_anim(s, tb_t, "fade_in", delay_ms=0, dur_ms=500)
+    for i, box in enumerate(loom_boxes):
+        add_anim(s, box, "fade_in", delay_ms=400 + i * 200, dur_ms=500)
+    for i, box in enumerate(forge_boxes):
+        add_anim(s, box, "fade_in", delay_ms=1200 + i * 200, dur_ms=500)
+    for i, box in enumerate(hook_boxes):
+        add_anim(s, box, "fade_in", delay_ms=2000 + i * 300, dur_ms=500)
+    add_anim(s, hook_boxes[1], "pulse", delay_ms=3500, dur_ms=1500, loop=True)
 
 
 def slide_10_ending(prs):
@@ -868,8 +876,8 @@ def slide_10_ending(prs):
     killer.line.color.rgb = GOLD
     killer.line.width = Pt(3)
     styled_text(s, 2.5, 4.25, 8.333, 0.6,
-                 "★ 让 AI 不再是 Demo,让企业系统真正智能",
-                 size=22, color=GOLD, bold=True)
+                 "★ 让 AI 懂数据,让数据懂 AI — 打造对话式数据分析标杆",
+                 size=20, color=GOLD, bold=True)
 
     # 终端框
     term = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
