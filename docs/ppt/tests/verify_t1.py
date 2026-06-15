@@ -18,12 +18,13 @@ PPTX = Path(__file__).resolve().parent.parent / "javabrain.pptx"
 
 def test_p1_slide_count():
     prs = Presentation(str(PPTX))
-    assert len(prs.slides) == 1, "expected 1 slide, got %d" % len(prs.slides)
+    # T1 检查 P1 封面页存在(总页数 >= 1)
+    assert len(prs.slides) >= 1, "expected at least 1 slide, got %d" % len(prs.slides)
 
 
 def test_p1_animations_count():
     prs = Presentation(str(PPTX))
-    slide = prs.slides[0]
+    slide = prs.slides[0]  # P1 是第 1 页(索引 0)
     xml = etree.tostring(slide._element).decode()
     # 5 个 timing 节点(每个 add_anim 注入一个)
     timing_count = xml.count("<p:timing")

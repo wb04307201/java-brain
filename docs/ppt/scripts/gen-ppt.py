@@ -201,13 +201,68 @@ def slide_1_cover(prs):
     add_anim(s, hook_box, "fade_in", delay_ms=1400, dur_ms=500)
 
 
+def slide_2_pain(prs):
+    """P2 痛点:3 红 vs 3 绿 + 杀手锏金边 pulse_loop(策略 B)"""
+    s = prs.slides.add_slide(prs.slide_layouts[6])
+    s.background.fill.solid()
+    s.background.fill.fore_color.rgb = BG_LIGHT
+
+    # 标题
+    tb_t = styled_text(s, 0.5, 0.4, 12.333, 0.7,
+                       "接入 AI 的 3 个痛点 vs JavaBrain 的 3 个解法",
+                       size=28, bold=True)
+
+    # 左半:3 红字
+    reds = ["3 月", "5 天", "3 天"]
+    red_boxes = []
+    for i, txt in enumerate(reds):
+        tb = styled_text(s, 0.5, 2.0 + i * 1.3, 4.5, 1.0,
+                         txt, font=FONT_EN, size=48, color=SEMANTIC_RED, bold=True)
+        red_boxes.append(tb)
+
+    # 中间箭头
+    tb_arrow = styled_text(s, 5.0, 3.4, 3.333, 1.0,
+                           "→", font=FONT_EN, size=72, color=GOLD, bold=True)
+
+    # 右半:3 绿字
+    greens = ["3 分", "90 秒", "10 分"]
+    green_boxes = []
+    for i, txt in enumerate(greens):
+        tb = styled_text(s, 8.333, 2.0 + i * 1.3, 4.5, 1.0,
+                         txt, font=FONT_EN, size=48, color=SEMANTIC_GREEN, bold=True)
+        green_boxes.append(tb)
+
+    # 杀手锏金边"3 月 vs 3 分"
+    hook = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
+                              Inches(3.5), Inches(6.3),
+                              Inches(6.333), Inches(0.7))
+    hook.fill.solid()
+    hook.fill.fore_color.rgb = GOLD_BG
+    hook.line.color.rgb = GOLD
+    hook.line.width = Pt(3)
+    styled_text(s, 3.5, 6.35, 6.333, 0.6,
+                "★ 3 月 vs 3 分 = 1440 倍效率提升",
+                size=20, color=GOLD, bold=True)
+
+    # ====== 8 动画(策略 B) ======
+    add_anim(s, red_boxes[0], "fade_in", delay_ms=0,    dur_ms=500)
+    add_anim(s, red_boxes[1], "fade_in", delay_ms=600,  dur_ms=500)
+    add_anim(s, red_boxes[2], "fade_in", delay_ms=1200, dur_ms=500)
+    add_anim(s, tb_arrow,    "fade_in", delay_ms=2000, dur_ms=500)
+    add_anim(s, green_boxes[0], "fade_in", delay_ms=2800, dur_ms=500)
+    add_anim(s, green_boxes[1], "fade_in", delay_ms=3400, dur_ms=500)
+    add_anim(s, green_boxes[2], "fade_in", delay_ms=4000, dur_ms=500)
+    add_anim(s, hook, "pulse", delay_ms=5000, dur_ms=1500, loop=True)  # ★ 杀手锏持续脉冲
+
+
 def main():
     prs = Presentation()
     prs.slide_width = SLIDE_W
     prs.slide_height = SLIDE_H
     slide_1_cover(prs)
+    slide_2_pain(prs)
     prs.save(str(OUTPUT))
-    print(f"OK: {OUTPUT}")
+    print(f"OK: {OUTPUT} (2 pages)")
 
 
 if __name__ == "__main__":
