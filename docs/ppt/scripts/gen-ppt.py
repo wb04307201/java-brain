@@ -750,6 +750,157 @@ def slide_8_compare(prs):
     add_anim(s, tech_boxes[3], "pulse", delay_ms=12000, dur_ms=1500, loop=True)
 
 
+def slide_9_roadmap(prs):
+    """P9 路线图 · 3 仓库 + V1.0-V1.3 时间线 + V1.0 金脉冲(策略 A)"""
+    s = prs.slides.add_slide(prs.slide_layouts[6])
+    s.background.fill.solid()
+    s.background.fill.fore_color.rgb = BG_LIGHT
+
+    styled_text(s, 0.5, 0.4, 12.333, 0.6,
+                 "3 组件 · 2 仓库 · 路线图",
+                 size=28, bold=True)
+
+    # 3 仓库卡
+    repos = [
+        ("灵梭", "★ 124", "spring-ai-loom-agent", JAVA_BLUE),
+        ("SQL工坊", "★ 89", "sql-forge", AI_PURPLE),
+        ("SQL工坊 MCP", "★ 89", "sql-forge", SEMANTIC_GREEN),
+    ]
+    repo_boxes = []
+    cw, ch = 3.8, 1.8
+    gap = 0.3
+    cx0 = (13.333 - 3 * cw - 2 * gap) / 2
+    cy0 = 1.3
+    for i, (name, stars, repo, color) in enumerate(repos):
+        x = cx0 + i * (cw + gap)
+        card = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
+                                    Inches(x), Inches(cy0), Inches(cw), Inches(ch))
+        card.fill.solid()
+        card.fill.fore_color.rgb = WHITE
+        card.line.color.rgb = color
+        card.line.width = Pt(2)
+        # 名称
+        styled_text(s, x, cy0 + 0.1, cw, 0.4,
+                     name, size=20, color=color, bold=True)
+        # stars
+        styled_text(s, x, cy0 + 0.6, cw, 0.4,
+                     stars, font=FONT_EN, size=16, color=GOLD, bold=True)
+        # repo
+        styled_text(s, x, cy0 + 1.1, cw, 0.4,
+                     repo, font=FONT_MONO, size=12, color=TEXT_SECONDARY)
+        repo_boxes.append(card)
+
+    # 4 节点时间线
+    versions = [("V1.0 当前", True), ("V1.1 多租户", False),
+                ("V1.2 移动端", False), ("V1.3 工作流", False)]
+    node_boxes = []
+    nw, nh = 2.5, 0.8
+    gap = 0.4
+    total_w = 4 * nw + 3 * gap
+    nx0 = (13.333 - total_w) / 2
+    ny = 4.5
+    for i, (label, is_current) in enumerate(versions):
+        x = nx0 + i * (nw + gap)
+        node = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
+                                    Inches(x), Inches(ny), Inches(nw), Inches(nh))
+        node.fill.solid()
+        if is_current:
+            node.fill.fore_color.rgb = GOLD
+        else:
+            node.fill.fore_color.rgb = WHITE
+        node.line.color.rgb = GOLD if is_current else DIVIDER
+        node.line.width = Pt(2)
+        styled_text(s, x, ny + 0.15, nw, 0.5,
+                     label, size=14,
+                     color=WHITE if is_current else TEXT_PRIMARY,
+                     bold=is_current)
+        node_boxes.append(node)
+        # 连线
+        if i < 3:
+            line = s.shapes.add_connector(1,  # STRAIGHT
+                                           Inches(x + nw), Inches(ny + nh/2),
+                                           Inches(x + nw + gap), Inches(ny + nh/2))
+            line.line.color.rgb = TEXT_SECONDARY
+            line.line.width = Pt(1)
+
+    # 底部
+    styled_text(s, 0.5, 6.0, 12.333, 0.4,
+                 "3 个组件 · 2 个仓库 · 各自独立维护 · 按需组合",
+                 size=14, color=TEXT_SECONDARY)
+
+    # 5 动画:策略 A(3 仓库入场 + V1.0 入场 + V1.0 脉冲)
+    add_anim(s, repo_boxes[0], "fade_in", delay_ms=0, dur_ms=500)
+    add_anim(s, repo_boxes[1], "fade_in", delay_ms=300, dur_ms=500)
+    add_anim(s, repo_boxes[2], "fade_in", delay_ms=600, dur_ms=500)
+    add_anim(s, node_boxes[0], "fade_in", delay_ms=1200, dur_ms=500)
+    add_anim(s, node_boxes[0], "pulse", delay_ms=2000, dur_ms=1500, loop=True)
+
+
+def slide_10_ending(prs):
+    """P10 结尾 · 3 句话 + 金句 + 启动日志 + 仓库地址(策略 B:4 入场 + 2 循环)"""
+    s = prs.slides.add_slide(prs.slide_layouts[6])
+    s.background.fill.solid()
+    s.background.fill.fore_color.rgb = BG_LIGHT
+
+    # JavaBrain 大字
+    tb_t = styled_text(s, 0.5, 0.6, 12.333, 1.2,
+                        "JavaBrain",
+                        font=FONT_EN, size=72, color=TEXT_PRIMARY, bold=True)
+
+    # 3 句话
+    sentences = [
+        "1. 开箱即用 + 私有化 + 业务语义",
+        "2. 一行命令启动,一个文件改 AI 行为",
+        "3. 让每个 Spring Boot 项目都自带 AI 能力",
+    ]
+    sent_boxes = []
+    for i, txt in enumerate(sentences):
+        tb = styled_text(s, 0.5, 2.0 + i * 0.5, 12.333, 0.4,
+                          txt, size=18)
+        sent_boxes.append(tb)
+
+    # 金句
+    killer = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
+                                  Inches(2.5), Inches(4.2),
+                                  Inches(8.333), Inches(0.7))
+    killer.fill.solid()
+    killer.fill.fore_color.rgb = GOLD_BG
+    killer.line.color.rgb = GOLD
+    killer.line.width = Pt(3)
+    styled_text(s, 2.5, 4.25, 8.333, 0.6,
+                 "★ 让 AI 不再是 Demo,让企业系统真正智能",
+                 size=22, color=GOLD, bold=True)
+
+    # 终端框
+    term = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
+                                Inches(2.5), Inches(5.2),
+                                Inches(8.333), Inches(0.6))
+    term.fill.solid()
+    term.fill.fore_color.rgb = RGBColor(0x0F, 0x17, 0x2A)
+    term.line.fill.background()
+    styled_text(s, 2.5, 5.25, 8.333, 0.5,
+                 "$ Started LoomAgentApplication in 25.394 seconds",
+                 font=FONT_MONO, size=14, color=SEMANTIC_GREEN)
+
+    # 仓库地址
+    styled_text(s, 0.5, 6.1, 12.333, 0.5,
+                 "github.com/wb04307201/spring-ai-loom-agent  ·  gitee.com/wb04307201/spring-ai-loom-agent",
+                 font=FONT_MONO, size=12, color=TEXT_SECONDARY)
+
+    # 致谢
+    styled_text(s, 0.5, 6.7, 12.333, 0.3,
+                 "感谢 [团队名] · 联系: [邮箱]",
+                 size=12, color=TEXT_SECONDARY)
+
+    # 6 动画:策略 B(5 入场 + 1 循环)
+    add_anim(s, tb_t, "fade_in", delay_ms=0, dur_ms=500)
+    add_anim(s, sent_boxes[0], "fade_in", delay_ms=600, dur_ms=500)
+    add_anim(s, sent_boxes[1], "fade_in", delay_ms=1200, dur_ms=500)
+    add_anim(s, sent_boxes[2], "fade_in", delay_ms=1800, dur_ms=500)
+    add_anim(s, killer, "pulse", delay_ms=6000, dur_ms=1500, loop=True)  # 金句持续脉冲
+    add_anim(s, term, "fade_in", delay_ms=10000, dur_ms=500)
+
+
 def main():
     prs = Presentation()
     prs.slide_width = SLIDE_W
@@ -764,8 +915,10 @@ def main():
     slide_6_demo1_workflow(prs)
     slide_7_demo2_workflow(prs)
     slide_8_compare(prs)
+    slide_9_roadmap(prs)
+    slide_10_ending(prs)
     prs.save(str(OUTPUT))
-    print(f"OK: {OUTPUT} (10 pages)")
+    print(f"OK: {OUTPUT} (12 pages)")
 
 
 if __name__ == "__main__":
