@@ -154,85 +154,234 @@ def styled_text(slide, x, y, w, h, text, *,
     return tb
 
 
+def _add_picture_with_alpha(slide, image_path, x, y, w, h, alpha_pct):
+    """Add picture with overall alpha (0-100). alpha_pct=100 fully opaque, smaller = more transparent.
+    python-pptx has no built-in API; we manipulate the blip's alphaModFix via XML.
+    """
+    from PIL import Image as _PILImage
+    pic = slide.shapes.add_picture(str(image_path), Inches(x), Inches(y), Inches(w), Inches(h))
+    # 设置图片整体透明度
+    sppr = pic._element.spPr
+    # 添加 alphaModFix 到 blip
+    blip = pic._element.blipFill.blip
+    # 在 blip 元素上设置 alpha(以 1000 为基数,如 30% = 30000)
+    alpha_val = int(alpha_pct * 1000)
+    # 找到 blip 元素的 a:alphaModFix 子元素,如果没有就加
+    nsmap = {"a": "http://schemas.openxmlformats.org/drawingml/2006/main"}
+    alpha = blip.find("a:alphaModFix", nsmap)
+    if alpha is None:
+        alpha = etree.SubElement(blip, qn("a:alphaModFix"))
+    alpha.set("amt", str(alpha_val))
+    return pic
+
+
 def slide_1_cover(prs):
-    """P1 封面:3 乐高 + JavaBrain 大字 + 副标 + 金钩 + 5 fade_in"""
+    """P1 封面:AI 神经网络背景图(半透明)+ 3 圈光晕节点 + JavaBrain 大字 + 副标 + 金钩。
+    替换原"3 乐高"封面,5 fade_in。
+    """
     s = prs.slides.add_slide(prs.slide_layouts[6])
     s.background.fill.solid()
     s.background.fill.fore_color.rgb = BG_LIGHT
 
-    # 3 乐高横排(Java 蓝 / AI 紫 / 语义绿)
-    lego_y = 1.5
-    lego_size = 1.2
-    lego_gap = 0.4
-    total_w = 3 * lego_size + 2 * lego_gap
-    lego_x0 = (13.333 - total_w) / 2
-    legos = []
-    for i, color in enumerate([JAVA_BLUE, AI_PURPLE, SEMANTIC_GREEN]):
-        x = lego_x0 + i * (lego_size + lego_gap)
-        lego = iso_lego(s, x, lego_y, lego_size, lego_size, color)
-        legos.append(lego)
+    # === 1) AI 神经网络背景图(右下半透明 30%) ===
+    # 图源: docs/ppt/images/ai/p1-neural-v1.png (浅蓝底 5 节点)
+    img_path = PPT_DIR / "images" / "ai" / "p1-neural-v1.png"
+    pic = _add_picture_with_alpha(s, img_path, 4.5, 0.5, 8.5, 5.5, alpha_pct=32)
+    # 派发到最底层(zorder),作为背景
+    spTree = s.shapes._spTree
+    spTree.remove(pic._element)
+    spTree.insert(2, pic._element)  # nvGrpSpPr 之后第 1 个位置
 
-    # JavaBrain 大字(72pt 居中)
-    tb_title = styled_text(s, 1.0, 3.4, 11.333, 1.4,
+    # === 2) 3 圈光晕节点(中心 + 3 卫星)===
+    # 中心节点
+    cx_emu, cy_emu = Inches(6.5), Inches(0.7)  # 顶部
+    center_circle = s.shapes.add_shape(MSO_SHAPE.OVAL,
+                                       Inches(6.2), Inches(0.4),
+                                       Inches(0.6), Inches(0.6))
+    center_circle.fill.solid()
+    center_circle.fill.fore_color.rgb = JAVA_BLUE
+    center_circle.line.color.rgb = JAVA_BLUE
+    center_circle.line.width = Pt(2)
+
+    # 3 卫星节点(Java 蓝 / AI 紫 / 语义绿,水平排在副标下方)
+    # 实际主视觉是底部金钩区 + 上方节点群,这里放 3 节点带光晕
+    sat_y = 1.2
+    sat_xs = [4.8, 6.667, 8.533]  # 13.333/2 居中布局
+    sat_colors = [JAVA_BLUE, AI_PURPLE, SEMANTIC_GREEN]
+    sat_shapes = []
+    for sx, sc in zip(sat_xs, sat_colors):
+        # 外光晕(更大的圆,半透明感)
+        halo = s.shapes.add_shape(MSO_SHAPE.OVAL,
+                                  Inches(sx - 0.25), Inches(sat_y - 0.25),
+                                  Inches(1.0), Inches(1.0))
+        halo.fill.solid()
+        halo.fill.fore_color.rgb = sc
+        # 设 alpha 30% 模拟光晕
+        sppr = halo._element.spPr
+        nsmap = {"a": "http://schemas.openxmlformats.org/drawingml/2006/main"}
+        solidFill = sppr.find("a:solidFill", nsmap)
+        if solidFill is not None:
+            alpha = etree.SubElement(solidFill, qn("a:alpha"))
+            alpha.set("val", "30000")
+        halo.line.fill.background()
+        sat_shapes.append(halo)
+        # 中心实心圆
+        core = s.shapes.add_shape(MSO_SHAPE.OVAL,
+                                  Inches(sx), Inches(sat_y),
+                                  Inches(0.5), Inches(0.5))
+        core.fill.solid()
+        core.fill.fore_color.rgb = sc
+        core.line.color.rgb = sc
+        sat_shapes.append(core)
+
+    # 3 节点文字标签(节点下方)
+    labels = [("灵梭", JAVA_BLUE), ("SQL工坊", AI_PURPLE), ("SQL工坊 MCP", SEMANTIC_GREEN)]
+    for sx, (txt, col) in zip(sat_xs, labels):
+        tb = styled_text(s, sx - 0.8, sat_y + 0.7, 2.1, 0.4,
+                          txt, font=FONT_CN, size=14, color=col, bold=True)
+        sat_shapes.append(tb)
+
+    # === 3) JavaBrain 大字(72pt 居中)===
+    tb_title = styled_text(s, 1.0, 4.3, 11.333, 1.4,
                            "JavaBrain",
                            font=FONT_EN, size=72, color=TEXT_PRIMARY, bold=True)
 
-    # 副标"让您的系统瞬间拥有“思考”与“执行”的智能大脑"
-    tb_sub = styled_text(s, 1.0, 4.8, 11.333, 0.5,
+    # === 4) 副标 ===
+    tb_sub = styled_text(s, 1.0, 5.7, 11.333, 0.5,
                           "让您的系统瞬间拥有“思考”与“执行”的智能大脑",
                           font=FONT_CN, size=24, color=TEXT_SECONDARY)
 
-    # 金钩"3 组件 · 1 starter · 0 漂移"(圆角矩形 + 文字叠加)
+    # === 5) 金钩"3 组件 · 1 starter · 0 漂移"===
     hook_box = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
-                                   Inches(4.0), Inches(5.5),
+                                   Inches(4.0), Inches(6.4),
                                    Inches(5.333), Inches(0.6))
     hook_box.fill.solid()
     hook_box.fill.fore_color.rgb = GOLD
     hook_box.line.fill.background()
-    hook_text = styled_text(s, 4.0, 5.55, 5.333, 0.5,
-                             "3 组件 · 1 starter · 0 漂移",
-                             font=FONT_CN, size=18, color=WHITE, bold=True)
+    styled_text(s, 4.0, 6.45, 5.333, 0.5,
+                "3 组件 · 1 starter · 0 漂移",
+                font=FONT_CN, size=18, color=WHITE, bold=True)
 
-    # ====== 5 个动画(策略 A 入场群) ======
-    add_anim(s, legos[0], "fade_in", delay_ms=0,    dur_ms=500)
-    add_anim(s, legos[1], "fade_in", delay_ms=300,  dur_ms=500)
-    add_anim(s, legos[2], "fade_in", delay_ms=600,  dur_ms=500)
-    add_anim(s, tb_title, "fade_in", delay_ms=900,  dur_ms=500)
-    add_anim(s, hook_box, "fade_in", delay_ms=1400, dur_ms=500)
+    # === 6) 5 动画(策略 A)===
+    add_anim(s, center_circle, "fade_in", delay_ms=0,    dur_ms=500)
+    add_anim(s, sat_shapes[0], "fade_in", delay_ms=300,  dur_ms=500)
+    add_anim(s, sat_shapes[1], "fade_in", delay_ms=600,  dur_ms=500)
+    add_anim(s, tb_title,      "fade_in", delay_ms=900,  dur_ms=500)
+    add_anim(s, hook_box,      "fade_in", delay_ms=1400, dur_ms=500)
 
 
 def slide_2_pain(prs):
-    """P2 痛点:3 红 vs 3 绿 + 杀手锏金边 pulse_loop(策略 B)"""
+    """P2 痛点:横向时间轴 + 6 槽位(3 红→3 绿)+ 6 张配图 + 中心"1440×"金钩 pulse。
+    替换原"3 红 vs 3 绿平铺"布局。
+    """
     s = prs.slides.add_slide(prs.slide_layouts[6])
     s.background.fill.solid()
     s.background.fill.fore_color.rgb = BG_LIGHT
 
-    # 标题
-    tb_t = styled_text(s, 0.5, 0.4, 12.333, 0.7,
-                       "接入 AI 的 3 个痛点 vs JavaBrain 的 3 个解法",
-                       size=28, bold=True)
+    # === 标题 ===
+    tb_t = styled_text(s, 0.5, 0.3, 12.333, 0.6,
+                       "接入 AI 的 3 个痛点  vs  JavaBrain 的 3 个解法",
+                       size=24, bold=True)
 
-    # 左半:3 红字
-    reds = ["3 月", "5 天", "3 天"]
-    red_boxes = []
-    for i, txt in enumerate(reds):
-        tb = styled_text(s, 0.5, 2.0 + i * 1.3, 4.5, 1.0,
-                         txt, font=FONT_EN, size=48, color=SEMANTIC_RED, bold=True)
-        red_boxes.append(tb)
+    # === 时间轴线(从左红→中金→右绿,横向贯穿中部)===
+    # 整条 12 in 长 × 0.06 in 厚
+    axis_y = 4.0
+    axis_x0 = 0.667
+    axis_w = 12.0
+    # 主体白底轴线
+    axis = s.shapes.add_shape(MSO_SHAPE.RECTANGLE,
+                              Inches(axis_x0), Inches(axis_y),
+                              Inches(axis_w), Inches(0.06))
+    axis.fill.solid()
+    axis.fill.fore_color.rgb = RGBColor(0xE5, 0xE7, 0xEB)  # 浅灰
+    axis.line.fill.background()
 
-    # 中间箭头
-    tb_arrow = styled_text(s, 5.0, 3.4, 3.333, 1.0,
-                           "→", font=FONT_EN, size=72, color=GOLD, bold=True)
+    # 红段(左 1/2)
+    red_seg = s.shapes.add_shape(MSO_SHAPE.RECTANGLE,
+                                  Inches(axis_x0), Inches(axis_y),
+                                  Inches(6.0), Inches(0.06))
+    red_seg.fill.solid()
+    red_seg.fill.fore_color.rgb = SEMANTIC_RED
+    red_seg.line.fill.background()
 
-    # 右半:3 绿字
-    greens = ["3 分", "90 秒", "10 分"]
-    green_boxes = []
-    for i, txt in enumerate(greens):
-        tb = styled_text(s, 8.333, 2.0 + i * 1.3, 4.5, 1.0,
-                         txt, font=FONT_EN, size=48, color=SEMANTIC_GREEN, bold=True)
-        green_boxes.append(tb)
+    # 金段(中间 1 in,锚点附近)
+    gold_seg = s.shapes.add_shape(MSO_SHAPE.RECTANGLE,
+                                   Inches(axis_x0 + 5.85), Inches(axis_y),
+                                   Inches(1.5), Inches(0.06))
+    gold_seg.fill.solid()
+    gold_seg.fill.fore_color.rgb = GOLD
+    gold_seg.line.fill.background()
 
-    # 杀手锏金边"3 月 vs 3 分"
+    # 绿段(右 1/2)
+    green_seg = s.shapes.add_shape(MSO_SHAPE.RECTANGLE,
+                                    Inches(axis_x0 + 6.0), Inches(axis_y),
+                                    Inches(6.0), Inches(0.06))
+    green_seg.fill.solid()
+    green_seg.fill.fore_color.rgb = SEMANTIC_GREEN
+    green_seg.line.fill.background()
+
+    # === 6 槽位(3 红 + 3 绿)===
+    # 槽位布局:6 个圆形锚点沿时间轴,X 间距 = 12/5 = 2.4
+    slot_xs = [axis_x0 + i * 2.4 for i in range(6)]
+    # 槽位配置:(img_filename, 数字, 文字, 颜色)
+    # 6 张图已用 PIL 裁掉文字/边框/按钮
+    slots = [
+        # 红段(传统)
+        ("p2-red-1-overwork.png",       "3 月",   "集成 AI",  SEMANTIC_RED),
+        ("p2-red-2-bureaucracy.png",    "5 天",   "训练数据",  SEMANTIC_RED),
+        ("p2-red-3-tangled.png",        "3 天",   "上线联调",  SEMANTIC_RED),
+        # 绿段(JavaBrain)
+        ("p2-green-3-dashboard.png",    "3 分",   "一键集成",  SEMANTIC_GREEN),
+        ("p2-green-2-rocket.png",       "90 秒",  "出报告",    SEMANTIC_GREEN),
+        ("p2-green-1-final.png",        "10 分",  "出页面",    SEMANTIC_GREEN),
+    ]
+
+    anim_targets = []  # 用于动画的对象
+    for i, (img, big, sub, col) in enumerate(slots):
+        cx = slot_xs[i]
+        # 1) 上方配图(1.2 in × 1.2 in)
+        img_w = 1.2
+        img_path = PPT_DIR / "images" / "ai" / img
+        if img_path.exists():
+            pic = s.shapes.add_picture(str(img_path),
+                                       Inches(cx - img_w/2), Inches(1.4),
+                                       Inches(img_w), Inches(img_w))
+            anim_targets.append(pic)
+        # 2) 锚点(时间轴上的圆点)
+        dot = s.shapes.add_shape(MSO_SHAPE.OVAL,
+                                  Inches(cx - 0.12), Inches(axis_y - 0.09),
+                                  Inches(0.24), Inches(0.24))
+        dot.fill.solid()
+        dot.fill.fore_color.rgb = col
+        dot.line.color.rgb = WHITE
+        dot.line.width = Pt(2)
+        # 3) 大数字(锚点下方)
+        tb_big = styled_text(s, cx - 0.7, axis_y + 0.3, 1.4, 0.6,
+                              big, font=FONT_EN, size=24, color=col, bold=True)
+        # 4) 小字说明(数字下方)
+        tb_sub2 = styled_text(s, cx - 0.8, axis_y + 0.95, 1.6, 0.4,
+                               sub, font=FONT_CN, size=14, color=TEXT_SECONDARY)
+        anim_targets.extend([dot, tb_big, tb_sub2])
+
+    # === 中心金钩"1440×"(金圆 + 数字 + 副标)===
+    # 位置:中心时间轴上(中点 = axis_x0 + 6.0)
+    center_x = axis_x0 + 6.0
+    # 大金圆
+    big_circle = s.shapes.add_shape(MSO_SHAPE.OVAL,
+                                     Inches(center_x - 0.55), Inches(axis_y - 0.55),
+                                     Inches(1.1), Inches(1.1))
+    big_circle.fill.solid()
+    big_circle.fill.fore_color.rgb = GOLD_BG
+    big_circle.line.color.rgb = GOLD
+    big_circle.line.width = Pt(3)
+    # 数字 1440×
+    styled_text(s, center_x - 0.6, axis_y - 0.25, 1.2, 0.5,
+                "1440×", font=FONT_EN, size=22, color=GOLD, bold=True)
+    # 副标"效率提升"
+    styled_text(s, center_x - 0.7, axis_y + 0.18, 1.4, 0.4,
+                "效率提升", font=FONT_CN, size=11, color=GOLD, bold=True)
+
+    # 杀手锏金句(底部)
     hook = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
                               Inches(3.5), Inches(6.3),
                               Inches(6.333), Inches(0.7))
@@ -241,18 +390,17 @@ def slide_2_pain(prs):
     hook.line.color.rgb = GOLD
     hook.line.width = Pt(3)
     styled_text(s, 3.5, 6.35, 6.333, 0.6,
-                "★ 3 月 vs 3 分 = 1440 倍效率提升",
+                "★ 3 月 vs 3 分 — 从季度到分钟",
                 size=20, color=GOLD, bold=True)
 
-    # ====== 8 动画(策略 B) ======
-    add_anim(s, red_boxes[0], "fade_in", delay_ms=0,    dur_ms=500)
-    add_anim(s, red_boxes[1], "fade_in", delay_ms=600,  dur_ms=500)
-    add_anim(s, red_boxes[2], "fade_in", delay_ms=1200, dur_ms=500)
-    add_anim(s, tb_arrow,    "fade_in", delay_ms=2000, dur_ms=500)
-    add_anim(s, green_boxes[0], "fade_in", delay_ms=2800, dur_ms=500)
-    add_anim(s, green_boxes[1], "fade_in", delay_ms=3400, dur_ms=500)
-    add_anim(s, green_boxes[2], "fade_in", delay_ms=4000, dur_ms=500)
-    add_anim(s, hook, "pulse", delay_ms=5000, dur_ms=1500, loop=True)  # ★ 杀手锏持续脉冲
+    # === 动画(策略 B:6 配图依次入场 + 1 数字串入场 + 1 中心金钩 pulse)===
+    # 6 张图交错 350ms
+    for i in range(min(6, len(anim_targets))):
+        add_anim(s, anim_targets[i], "fade_in", delay_ms=i * 350, dur_ms=500)
+    # 中心金钩 pulse(杀手锏持续脉冲)
+    add_anim(s, hook, "pulse", delay_ms=3500, dur_ms=1500, loop=True)
+    # 底部 6 文字组整体淡入(轻量,共 6 + 1 center + 1 hook = 8 入场 + 1 pulse)
+    add_anim(s, big_circle, "fade_in", delay_ms=2200, dur_ms=500)
 
 
 def slide_3_position(prs):
