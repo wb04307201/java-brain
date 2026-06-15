@@ -183,73 +183,43 @@ def slide_1_cover(prs):
     s.background.fill.solid()
     s.background.fill.fore_color.rgb = BG_LIGHT
 
-    # === 1) AI 神经网络背景图(右下半透明 30%) ===
-    # 图源: docs/ppt/images/ai/p1-neural-v1.png (浅蓝底 5 节点)
-    img_path = PPT_DIR / "images" / "ai" / "p1-neural-v1.png"
-    pic = _add_picture_with_alpha(s, img_path, 4.5, 0.5, 8.5, 5.5, alpha_pct=32)
+    # === 1) JavaBrain 大脑配图(顶部 3.3 英寸,35% alpha 作为背景) ===
+    # 图源: docs/ppt/images/ai/p1v2-d1-brain-3streams.png (紫发光大脑 + 蓝/绿/紫 3 股能量流)
+    img_path = PPT_DIR / "images" / "ai" / "p1v2-d1-brain-3streams.png"
+    pic = _add_picture_with_alpha(s, img_path, 3.0, 0.1, 7.5, 3.3, alpha_pct=38)
     # 派发到最底层(zorder),作为背景
     spTree = s.shapes._spTree
     spTree.remove(pic._element)
     spTree.insert(2, pic._element)  # nvGrpSpPr 之后第 1 个位置
 
-    # === 2) 3 圈光晕节点(中心 + 3 卫星)===
-    # 中心节点
-    cx_emu, cy_emu = Inches(6.5), Inches(0.7)  # 顶部
-    center_circle = s.shapes.add_shape(MSO_SHAPE.OVAL,
-                                       Inches(6.2), Inches(0.4),
-                                       Inches(0.6), Inches(0.6))
-    center_circle.fill.solid()
-    center_circle.fill.fore_color.rgb = JAVA_BLUE
-    center_circle.line.color.rgb = JAVA_BLUE
-    center_circle.line.width = Pt(2)
-
-    # 3 卫星节点(Java 蓝 / AI 紫 / 语义绿,水平排在副标下方)
-    # 实际主视觉是底部金钩区 + 上方节点群,这里放 3 节点带光晕
-    sat_y = 1.2
-    sat_xs = [4.8, 6.667, 8.533]  # 13.333/2 居中布局
-    sat_colors = [JAVA_BLUE, AI_PURPLE, SEMANTIC_GREEN]
-    sat_shapes = []
-    for sx, sc in zip(sat_xs, sat_colors):
-        # 外光晕(更大的圆,半透明感)
-        halo = s.shapes.add_shape(MSO_SHAPE.OVAL,
-                                  Inches(sx - 0.25), Inches(sat_y - 0.25),
-                                  Inches(1.0), Inches(1.0))
-        halo.fill.solid()
-        halo.fill.fore_color.rgb = sc
-        # 设 alpha 30% 模拟光晕
-        sppr = halo._element.spPr
-        nsmap = {"a": "http://schemas.openxmlformats.org/drawingml/2006/main"}
-        solidFill = sppr.find("a:solidFill", nsmap)
-        if solidFill is not None:
-            alpha = etree.SubElement(solidFill, qn("a:alpha"))
-            alpha.set("val", "30000")
-        halo.line.fill.background()
-        sat_shapes.append(halo)
-        # 中心实心圆
-        core = s.shapes.add_shape(MSO_SHAPE.OVAL,
-                                  Inches(sx), Inches(sat_y),
-                                  Inches(0.5), Inches(0.5))
-        core.fill.solid()
-        core.fill.fore_color.rgb = sc
-        core.line.color.rgb = sc
-        sat_shapes.append(core)
-
-    # 3 节点文字标签(节点下方)
-    labels = [("灵梭", JAVA_BLUE), ("SQL工坊", AI_PURPLE), ("SQL工坊 MCP", SEMANTIC_GREEN)]
-    for sx, (txt, col) in zip(sat_xs, labels):
-        tb = styled_text(s, sx - 0.8, sat_y + 0.7, 2.1, 0.4,
-                          txt, font=FONT_CN, size=14, color=col, bold=True)
-        sat_shapes.append(tb)
-
-    # === 3) JavaBrain 大字(72pt 居中)===
-    tb_title = styled_text(s, 1.0, 4.3, 11.333, 1.4,
+    # === 2) JavaBrain 大字(72pt 居中)===
+    tb_title = styled_text(s, 1.0, 3.5, 11.333, 1.4,
                            "JavaBrain",
                            font=FONT_EN, size=72, color=TEXT_PRIMARY, bold=True)
 
-    # === 4) 副标 ===
-    tb_sub = styled_text(s, 1.0, 5.7, 11.333, 0.5,
+    # === 3) 副标 ===
+    tb_sub = styled_text(s, 1.0, 4.9, 11.333, 0.5,
                           "让您的系统瞬间拥有“思考”与“执行”的智能大脑",
                           font=FONT_CN, size=24, color=TEXT_SECONDARY)
+
+    # === 4) 3 组件标签(横向,Java 蓝 / AI 紫 / 绿)===
+    sat_y_lbl = 5.6
+    sat_xs = [3.5, 6.167, 8.833]
+    sat_colors = [JAVA_BLUE, AI_PURPLE, SEMANTIC_GREEN]
+    sat_shapes = []
+    for sx, sc in zip(sat_xs, sat_colors):
+        dot = s.shapes.add_shape(MSO_SHAPE.OVAL,
+                                  Inches(sx), Inches(sat_y_lbl),
+                                  Inches(0.18), Inches(0.18))
+        dot.fill.solid()
+        dot.fill.fore_color.rgb = sc
+        dot.line.fill.background()
+        sat_shapes.append(dot)
+    labels = [("灵梭", JAVA_BLUE), ("SQL工坊", AI_PURPLE), ("SQL工坊 MCP", SEMANTIC_GREEN)]
+    for sx, (txt, col) in zip(sat_xs, labels):
+        tb = styled_text(s, sx + 0.25, sat_y_lbl - 0.07, 2.0, 0.4,
+                          txt, font=FONT_CN, size=14, color=col, bold=True)
+        sat_shapes.append(tb)
 
     # === 5) 金钩"3 组件 · 1 starter · 0 漂移"===
     hook_box = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
@@ -263,10 +233,10 @@ def slide_1_cover(prs):
                 font=FONT_CN, size=18, color=WHITE, bold=True)
 
     # === 6) 5 动画(策略 A)===
-    add_anim(s, center_circle, "fade_in", delay_ms=0,    dur_ms=500)
-    add_anim(s, sat_shapes[0], "fade_in", delay_ms=300,  dur_ms=500)
-    add_anim(s, sat_shapes[1], "fade_in", delay_ms=600,  dur_ms=500)
-    add_anim(s, tb_title,      "fade_in", delay_ms=900,  dur_ms=500)
+    add_anim(s, tb_title,      "fade_in", delay_ms=0,    dur_ms=500)
+    add_anim(s, tb_sub,        "fade_in", delay_ms=400,  dur_ms=500)
+    add_anim(s, sat_shapes[0], "fade_in", delay_ms=800,  dur_ms=500)
+    add_anim(s, sat_shapes[3], "fade_in", delay_ms=1000, dur_ms=500)
     add_anim(s, hook_box,      "fade_in", delay_ms=1400, dur_ms=500)
 
 
