@@ -416,6 +416,144 @@ def slide_4b_loom_modules(prs):
     add_anim(s, cards[2], "pulse", delay_ms=12000, dur_ms=1500, loop=True)  # Skill
 
 
+def slide_5a_forge_intro(prs):
+    """P5-a SQL工坊 · 整体定位(策略 A:3 入场 + 1 循环)"""
+    s = prs.slides.add_slide(prs.slide_layouts[6])
+    s.background.fill.solid()
+    s.background.fill.fore_color.rgb = BG_LIGHT
+
+    # 小标
+    styled_text(s, 0.5, 0.4, 12.333, 0.4,
+                "SQL工坊 · SQL Forge",
+                font=FONT_EN, size=16, color=AI_PURPLE, bold=True)
+
+    # 主标
+    tb_t = styled_text(s, 0.5, 1.0, 12.333, 1.0,
+                       "JSON CRUD + Calcite 联邦 + Amis 低代码",
+                       size=32, bold=True)
+
+    # 4 特性卡(2x2)
+    advs = [
+        ("🔌 JSON CRUD\n一套协议 5 method", GOLD, True),
+        ("🌐 Calcite 联邦\n跨 MySQL+PG+H2", GOLD, True),
+        ("🎨 Amis 低代码\nJSON 模板 + Console", GOLD, True),
+        ("🔒 MCP 5 受限工具\n数据不出企业", JAVA_BLUE, False),
+    ]
+    cards = []
+    cw, ch = 5.0, 1.3
+    gap = 0.3
+    cx0 = (13.333 - 2 * cw - gap) / 2
+    cy0 = 2.5
+    for i, (text, color, killer) in enumerate(advs):
+        row, col = i // 2, i % 2
+        x = cx0 + col * (cw + gap)
+        y = cy0 + row * (ch + gap)
+        card = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
+                                  Inches(x), Inches(y), Inches(cw), Inches(ch))
+        card.fill.solid()
+        card.fill.fore_color.rgb = WHITE
+        card.line.color.rgb = GOLD if killer else DIVIDER
+        card.line.width = Pt(3) if killer else Pt(1)
+        styled_text(s, x, y + 0.2, cw, ch - 0.4,
+                    text, size=18, color=color, bold=True)
+        cards.append(card)
+
+    # 引导
+    styled_text(s, 0.5, 6.0, 12.333, 0.4,
+                "▼ 下一页 · 4 starter + 6 功能",
+                size=16, color=AI_PURPLE, bold=True)
+
+    # 4 动画:策略 A
+    add_anim(s, tb_t, "fade_in", delay_ms=0, dur_ms=500)
+    add_anim(s, cards[0], "fade_in", delay_ms=600, dur_ms=500)
+    add_anim(s, cards[3], "fade_in", delay_ms=1200, dur_ms=500)
+    add_anim(s, cards[3], "pulse", delay_ms=2000, dur_ms=1500, loop=True)  # 数据不出企业脉冲
+
+
+def slide_5b_forge_4plus6(prs):
+    """P5-b SQL工坊 · 4 starter + 6 功能 + 3 chase pulse(策略 C)"""
+    s = prs.slides.add_slide(prs.slide_layouts[6])
+    s.background.fill.solid()
+    s.background.fill.fore_color.rgb = BG_LIGHT
+
+    # 标题
+    styled_text(s, 0.5, 0.3, 12.333, 0.5,
+                "SQL工坊 · 4 starter + 6 功能",
+                size=24, bold=True)
+
+    # 4 starter 横条
+    starters = [
+        ("sql-forge-starter", SEMANTIC_GREEN),
+        ("sql-forge-calcite", JAVA_BLUE),
+        ("sql-forge-web", JAVA_BLUE),
+        ("sql-forge-mcp", AI_PURPLE),
+    ]
+    starter_boxes = []
+    sw, sh = 3.0, 0.5
+    gap = 0.1
+    sx0 = (13.333 - 4 * sw - 3 * gap) / 2
+    sy = 1.0
+    for i, (name, color) in enumerate(starters):
+        x = sx0 + i * (sw + gap)
+        box = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
+                                 Inches(x), Inches(sy), Inches(sw), Inches(sh))
+        box.fill.solid()
+        box.fill.fore_color.rgb = color
+        box.line.fill.background()
+        styled_text(s, x, sy + 0.05, sw, 0.4,
+                    name, font=FONT_MONO, size=11, color=WHITE, bold=True)
+        starter_boxes.append(box)
+
+    # 6 功能卡(2x3)
+    funcs = [
+        ("🔌 JSON CRUD ★", GOLD, True),
+        ("🌐 Calcite ★", GOLD, True),
+        ("🔒 MCP 5 受限 ★", GOLD, True),
+        ("🎨 Amis", JAVA_BLUE, False),
+        ("🏗️ 实体", JAVA_BLUE, False),
+        ("🛡️ 零直连", JAVA_BLUE, False),
+    ]
+    func_cards = []
+    cw, ch = 4.0, 1.4
+    gap_x, gap_y = 0.2, 0.2
+    cx0 = (13.333 - 3 * cw - 2 * gap_x) / 2
+    cy0 = 1.8
+    for i, (name, color, killer) in enumerate(funcs):
+        col, row = i % 3, i // 3
+        x = cx0 + col * (cw + gap_x)
+        y = cy0 + row * (ch + gap_y)
+        card = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
+                                  Inches(x), Inches(y), Inches(cw), Inches(ch))
+        card.fill.solid()
+        card.fill.fore_color.rgb = WHITE
+        if killer:
+            card.line.color.rgb = GOLD
+            card.line.width = Pt(3)
+        else:
+            card.line.color.rgb = DIVIDER
+            card.line.width = Pt(1)
+        styled_text(s, x, y + 0.4, cw, ch - 0.8,
+                    name, size=18, color=color, bold=True)
+        func_cards.append(card)
+
+    # 金句
+    styled_text(s, 0.5, 6.5, 12.333, 0.5,
+                "★ AI 通过 5 个受限通道安全对话业务库,数据不出企业",
+                size=18, color=GOLD, bold=True)
+
+    # 11 动画:4 starter + 6 功能 + 3 chase(策略 C)
+    for i in range(4):
+        add_anim(s, starter_boxes[i], "fade_in",
+                 delay_ms=i * 200, dur_ms=500)
+    for i in range(6):
+        add_anim(s, func_cards[i], "fade_in",
+                 delay_ms=1000 + i * 200, dur_ms=500)
+    # 3 杀手锏 chase pulse 错开 2s
+    add_anim(s, func_cards[0], "pulse", delay_ms=15000, dur_ms=1500, loop=True)  # JSON CRUD
+    add_anim(s, func_cards[1], "pulse", delay_ms=17000, dur_ms=1500, loop=True)  # Calcite
+    add_anim(s, func_cards[2], "pulse", delay_ms=19000, dur_ms=1500, loop=True)  # MCP
+
+
 def main():
     prs = Presentation()
     prs.slide_width = SLIDE_W
@@ -425,8 +563,10 @@ def main():
     slide_3_position(prs)
     slide_4a_loom_intro(prs)
     slide_4b_loom_modules(prs)
+    slide_5a_forge_intro(prs)
+    slide_5b_forge_4plus6(prs)
     prs.save(str(OUTPUT))
-    print(f"OK: {OUTPUT} (5 pages)")
+    print(f"OK: {OUTPUT} (7 pages)")
 
 
 if __name__ == "__main__":
