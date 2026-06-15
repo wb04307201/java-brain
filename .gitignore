@@ -1,3 +1,7 @@
 /.idea/
 /.playwright-mcp/
 /docs/ppt/.superpowers/
+/docs/ppt/build/
+/docs/ppt/javabrain.pdf
+__pycache__/
+*.pyc
