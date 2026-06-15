@@ -221,7 +221,7 @@ def slide_1_cover(prs):
                           txt, font=FONT_CN, size=14, color=col, bold=True)
         sat_shapes.append(tb)
 
-    # === 5) 金钩"3 组件 · 1 starter · 0 漂移"===
+    # === 5) 金钩"3 分钟接入 AI" — 数字钩,呼应 P2 时间轴 ===
     hook_box = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
                                    Inches(4.0), Inches(6.4),
                                    Inches(5.333), Inches(0.6))
@@ -229,8 +229,8 @@ def slide_1_cover(prs):
     hook_box.fill.fore_color.rgb = GOLD
     hook_box.line.fill.background()
     styled_text(s, 4.0, 6.45, 5.333, 0.5,
-                "3 组件 · 1 starter · 0 漂移",
-                font=FONT_CN, size=18, color=WHITE, bold=True)
+                "3 分钟接入 AI",
+                font=FONT_CN, size=22, color=WHITE, bold=True)
 
     # === 6) 5 动画(策略 A)===
     add_anim(s, tb_title,      "fade_in", delay_ms=0,    dur_ms=500)
@@ -463,11 +463,6 @@ def slide_4a_loom_intro(prs):
                     text, size=18, color=color, bold=True)
         cards.append(card)
 
-    # 引导
-    styled_text(s, 0.5, 6.0, 12.333, 0.4,
-                "▼ 下一页 · 6 大功能模块",
-                size=16, color=AI_PURPLE, bold=True)
-
     # 4 动画:策略 A(标题入场 + 卡片入场 + Skill 金脉冲)
     add_anim(s, tb_t, "fade_in", delay_ms=0, dur_ms=500)
     add_anim(s, cards[0], "fade_in", delay_ms=600, dur_ms=500)
@@ -575,11 +570,6 @@ def slide_5a_forge_intro(prs):
         styled_text(s, x, y + 0.2, cw, ch - 0.4,
                     text, size=18, color=color, bold=True)
         cards.append(card)
-
-    # 引导
-    styled_text(s, 0.5, 6.0, 12.333, 0.4,
-                "▼ 下一页 · 4 starter + 6 功能",
-                size=16, color=AI_PURPLE, bold=True)
 
     # 4 动画:策略 A
     add_anim(s, tb_t, "fade_in", delay_ms=0, dur_ms=500)
@@ -900,9 +890,9 @@ def slide_9_roadmap(prs):
         card.line.color.rgb = JAVA_BLUE
         card.line.width = Pt(1.5)
         styled_text(s, 0.5, y + 0.05, 6.0, 0.35,
-                    title, size=14, color=JAVA_BLUE, bold=True)
+                    title, size=15, color=JAVA_BLUE, bold=True)
         styled_text(s, 0.5, y + 0.42, 6.0, 0.35,
-                    desc, size=11, color=TEXT_SECONDARY)
+                    desc, size=13, color=TEXT_SECONDARY)
         loom_boxes.append(card)
 
     # 右列:SQL工坊 (AI 紫)
@@ -926,9 +916,9 @@ def slide_9_roadmap(prs):
         card.line.color.rgb = AI_PURPLE
         card.line.width = Pt(1.5)
         styled_text(s, 7.033, y + 0.05, 6.0, 0.35,
-                    title, size=14, color=AI_PURPLE, bold=True)
+                    title, size=15, color=AI_PURPLE, bold=True)
         styled_text(s, 7.033, y + 0.42, 6.0, 0.35,
-                    desc, size=11, color=TEXT_SECONDARY)
+                    desc, size=13, color=TEXT_SECONDARY)
         forge_boxes.append(card)
 
     # 底部 3 金钩:双引擎协同愿景
@@ -948,7 +938,7 @@ def slide_9_roadmap(prs):
         box.line.color.rgb = GOLD
         box.line.width = Pt(1.5)
         styled_text(s, 2.0, y + 0.02, 9.333, 0.33,
-                    txt, size=14, color=GOLD, bold=True, center=True)
+                    txt, size=15, color=GOLD, bold=True, center=True)
         hook_boxes.append(box)
 
     # 13 动画:1 标题 + 4 灵梭 + 4 SQL工坊 + 3 金钩 + 1 金钩[1] 脉冲
