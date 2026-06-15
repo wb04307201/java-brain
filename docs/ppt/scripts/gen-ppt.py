@@ -554,6 +554,132 @@ def slide_5b_forge_4plus6(prs):
     add_anim(s, func_cards[2], "pulse", delay_ms=19000, dur_ms=1500, loop=True)  # MCP
 
 
+def slide_6_demo1_workflow(prs):
+    """P6 演示 1 · 5 步工作流(策略 D:5 步依次入,末步 pulse)"""
+    s = prs.slides.add_slide(prs.slide_layouts[6])
+    s.background.fill.solid()
+    s.background.fill.fore_color.rgb = BG_LIGHT
+
+    # 标题
+    styled_text(s, 0.5, 0.6, 12.333, 0.5,
+                 "演示 1 · 一句话出分析报告",
+                 size=28, bold=True)
+
+    # 用户原话
+    styled_text(s, 0.5, 1.3, 12.333, 0.4,
+                 '"上个月各品类销量怎么样?"',
+                 size=18, color=TEXT_SECONDARY)
+
+    # 5 步横排
+    steps = [
+        ("S1", "👤 用户提问", TEXT_SECONDARY),
+        ("S2", "🧠 NL2SQL", JAVA_BLUE),
+        ("S3", "📊 读表", JAVA_BLUE),
+        ("S4", "⚙️ 跨库 JOIN", JAVA_BLUE),
+        ("S5", "📄 报告", GOLD),
+    ]
+    step_boxes = []
+    sw, sh = 2.0, 2.5
+    gap = 0.3
+    total_w = 5 * sw + 4 * gap
+    sx0 = (13.333 - total_w) / 2
+    sy = 2.5
+    for i, (num, name, color) in enumerate(steps):
+        x = sx0 + i * (sw + gap)
+        box = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
+                                   Inches(x), Inches(sy), Inches(sw), Inches(sh))
+        box.fill.solid()
+        if color == GOLD:
+            box.fill.fore_color.rgb = GOLD_BG
+        else:
+            box.fill.fore_color.rgb = WHITE
+        box.line.color.rgb = color
+        box.line.width = Pt(3) if color == GOLD else Pt(1)
+        # S1-S5 标签
+        styled_text(s, x, sy + 0.2, sw, 0.4,
+                     num, font=FONT_EN, size=14, color=color, bold=True)
+        # 步骤名
+        styled_text(s, x, sy + 0.8, sw, 1.5,
+                     name, size=16, color=color, bold=True)
+        step_boxes.append(box)
+
+    # 箭头(4 个)
+    for i in range(4):
+        x = sx0 + (i + 1) * sw + i * gap + 0.05
+        styled_text(s, x, sy + sh/2 - 0.2, gap - 0.1, 0.4,
+                     "→", font=FONT_EN, size=20, color=GOLD, bold=True)
+
+    # 底部金句
+    styled_text(s, 0.5, 6.0, 12.333, 0.5,
+                 "▼ 接下来看 42 秒真实录屏",
+                 size=18, color=AI_PURPLE, bold=True)
+
+    # 6 动画:5 步 0/1/2/3/4s 入场 + 末步 pulse
+    for i in range(5):
+        add_anim(s, step_boxes[i], "fade_in",
+                 delay_ms=i * 1000, dur_ms=500)
+    add_anim(s, step_boxes[4], "pulse", delay_ms=4500, dur_ms=1500, loop=True)
+
+
+def slide_7_demo2_workflow(prs):
+    """P7 演示 2 · 5 步工作流"""
+    s = prs.slides.add_slide(prs.slide_layouts[6])
+    s.background.fill.solid()
+    s.background.fill.fore_color.rgb = BG_LIGHT
+
+    styled_text(s, 0.5, 0.6, 12.333, 0.5,
+                 "演示 2 · 一句话生成 CRUD",
+                 size=28, bold=True)
+
+    styled_text(s, 0.5, 1.3, 12.333, 0.4,
+                 '"做一个商品管理 CRUD 页面"',
+                 size=18, color=TEXT_SECONDARY)
+
+    steps = [
+        ("S1", "👤 用户提问", TEXT_SECONDARY),
+        ("S2", "🧠 web.st", AI_PURPLE),
+        ("S3", "📊 读表", AI_PURPLE),
+        ("S4", "🔧 生成 Amis", AI_PURPLE),
+        ("S5", "🌐 URL", GOLD),
+    ]
+    step_boxes = []
+    sw, sh = 2.0, 2.5
+    gap = 0.3
+    total_w = 5 * sw + 4 * gap
+    sx0 = (13.333 - total_w) / 2
+    sy = 2.5
+    for i, (num, name, color) in enumerate(steps):
+        x = sx0 + i * (sw + gap)
+        box = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
+                                   Inches(x), Inches(sy), Inches(sw), Inches(sh))
+        box.fill.solid()
+        if color == GOLD:
+            box.fill.fore_color.rgb = GOLD_BG
+        else:
+            box.fill.fore_color.rgb = WHITE
+        box.line.color.rgb = color
+        box.line.width = Pt(3) if color == GOLD else Pt(1)
+        styled_text(s, x, sy + 0.2, sw, 0.4,
+                     num, font=FONT_EN, size=14, color=color, bold=True)
+        styled_text(s, x, sy + 0.8, sw, 1.5,
+                     name, size=16, color=color, bold=True)
+        step_boxes.append(box)
+
+    for i in range(4):
+        x = sx0 + (i + 1) * sw + i * gap + 0.05
+        styled_text(s, x, sy + sh/2 - 0.2, gap - 0.1, 0.4,
+                     "→", font=FONT_EN, size=20, color=GOLD, bold=True)
+
+    styled_text(s, 0.5, 6.0, 12.333, 0.5,
+                 "▼ 接下来看 40 秒真实录屏",
+                 size=18, color=AI_PURPLE, bold=True)
+
+    for i in range(5):
+        add_anim(s, step_boxes[i], "fade_in",
+                 delay_ms=i * 1000, dur_ms=500)
+    add_anim(s, step_boxes[4], "pulse", delay_ms=4500, dur_ms=1500, loop=True)
+
+
 def main():
     prs = Presentation()
     prs.slide_width = SLIDE_W
@@ -565,8 +691,10 @@ def main():
     slide_4b_loom_modules(prs)
     slide_5a_forge_intro(prs)
     slide_5b_forge_4plus6(prs)
+    slide_6_demo1_workflow(prs)
+    slide_7_demo2_workflow(prs)
     prs.save(str(OUTPUT))
-    print(f"OK: {OUTPUT} (7 pages)")
+    print(f"OK: {OUTPUT} (9 pages)")
 
 
 if __name__ == "__main__":
