@@ -122,9 +122,81 @@ def iso_lego(slide, x_in, y_in, w_in, h_in, color, *, studs=True, highlight=Fals
     return main
 
 
+def slide_1_cover(prs):
+    """P1 封面:3 乐高 + JavaBrain 大字 + 副标 + 金钩 + 5 fade_in"""
+    s = prs.slides.add_slide(prs.slide_layouts[6])
+    s.background.fill.solid()
+    s.background.fill.fore_color.rgb = BG_LIGHT
+
+    # 3 乐高横排(Java 蓝 / AI 紫 / 语义绿)
+    lego_y = 1.5
+    lego_size = 1.2
+    lego_gap = 0.4
+    total_w = 3 * lego_size + 2 * lego_gap
+    lego_x0 = (13.333 - total_w) / 2
+    legos = []
+    for i, color in enumerate([JAVA_BLUE, AI_PURPLE, SEMANTIC_GREEN]):
+        x = lego_x0 + i * (lego_size + lego_gap)
+        lego = iso_lego(s, x, lego_y, lego_size, lego_size, color)
+        legos.append(lego)
+
+    # JavaBrain 大字(72pt 居中)
+    tb_title = s.shapes.add_textbox(Inches(1.0), Inches(3.4),
+                                     Inches(11.333), Inches(1.2))
+    tf = tb_title.text_frame
+    tf.text = "JavaBrain"
+    p = tf.paragraphs[0]
+    p.alignment = PP_ALIGN.CENTER
+    run = p.runs[0]
+    run.font.name = FONT_EN
+    run.font.size = Pt(72)
+    run.font.bold = True
+    run.font.color.rgb = TEXT_PRIMARY
+
+    # 副标"让 Spring Boot 秒变 AI 中枢"
+    tb_sub = s.shapes.add_textbox(Inches(1.0), Inches(4.6),
+                                   Inches(11.333), Inches(0.5))
+    tf2 = tb_sub.text_frame
+    tf2.text = "让 Spring Boot 秒变 AI 中枢"
+    p2 = tf2.paragraphs[0]
+    p2.alignment = PP_ALIGN.CENTER
+    run2 = p2.runs[0]
+    run2.font.name = FONT_CN
+    run2.font.size = Pt(24)
+    run2.font.color.rgb = TEXT_SECONDARY
+
+    # 金钩"3 组件 · 1 starter · 0 漂移"
+    hook_box = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
+                                   Inches(4.0), Inches(5.5),
+                                   Inches(5.333), Inches(0.6))
+    hook_box.fill.solid()
+    hook_box.fill.fore_color.rgb = GOLD
+    hook_box.line.fill.background()
+    tf3 = hook_box.text_frame
+    tf3.text = "3 组件 · 1 starter · 0 漂移"
+    p3 = tf3.paragraphs[0]
+    p3.alignment = PP_ALIGN.CENTER
+    run3 = p3.runs[0]
+    run3.font.name = FONT_CN
+    run3.font.size = Pt(18)
+    run3.font.bold = True
+    run3.font.color.rgb = WHITE
+
+    # ====== 5 个动画(策略 A 入场群) ======
+    add_anim(s, legos[0], "fade_in", delay_ms=0,    dur_ms=500)
+    add_anim(s, legos[1], "fade_in", delay_ms=300,  dur_ms=500)
+    add_anim(s, legos[2], "fade_in", delay_ms=600,  dur_ms=500)
+    add_anim(s, tb_title, "fade_in", delay_ms=900,  dur_ms=500)
+    add_anim(s, hook_box, "fade_in", delay_ms=1400, dur_ms=500)
+
+
 def main():
-    """空 main —— 后续 T1-T9 在此追加 slide_X 函数并注册到总账。"""
-    pass
+    prs = Presentation()
+    prs.slide_width = SLIDE_W
+    prs.slide_height = SLIDE_H
+    slide_1_cover(prs)
+    prs.save(str(OUTPUT))
+    print(f"OK: {OUTPUT}")
 
 
 if __name__ == "__main__":
