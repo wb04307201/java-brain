@@ -35,22 +35,17 @@ def test_total_pages():
 
 
 def test_total_animations():
-    """12 页累计动画总数(P1 加大脑 zoom_in + 金钩 zoom_in 模拟打字机 + P10 logo spin)。
-
-    按实际 add_anim 调用累计:
-    - 85 fade_in/zoom_in/spin + 15 pulse_loop(其中 5 个 chase)= 100 anim,15 indefinite
-    """
+    """12 页累计动画总数 — 已全部删除,期望 0。"""
     prs = Presentation(str(PPTX))
     total = 0
     total_indefinite = 0
     for slide in prs.slides:
         xml = etree.tostring(slide._element).decode()
-        # 改用 animEffect 计数(累积式 add_anim 修复后每页只有 1 个 <p:timing>)
         total += xml.count("<p:animEffect")
         total_indefinite += xml.count('repeatCount="indefinite"')
     print(f"  total animEffects: {total}, indefinites: {total_indefinite}")
-    assert total == 93, f"期望 93 animEffect,实际 {total}"
-    assert total_indefinite == 15, f"期望 15 pulse_loop,实际 {total_indefinite}"
+    assert total == 0, f"动画已删除,期望 0,实际 {total}"
+    assert total_indefinite == 0, f"动画已删除,期望 0 pulse_loop,实际 {total_indefinite}"
 
 
 def test_p9_loom_future():
@@ -84,20 +79,20 @@ def test_p9_dual_engine_vision():
 
 
 def test_p9_pulse_indefinite():
-    """金钩持续脉冲。"""
+    """动画已删除 — 无 pulse_loop。"""
     prs = Presentation(str(PPTX))
     p9 = prs.slides[10]
     xml = etree.tostring(p9._element).decode()
-    assert 'repeatCount="indefinite"' in xml
+    assert 'repeatCount="indefinite"' not in xml
 
 
 def test_p9_animation_count():
-    """P9:6 动画(1 标题 fade + 4 阶段 fade + 1 金句 pulse)。"""
+    """P9 动画已删除 — 0。"""
     prs = Presentation(str(PPTX))
     p9 = prs.slides[10]
     xml = etree.tostring(p9._element).decode()
     tc = xml.count("<p:animEffect")
-    assert tc == 6, f"P9 期望 6 animEffect,实际 {tc}"
+    assert tc == 0, f"P9 动画已删除,期望 0,实际 {tc}"
 
 
 def test_p10_key_text():
@@ -120,28 +115,27 @@ def test_p10_three_sentences():
 
 
 def test_p10_pulse_indefinite():
-    """金句持续脉冲。"""
+    """动画已删除 — 无 pulse_loop。"""
     prs = Presentation(str(PPTX))
     p10 = prs.slides[11]
     xml = etree.tostring(p10._element).decode()
-    indefinite_count = xml.count('repeatCount="indefinite"')
-    assert indefinite_count >= 1, f"P10 期望 ≥1 pulse_loop(金句),实际 {indefinite_count}"
+    assert 'repeatCount="indefinite"' not in xml
 
 
 def test_p10_animation_count():
-    """P10:7 动画(logo spin + title fade + 3 sent fade + killer pulse + term fade)。"""
+    """P10 动画已删除 — 0。"""
     prs = Presentation(str(PPTX))
     p10 = prs.slides[11]
     xml = etree.tostring(p10._element).decode()
     tc = xml.count("<p:animEffect")
-    assert tc == 7, f"P10 期望 7 animEffect,实际 {tc}"
+    assert tc == 0, f"P10 动画已删除,期望 0,实际 {tc}"
 
 
 if __name__ == "__main__":
     test_total_pages()
     print("OK 12 pages")
     test_total_animations()
-    print("OK 93 animEffects + 15 indefinite")
+    print("OK 0 animEffects + 0 indefinite (动画已删除)")
     test_p9_loom_future()
     print("OK P9 阶段 1/2")
     test_p9_forge_future()
@@ -149,15 +143,15 @@ if __name__ == "__main__":
     test_p9_dual_engine_vision()
     print("OK P9 信任阶梯标题/金钩")
     test_p9_pulse_indefinite()
-    print("OK P9 金句 pulse")
+    print("OK P9 无 pulse")
     test_p9_animation_count()
-    print("OK P9 6 anim")
+    print("OK P9 0 anim")
     test_p10_key_text()
     print("OK P10 key text")
     test_p10_three_sentences()
     print("OK P10 3 sentences")
     test_p10_pulse_indefinite()
-    print("OK P10 pulse_loop")
+    print("OK P10 无 pulse")
     test_p10_animation_count()
-    print("OK P10 7 anim")
-    print("\nT7 验证全部通过 + 12 页 PPT 完成")
+    print("OK P10 0 anim")
+    print("\nT7 验证全部通过 + 12 页 PPT 完成 (动画已删除)")

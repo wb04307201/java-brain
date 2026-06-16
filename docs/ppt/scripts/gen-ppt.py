@@ -258,13 +258,7 @@ def slide_1_cover(prs):
                 "3 分钟接入 AI",
                 font=FONT_CN, size=22, color=WHITE, bold=True)
 
-    # === 6) 6 动画(大脑 zoom_in 缩放入场 + 标题副标 + 3 组件 + 金钩 zoom_in 模拟打字机)===
-    add_anim(s, pic._element,  "zoom_in", delay_ms=0,    dur_ms=800)  # 大脑 0.9→1.0
-    add_anim(s, tb_title,      "fade_in", delay_ms=600,  dur_ms=500)
-    add_anim(s, tb_sub,        "fade_in", delay_ms=1000, dur_ms=500)
-    add_anim(s, sat_shapes[0], "fade_in", delay_ms=1400, dur_ms=500)
-    add_anim(s, sat_shapes[3], "fade_in", delay_ms=1600, dur_ms=500)
-    add_anim(s, hook_box,      "zoom_in", delay_ms=2000, dur_ms=600)  # 金钩 0.5x→1.0x 弹出
+    # (动画已删除 — 用户手动添加)
 
 
 def slide_2_pain(prs):
@@ -390,14 +384,7 @@ def slide_2_pain(prs):
                 "★ 3 月 vs 3 分 — 从季度到分钟",
                 size=20, color=GOLD, bold=True)
 
-    # === 动画(策略 B:6 配图依次入场 + 1 数字串入场 + 1 中心金钩 pulse)===
-    # 6 张图交错 350ms
-    for i in range(min(6, len(anim_targets))):
-        add_anim(s, anim_targets[i], "fade_in", delay_ms=i * 350, dur_ms=500)
-    # 中心金钩 pulse(杀手锏持续脉冲)
-    add_anim(s, hook, "pulse", delay_ms=3500, dur_ms=1500, loop=True)
-    # 底部 6 文字组整体淡入(轻量,共 6 + 1 center + 1 hook = 8 入场 + 1 pulse)
-    add_anim(s, big_circle, "fade_in", delay_ms=2200, dur_ms=500)
+    # (动画已删除 — 用户手动添加)
 
 
 def slide_3_position(prs):
@@ -442,11 +429,7 @@ def slide_3_position(prs):
                          text, size=16, color=color, bold=(i == 0))
         item_boxes.append(tb)
 
-    # 4 动画:策略 A(标题入场 + 1 乐高入场 + 首行金行入场 + 1 循环)
-    add_anim(s, tb_t, "fade_in", delay_ms=0, dur_ms=500)
-    add_anim(s, legos[0], "fade_in", delay_ms=600, dur_ms=500)
-    add_anim(s, item_boxes[0], "fade_in", delay_ms=1200, dur_ms=500)
-    add_anim(s, item_boxes[0], "pulse", delay_ms=2000, dur_ms=1500, loop=True)
+    # (动画已删除 — 用户手动添加)
 
 
 def slide_4a_loom_intro(prs):
@@ -464,9 +447,9 @@ def slide_4a_loom_intro(prs):
                        "从 Spring AI 裸用到 JavaBrain 一体化",
                        size=28, bold=True)
 
-    # 副标杀手锏
+    # 副标杀手锏(P4-a 方案 A:数字型可验证)
     styled_text(s, 0.5, 1.4, 12.333, 0.4,
-                "★ 50 行配置 → 1 行模板,半年维护成本归零",
+                "★ 50 行配置 → 1 行模板 = 49 行省下",
                 size=15, color=GOLD, bold=True)
 
     # 3 步进阶横排(每步 = 大编号 + 标题 + 描述 + 时间标签)
@@ -511,13 +494,7 @@ def slide_4a_loom_intro(prs):
     spTree.remove(pic._element)
     spTree.insert(2, pic._element)
 
-    # 8 动画:1 标题 + 3 步骤卡 + 1 .st 杀手锏 pulse + 3 时间标签
-    add_anim(s, tb_t, "fade_in", delay_ms=0, dur_ms=500)
-    for i, (card, tb_time) in enumerate(step_cards):
-        add_anim(s, card, "fade_in", delay_ms=400 + i * 300, dur_ms=500)
-        add_anim(s, tb_time, "fade_in", delay_ms=400 + i * 300, dur_ms=500)
-    # .st 第 3 步杀手锏脉冲
-    add_anim(s, step_cards[2][0], "pulse", delay_ms=2000, dur_ms=1500, loop=True)
+    # (动画已删除 — 用户手动添加)
 
 
 def slide_4b_loom_modules(prs):
@@ -572,13 +549,7 @@ def slide_4b_loom_modules(prs):
                 "★ 改一个 .st 文件,AI 行为就变",
                 size=20, color=GOLD, bold=True)
 
-    # 8 动画:6 入场 + 2 chase(策略 C,chase 错开 2s)
-    for i in range(6):
-        add_anim(s, cards[i], "fade_in",
-                 delay_ms=i * 200, dur_ms=500)
-    # 2 杀手锏金边 chase(MCP + Skill)
-    add_anim(s, cards[1], "pulse", delay_ms=10000, dur_ms=1500, loop=True)  # MCP
-    add_anim(s, cards[2], "pulse", delay_ms=12000, dur_ms=1500, loop=True)  # Skill
+    # (动画已删除 — 用户手动添加)
 
 
 def slide_5a_forge_intro(prs):
@@ -643,13 +614,7 @@ def slide_5a_forge_intro(prs):
     spTree.remove(pic._element)
     spTree.insert(2, pic._element)
 
-    # 8 动画:1 标题 + 3 步骤卡 + 3 时间标签 + 1 杀手锏脉冲
-    add_anim(s, tb_t, "fade_in", delay_ms=0, dur_ms=500)
-    for i, (card, tb_time) in enumerate(step_cards):
-        add_anim(s, card, "fade_in", delay_ms=400 + i * 300, dur_ms=500)
-        add_anim(s, tb_time, "fade_in", delay_ms=400 + i * 300, dur_ms=500)
-    # sql-forge-mcp 杀手锏脉冲
-    add_anim(s, step_cards[2][0], "pulse", delay_ms=2000, dur_ms=1500, loop=True)
+    # (动画已删除 — 用户手动添加)
 
 
 def slide_5b_forge_4plus6(prs):
@@ -723,17 +688,7 @@ def slide_5b_forge_4plus6(prs):
                 "★ AI 通过 5 个受限通道安全对话业务库,数据不出企业",
                 size=18, color=GOLD, bold=True)
 
-    # 11 动画:4 starter + 6 功能 + 3 chase(策略 C)
-    for i in range(4):
-        add_anim(s, starter_boxes[i], "fade_in",
-                 delay_ms=i * 200, dur_ms=500)
-    for i in range(6):
-        add_anim(s, func_cards[i], "fade_in",
-                 delay_ms=1000 + i * 200, dur_ms=500)
-    # 3 杀手锏 chase pulse 错开 2s
-    add_anim(s, func_cards[0], "pulse", delay_ms=15000, dur_ms=1500, loop=True)  # JSON CRUD
-    add_anim(s, func_cards[1], "pulse", delay_ms=17000, dur_ms=1500, loop=True)  # Calcite
-    add_anim(s, func_cards[2], "pulse", delay_ms=19000, dur_ms=1500, loop=True)  # MCP
+    # (动画已删除 — 用户手动添加)
 
 
 def slide_6_demo1_workflow(prs):
@@ -796,11 +751,7 @@ def slide_6_demo1_workflow(prs):
                  "▼ 接下来看 42 秒真实录屏",
                  size=18, color=AI_PURPLE, bold=True)
 
-    # 6 动画:5 步 0/0.4/0.8/1.2/1.6s 阶梯入场 + 末步 pulse(体现流程而非并列)
-    for i in range(5):
-        add_anim(s, step_boxes[i], "fade_in",
-                 delay_ms=i * 400, dur_ms=500)
-    add_anim(s, step_boxes[4], "pulse", delay_ms=2500, dur_ms=1500, loop=True)
+    # (动画已删除 — 用户手动添加)
 
 
 def slide_7_demo2_workflow(prs):
@@ -856,14 +807,20 @@ def slide_7_demo2_workflow(prs):
                  "▼ 接下来看 40 秒真实录屏",
                  size=18, color=AI_PURPLE, bold=True)
 
-    for i in range(5):
-        add_anim(s, step_boxes[i], "fade_in",
-                 delay_ms=i * 400, dur_ms=500)
-    add_anim(s, step_boxes[4], "pulse", delay_ms=2500, dur_ms=1500, loop=True)
+    # (动画已删除 — 用户手动添加)
+    pass
 
 
 def slide_8_compare(prs):
-    """P8 实战对比 · 左技术派 ✓ + 中 3 柱状图(传统/集成AI/JavaBrain) + 右商业派 5 项 + 杀手锏金脉冲(策略 C:13 动画,精简分组滑入 3.5s)"""
+    """P8 实战对比 · 方案 A 柱状图为主角(左技术派 3.1" / 中柱状图 6.1" 放大 / 右商业派 3.2")。
+
+    柱状图放大逻辑:
+    - 中部宽度从 3.5" → 6.1"(占 PPT 宽 46%)
+    - 柱子宽 0.9" → 1.3"(视觉更厚重)
+    - 数字 11pt → 18pt 顶到顶
+    - 30天柱子副标 "≈ 3 月"(红色)/ 10天 "10 天"(红色)/ 1天 "≈ 3 分"(绿色)— 对齐 P2 痛点数字
+    - 删除底部金句(让数据自己说话)
+    """
     s = prs.slides.add_slide(prs.slide_layouts[6])
     s.background.fill.solid()
     s.background.fill.fore_color.rgb = BG_LIGHT
@@ -873,103 +830,94 @@ def slide_8_compare(prs):
                  "实战测试 · 7 张表 / 0 漂移 / 节省 >80%",
                  size=24, bold=True)
 
-    # 左半:技术派 4 行 ✓
-    styled_text(s, 0.3, 0.95, 4.0, 0.35,
+    # 左半:技术派 4 行 ✓(压缩到 3.1" 宽)
+    styled_text(s, 0.3, 0.95, 3.1, 0.35,
                  "技术派 · 4 项测试",
-                 size=15, color=JAVA_BLUE, bold=True)
+                 size=14, color=JAVA_BLUE, bold=True)
 
     items_tech = [
-        "✓ 7 张表测试(简单/字典/自关联)",
-        "✓ 0 漂移 / 0 错误链接 / 0 乱码",
-        "✓ 5/5 AI 字段推断自检通过",
-        "✓ 节省 CRUD 开发时间 >80%",
+        "✓ 7 张表测试",
+        "✓ 0 漂移 / 0 错误链接",
+        "✓ 5/5 字段推断通过",
+        "✓ 节省 CRUD >80%",
     ]
-    tech_boxes = []
     for i, txt in enumerate(items_tech):
         is_killer = ">80%" in txt
-        tb = styled_text(s, 0.4, 1.5 + i * 0.55, 4.0, 0.4,
-                          txt, size=13,
-                          color=GOLD if is_killer else TEXT_PRIMARY,
-                          bold=is_killer)
-        tech_boxes.append(tb)
+        styled_text(s, 0.4, 1.5 + i * 0.55, 3.0, 0.4,
+                     txt, size=12,
+                     color=GOLD if is_killer else TEXT_PRIMARY,
+                     bold=is_killer)
 
-    # 中部:3 柱状图(传统 vs 集成 AI vs JavaBrain)
-    styled_text(s, 4.7, 0.95, 3.5, 0.35,
-                 "开发时间 · 3 种方案",
-                 size=15, color=AI_PURPLE, bold=True)
+    # 中部:3 柱状图放大(从 3.5" 扩到 6.1",柱子 1.3" 宽,数字 18pt)
+    styled_text(s, 3.6, 0.95, 6.1, 0.35,
+                 "开发时间 · 3 种方案(柱状图为主角)",
+                 size=15, color=AI_PURPLE, bold=True, center=True)
 
-    # 柱状图数据
+    # 柱状图数据(带副标对齐 P2 痛点数字)
     bar_data = [
-        ("传统开发", 30, DIVIDER),
-        ("集成 AI", 10, SEMANTIC_RED),
-        ("JavaBrain", 1, SEMANTIC_GREEN),
+        ("传统开发", "30天", "≈ 3 月", 30, DIVIDER, SEMANTIC_RED),
+        ("集成 AI",  "10天", "10 天",  10, SEMANTIC_RED, SEMANTIC_RED),
+        ("JavaBrain", "1天",  "≈ 3 分", 1,  SEMANTIC_GREEN, SEMANTIC_GREEN),
     ]
-    bar_shapes = []
-    bar_w = 0.9
-    bar_gap = 0.25
-    bar_x0 = 4.9
-    bar_baseline_y = 5.0  # 底部基线
-    bar_max_h = 2.8  # 30天 对应 2.8 in
-    bar_label_y = 5.15
-    bar_title_y = 5.55
-    for i, (label, days, color) in enumerate(bar_data):
+    bar_w = 1.3
+    bar_gap = 0.4
+    middle_x0 = 3.6
+    middle_w = 6.1
+    bar_baseline_y = 5.2  # 底部基线
+    bar_max_h = 3.0      # 30天 对应 3.0 in
+    bar_label_y = 5.35   # 柱子下方"传统开发/集成AI/JavaBrain"
+    bar_sub_y = 5.85     # 最下方副标"3月/10天/3分"
+    # 计算居中起点
+    total_bars_w = 3 * bar_w + 2 * bar_gap  # 4.7"
+    start_x = middle_x0 + (middle_w - total_bars_w) / 2  # 4.3
+    for i, (label, big, sub, days, bar_color, sub_color) in enumerate(bar_data):
         h = (days / 30.0) * bar_max_h
-        x = bar_x0 + i * (bar_w + bar_gap)
+        x = start_x + i * (bar_w + bar_gap)
         y = bar_baseline_y - h
         # 柱子
         bar = s.shapes.add_shape(MSO_SHAPE.RECTANGLE,
                                   Inches(x), Inches(y),
                                   Inches(bar_w), Inches(h))
         bar.fill.solid()
-        bar.fill.fore_color.rgb = color
+        bar.fill.fore_color.rgb = bar_color
         bar.line.fill.background()
-        # 数字标签(柱子顶部)
-        styled_text(s, x, y - 0.35, bar_w, 0.3,
-                    f"{days}天", size=11, color=color, bold=True, center=True)
-        # 底部标签
-        styled_text(s, x, bar_label_y, bar_w, 0.3,
-                    label, size=11, color=TEXT_PRIMARY, bold=True, center=True)
-        bar_shapes.append(bar)
+        # 大数字(柱子顶部,18pt)
+        styled_text(s, x, y - 0.5, bar_w, 0.4,
+                    big, font=FONT_EN, size=18, color=bar_color, bold=True, center=True)
+        # 副标(对齐 P2 数字,12pt)
+        styled_text(s, x, y - 0.85, bar_w, 0.3,
+                    sub, size=12, color=sub_color, bold=True, center=True)
+        # 底部标签"传统开发/集成 AI/JavaBrain"
+        styled_text(s, x, bar_label_y, bar_w, 0.4,
+                    label, size=12, color=TEXT_PRIMARY, bold=True, center=True)
+        # 副标"3 月/10天/3分"(最大字号,呼应 P2)
+        styled_text(s, x, bar_sub_y, bar_w, 0.4,
+                    sub, font=FONT_EN, size=14, color=sub_color, bold=True, center=True)
 
-    # 右半:商业派 5 行对比表
-    styled_text(s, 8.3, 0.95, 4.8, 0.35,
-                 "商业派 · 5 项对比",
-                 size=15, color=AI_PURPLE, bold=True)
+    # 右半:商业派 5 行对比表(压缩到 3.2" 宽)
+    styled_text(s, 9.9, 0.95, 3.2, 0.35,
+                 "商业派 · 5 项",
+                 size=14, color=AI_PURPLE, bold=True)
 
     rows_biz = ["业务取数", "CRUD 页面", "跨库 JOIN", "私有化", "列名识别"]
-    biz_boxes = []
     for i, txt in enumerate(rows_biz):
         # 行背景
         bg = s.shapes.add_shape(MSO_SHAPE.RECTANGLE,
-                                  Inches(8.3), Inches(1.5 + i * 0.5),
-                                  Inches(4.8), Inches(0.45))
+                                  Inches(9.9), Inches(1.5 + i * 0.5),
+                                  Inches(3.2), Inches(0.45))
         bg.fill.solid()
         bg.fill.fore_color.rgb = GREEN_BG if i % 2 == 0 else WHITE
         bg.line.color.rgb = DIVIDER
         bg.line.width = Pt(1)
         # 行文字
-        row_tb = styled_text(s, 8.5, 1.55 + i * 0.5, 3.0, 0.4,
-                              txt, size=14, center=False)
+        styled_text(s, 10.05, 1.55 + i * 0.5, 2.0, 0.4,
+                     txt, size=12, center=False)
         # ✓
-        styled_text(s, 11.7, 1.55 + i * 0.5, 1.2, 0.4,
+        styled_text(s, 12.3, 1.55 + i * 0.5, 0.8, 0.4,
                      "✓", font=FONT_EN, size=16, color=SEMANTIC_GREEN, bold=True)
-        biz_boxes.append(row_tb)
 
-    # 底部金句
-    styled_text(s, 0.5, 6.3, 12.333, 0.5,
-                 "★ JavaBrain 在 安全 + 智能 + 私有化 三角都做到",
-                 size=18, color=GOLD, bold=True)
-
-    # 13 动画:策略 C(精简分组滑入 — 整组 3.5s 内完成,3 段紧贴)
-    for i in range(4):                                              # 技术派 4 项 0-900ms
-        add_anim(s, tech_boxes[i], "fade_in",
-                 delay_ms=i * 225, dur_ms=400)
-    for i, bar in enumerate(bar_shapes):                            # 柱状图 3 项 1200-1800ms
-        add_anim(s, bar, "fade_in", delay_ms=1200 + i * 200, dur_ms=400)
-    for i in range(5):                                              # 商业派 5 项 2100-2900ms
-        add_anim(s, biz_boxes[i], "fade_in",
-                 delay_ms=2100 + i * 200, dur_ms=400)
-    add_anim(s, tech_boxes[3], "pulse", delay_ms=12000, dur_ms=1500, loop=True)
+    # 底部金句删除(让柱状图自己说话)
+    # (动画已删除 — 用户手动添加)
 
 
 def slide_9_roadmap(prs):
@@ -1111,11 +1059,7 @@ def slide_9_roadmap(prs):
                  "★ JavaBrain 不只是工具,而是你可托付的数据同事",
                  size=20, color=GOLD, bold=True, center=True)
 
-    # 13 动画:1 标题 + 4 阶段(每阶段 1 卡片)+ 4 阶段×3 证据(12,合并到卡片入场)+ 3 箭头 + 1 金句脉冲
-    add_anim(s, tb_t, "fade_in", delay_ms=0, dur_ms=500)
-    for i, card in enumerate(stage_boxes):
-        add_anim(s, card, "fade_in", delay_ms=600 + i * 400, dur_ms=500)
-    add_anim(s, killer, "pulse", delay_ms=2500, dur_ms=1500, loop=True)
+    # (动画已删除 — 用户手动添加)
 
 
 def slide_10_ending(prs):
@@ -1179,14 +1123,7 @@ def slide_10_ending(prs):
                  "感谢聆听 · Star 支持: github.com/wb04307201/spring-ai-loom-agent",
                  size=12, color=TEXT_SECONDARY)
 
-    # 7 动画:logo 旋转 + 5 入场 + 1 金句循环
-    add_anim(s, p10_logo, "spin", delay_ms=0, dur_ms=8000, loop=True)  # 8s 慢转
-    add_anim(s, tb_t, "fade_in", delay_ms=0, dur_ms=500)
-    add_anim(s, sent_boxes[0], "fade_in", delay_ms=600, dur_ms=500)
-    add_anim(s, sent_boxes[1], "fade_in", delay_ms=1200, dur_ms=500)
-    add_anim(s, sent_boxes[2], "fade_in", delay_ms=1800, dur_ms=500)
-    add_anim(s, killer, "pulse", delay_ms=6000, dur_ms=1500, loop=True)  # 金句持续脉冲
-    add_anim(s, term, "fade_in", delay_ms=4000, dur_ms=500)
+    # (动画已删除 — 用户手动添加)
 
 
 def main():

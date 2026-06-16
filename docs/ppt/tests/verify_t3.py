@@ -23,20 +23,20 @@ def test_total_pages():
 
 
 def test_p3_animation_count():
-    """P3 spec §3 写 4 动画(3 入场 + 1 循环);实际实现含 4 动画(tb_t + legos[0] + item[0] + pulse)。"""
+    """动画已全部删除 — 用户手动添加。"""
     prs = Presentation(str(PPTX))
     p3 = prs.slides[2]
     xml = etree.tostring(p3._element).decode()
     anim_count = xml.count("<p:animEffect")
-    assert anim_count >= 4, f"P3 期望 ≥4 animEffect,实际 {anim_count}"
+    assert anim_count == 0, f"P3 动画已删除,期望 0,实际 {anim_count}"
 
 
 def test_p3_pulse_indefinite():
-    """P3 首行金脉冲:1 个 indefinite。"""
+    """动画已删除 — 无 pulse_loop。"""
     prs = Presentation(str(PPTX))
     p3 = prs.slides[2]
     xml = etree.tostring(p3._element).decode()
-    assert 'repeatCount="indefinite"' in xml
+    assert 'repeatCount="indefinite"' not in xml
 
 
 def test_p3_key_text():
@@ -50,56 +50,56 @@ def test_p3_key_text():
 
 
 def test_p4a_animation_count():
-    """P4-a spec §3 写 4 动画。"""
+    """动画已全部删除。"""
     prs = Presentation(str(PPTX))
     p4a = prs.slides[3]
     xml = etree.tostring(p4a._element).decode()
     anim_count = xml.count("<p:animEffect")
-    assert anim_count >= 4, f"P4-a 期望 ≥4 animEffect,实际 {anim_count}"
+    assert anim_count == 0, f"P4-a 动画已删除,期望 0,实际 {anim_count}"
 
 
 def test_p4a_pulse_indefinite():
-    """P4-a Skill 金脉冲:1 个。"""
+    """动画已删除 — 无 pulse_loop。"""
     prs = Presentation(str(PPTX))
     p4a = prs.slides[3]
     xml = etree.tostring(p4a._element).decode()
-    assert 'repeatCount="indefinite"' in xml
+    assert 'repeatCount="indefinite"' not in xml
 
 
 def test_p4a_key_text():
     prs = Presentation(str(PPTX))
     p4a = prs.slides[3]
     xml = unescape(etree.tostring(p4a._element).decode())
+    # 新金句(P4-a 方案 A:数字型)
     for text in ["LoomAgent", "从 Spring AI 裸用到 JavaBrain 一体化",
-                 "灵梭 starter", ".st 模板", "50 行配置"]:
+                 "灵梭 starter", ".st 模板", "50 行配置",
+                 "1 行模板", "49 行省下"]:
         assert text in xml, f"P4-a 缺失: {text}"
 
 
 def test_p4b_animation_count():
-    """P4-b spec §3 写 8 动画(6 入场 + 2 chase 循环)。"""
+    """动画已全部删除。"""
     prs = Presentation(str(PPTX))
     p4b = prs.slides[4]
     xml = etree.tostring(p4b._element).decode()
     anim_count = xml.count("<p:animEffect")
-    assert anim_count >= 8, f"P4-b 期望 ≥8 animEffect,实际 {anim_count}"
+    assert anim_count == 0, f"P4-b 动画已删除,期望 0,实际 {anim_count}"
 
 
 def test_p4b_chase_indefinite():
-    """P4-b 2 个 chase pulse(MCP + Skill 错开 2s)。"""
+    """动画已删除 — 无 pulse_loop。"""
     prs = Presentation(str(PPTX))
     p4b = prs.slides[4]
     xml = etree.tostring(p4b._element).decode()
-    indefinite_count = xml.count('repeatCount="indefinite"')
-    assert indefinite_count >= 2, f"P4-b 期望 ≥2 pulse_loop,实际 {indefinite_count}"
+    assert 'repeatCount="indefinite"' not in xml
 
 
 def test_p4b_chase_delay_staggered():
-    """2 个 chase pulse 的 delay_ms 应错开约 2s(10000 vs 12000)。"""
+    """动画已删除 — chase delay 不再需要,改为检查无 delay 残留。"""
     prs = Presentation(str(PPTX))
     p4b = prs.slides[4]
     xml = etree.tostring(p4b._element).decode()
-    assert '10000' in xml, "MCP chase delay 10000ms 缺失"
-    assert '12000' in xml, "Skill chase delay 12000ms 缺失"
+    assert 'repeatCount' not in xml, "P4-b 应无残留 repeatCount"
 
 
 def test_p4b_modules_present():
@@ -134,4 +134,4 @@ if __name__ == "__main__":
     print("[OK] P4-b chase staggered 2s")
     test_p4b_modules_present()
     print("[OK] P4-b 6 modules")
-    print("\nT3 验证全部通过")
+    print("\nT3 验证全部通过 (动画已删除)")

@@ -17,20 +17,38 @@ def test_total_pages():
 
 
 def test_p8_animation_count():
-    """P8 spec §3 写 10 动画(9 入场 + 1 循环)。"""
+    """动画已全部删除。"""
     prs = Presentation(str(PPTX))
     p8 = prs.slides[9]
     xml = etree.tostring(p8._element).decode()
     anim_count = xml.count("<p:animEffect")
-    assert anim_count >= 10, f"P8 期望 ≥10 animEffect,实际 {anim_count}"
+    assert anim_count == 0, f"P8 动画已删除,期望 0,实际 {anim_count}"
 
 
 def test_p8_pulse_indefinite():
-    """P8 >80% 金脉冲:1 个。"""
+    """动画已删除 — 无 pulse_loop。"""
     prs = Presentation(str(PPTX))
     p8 = prs.slides[9]
     xml = etree.tostring(p8._element).decode()
-    assert 'repeatCount="indefinite"' in xml
+    assert 'repeatCount="indefinite"' not in xml
+
+
+def test_p8_bar_subtitle_present():
+    """P8 柱状图新副标(≈ 3 月 / 10 天 / ≈ 3 分)。"""
+    prs = Presentation(str(PPTX))
+    p8 = prs.slides[9]
+    xml = unescape(etree.tostring(p8._element).decode())
+    for text in ["≈ 3 月", "10 天", "≈ 3 分"]:
+        assert text in xml, f"P8 柱状图副标缺失: {text}"
+
+
+def test_p8_no_bottom_gold_killer():
+    """P8 底部金句已删除(让柱状图自己说话)。"""
+    prs = Presentation(str(PPTX))
+    p8 = prs.slides[9]
+    xml = unescape(etree.tostring(p8._element).decode())
+    assert "JavaBrain 在 安全 + 智能 + 私有化 三角都做到" not in xml, \
+        "P8 底部金句应已删除"
 
 
 def test_p8_tech_items():
@@ -52,11 +70,11 @@ def test_p8_biz_items():
 
 
 def test_p8_killer_pulse():
-    """杀手锏 >80% 金脉冲:delay=12000ms。"""
+    """动画已删除 — pulse delay 不再需要。"""
     prs = Presentation(str(PPTX))
     p8 = prs.slides[9]
     xml = etree.tostring(p8._element).decode()
-    assert '12000' in xml, "P8 >80% 脉冲 delay 12000ms 缺失"
+    assert '12000' not in xml, "P8 应无残留 12000ms pulse"
 
 
 if __name__ == "__main__":
@@ -72,4 +90,4 @@ if __name__ == "__main__":
     print("✓ P8 biz items")
     test_p8_killer_pulse()
     print("✓ P8 >80% pulse delay")
-    print("\nT6 验证全部通过")
+    print("\nT6 验证全部通过 (动画已删除 + 柱状图副标)")

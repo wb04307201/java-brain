@@ -17,55 +17,54 @@ def test_total_pages():
 
 
 def test_p5a_animation_count():
-    """P5-a spec §3 写 4 动画(3 入场 + 1 循环)。"""
+    """动画已全部删除。"""
     prs = Presentation(str(PPTX))
     p5a = prs.slides[5]
     xml = etree.tostring(p5a._element).decode()
     timing_count = xml.count("<p:timing")
-    assert timing_count >= 4, f"P5-a 期望 ≥4 动画,实际 {timing_count}"
+    assert timing_count == 0, f"P5-a 动画已删除,期望 0,实际 {timing_count}"
 
 
 def test_p5a_pulse_indefinite():
-    """P5-a 数据不出企业金脉冲:1 个。"""
+    """动画已删除 — 无 pulse_loop。"""
     prs = Presentation(str(PPTX))
     p5a = prs.slides[5]
     xml = etree.tostring(p5a._element).decode()
-    assert 'repeatCount="indefinite"' in xml
+    assert 'repeatCount="indefinite"' not in xml
 
 
 def test_p5a_key_text():
     prs = Presentation(str(PPTX))
     p5a = prs.slides[5]
     xml = unescape(etree.tostring(p5a._element).decode())
-    for text in ["SQL Forge", "JSON CRUD", "Calcite", "Amis", "MCP 5 受限"]:
+    for text in ["SQL Forge", "从 JDBC 散弹到 Calcite 联邦", "Calcite",
+                 "1 套协议代替 5 套 ORM", "数据不出企业"]:
         assert text in xml, f"P5-a 缺失: {text}"
 
 
 def test_p5b_animation_count():
-    """P5-b spec §3 写 11 动画(10 入场 + 3 chase)。"""
+    """动画已全部删除。"""
     prs = Presentation(str(PPTX))
     p5b = prs.slides[6]
     xml = etree.tostring(p5b._element).decode()
     timing_count = xml.count("<p:timing")
-    assert timing_count >= 11, f"P5-b 期望 ≥11 动画,实际 {timing_count}"
+    assert timing_count == 0, f"P5-b 动画已删除,期望 0,实际 {timing_count}"
 
 
 def test_p5b_3_chase_indefinite():
-    """P5-b 3 个 chase pulse(JSON CRUD + Calcite + MCP)。"""
+    """动画已删除 — 无 pulse_loop。"""
     prs = Presentation(str(PPTX))
     p5b = prs.slides[6]
     xml = etree.tostring(p5b._element).decode()
-    indefinite_count = xml.count('repeatCount="indefinite"')
-    assert indefinite_count >= 3, f"P5-b 期望 ≥3 pulse_loop,实际 {indefinite_count}"
+    assert 'repeatCount="indefinite"' not in xml
 
 
 def test_p5b_chase_delay_staggered():
-    """3 个 chase 错开 2s(15000/17000/19000)。"""
+    """动画已删除 — chase delay 不再需要。"""
     prs = Presentation(str(PPTX))
     p5b = prs.slides[6]
     xml = etree.tostring(p5b._element).decode()
-    for delay in ["15000", "17000", "19000"]:
-        assert delay in xml, f"P5-b chase delay {delay}ms 缺失"
+    assert 'repeatCount' not in xml, "P5-b 应无残留 repeatCount"
 
 
 def test_p5b_4_starters_present():
@@ -104,4 +103,4 @@ if __name__ == "__main__":
     print("✓ P5-b 4 starters")
     test_p5b_6_functions_present()
     print("✓ P5-b 6 functions")
-    print("\nT4 验证全部通过")
+    print("\nT4 验证全部通过 (动画已删除)")

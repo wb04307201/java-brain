@@ -23,21 +23,20 @@ def test_total_pages():
 
 
 def test_p2_animation_count():
+    """动画已全部删除 — 用户手动添加。"""
     prs = Presentation(str(PPTX))
     p2 = prs.slides[1]
     xml = etree.tostring(p2._element).decode()
     timing_count = xml.count("<p:timing")
-    assert timing_count == 8, f"期望 8 个动画,实际 {timing_count}"
+    assert timing_count == 0, f"无 timing,期望 0,实际 {timing_count}"
 
 
 def test_p2_pulse_loop_indefinite():
-    """P2 应该有 1 个 pulse_loop indefinite(杀手锏金钩)。"""
+    """动画已删除 — pulse_loop 也归零。"""
     prs = Presentation(str(PPTX))
     p2 = prs.slides[1]
     xml = etree.tostring(p2._element).decode()
-    assert 'repeatCount="indefinite"' in xml
-    indefinite_count = xml.count('repeatCount="indefinite"')
-    assert indefinite_count == 1, f"期望 1 个 pulse_loop,实际 {indefinite_count}"
+    assert 'repeatCount="indefinite"' not in xml
 
 
 def test_p2_key_text():
@@ -45,7 +44,7 @@ def test_p2_key_text():
     p2 = prs.slides[1]
     xml = unescape(etree.tostring(p2._element).decode())
     for text in ["3 月", "5 天", "3 天", "3 分", "90 秒", "10 分",
-                 "1440 倍", "接入 AI"]:
+                 "1440×", "接入 AI"]:
         assert text in xml, f"缺失文字: {text}"
 
 
@@ -61,9 +60,9 @@ if __name__ == "__main__":
     test_total_pages()
     print("[OK] 2 pages")
     test_p2_animation_count()
-    print("[OK] 8 animations")
+    print("[OK] 0 animations (动画已删除)")
     test_p2_pulse_loop_indefinite()
-    print("[OK] 1 pulse_loop indefinite")
+    print("[OK] 0 pulse_loop")
     test_p2_key_text()
     print("[OK] key text")
     test_p2_red_green_gold_colors()
