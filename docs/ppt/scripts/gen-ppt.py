@@ -175,6 +175,13 @@ def _add_picture_with_alpha(slide, image_path, x, y, w, h, alpha_pct):
     return pic
 
 
+def add_page_number(slide, current, total=12, color=TEXT_SECONDARY, size=10):
+    """在右下角加 'XX/12' 页码(灰色小字,品牌系统一致)。"""
+    styled_text(slide, 11.6, 7.05, 1.4, 0.3,
+                f"{current:02d} / {total}",
+                font=FONT_EN, size=size, color=color)
+
+
 def slide_1_cover(prs):
     """P1 封面:AI 神经网络背景图(半透明)+ 3 圈光晕节点 + JavaBrain 大字 + 副标 + 金钩。
     替换原"3 乐高"封面,5 fade_in。
@@ -421,67 +428,74 @@ def slide_3_position(prs):
 
 
 def slide_4a_loom_intro(prs):
-    """P4-a 灵梭 · 整体定位(策略 A:6 动画=4 入场 + 1 循环 + 1 配图)"""
+    """P4-a 灵梭 · 3 步进阶(演进路线)+ AI 编排图作为视觉锚(alpha=100% 避免 OnlyOffice 渲染跳过)"""
     s = prs.slides.add_slide(prs.slide_layouts[6])
     s.background.fill.solid()
     s.background.fill.fore_color.rgb = BG_LIGHT
 
-    # 小标
-    styled_text(s, 0.5, 0.4, 12.333, 0.4,
+    # 标题
+    styled_text(s, 0.5, 0.3, 12.333, 0.4,
                 "灵梭 · LoomAgent",
                 font=FONT_EN, size=16, color=JAVA_BLUE, bold=True)
 
-    # 主标(拆 2 行,更精炼)
-    tb_t = styled_text(s, 0.5, 0.85, 12.333, 0.7,
-                       "Spring AI 一键启动",
-                       size=32, bold=True)
+    tb_t = styled_text(s, 0.5, 0.7, 12.333, 0.7,
+                       "从 Spring AI 裸用到 JavaBrain 一体化",
+                       size=28, bold=True)
 
     # 副标杀手锏
-    styled_text(s, 0.5, 1.45, 12.333, 0.4,
-                "★ 改一个 .st 文件,AI 行为就变",
-                size=16, color=GOLD, bold=True)
+    styled_text(s, 0.5, 1.4, 12.333, 0.4,
+                "★ 50 行配置 → 1 行模板,半年维护成本归零",
+                size=15, color=GOLD, bold=True)
 
-    # 4 特性卡(2x2,缩小,留出左侧放配图)
-    advs = [
-        ("📦 6 大功能模块\n一站集成", JAVA_BLUE, False),
-        ("🔌 MCP 可热插拔\n8+ 服务", GOLD, True),
-        ("🧠 Skill 模板\n改 .st 即生效", GOLD, True),
-        ("💬 流式对话 + 思维链\nSSE + 可折叠", JAVA_BLUE, False),
+    # 3 步进阶横排(每步 = 大编号 + 标题 + 描述 + 时间标签)
+    steps = [
+        ("1", "裸 Spring AI", "写 50 行\nChatClient 配置", "5 天", DIVIDER, False),
+        ("2", "灵梭 starter", "1 个 @Bean\n完成 RAG + MCP", "1 天", JAVA_BLUE, False),
+        ("3", ".st 模板", "改 1 行字\nAI 行为变", "10 分钟", GOLD, True),
     ]
-    cards = []
-    cw, ch = 4.5, 1.3
-    gap = 0.25
-    # 卡片在右侧(8.0-12.5)
-    cx0 = 8.0
-    cy0 = 2.4
-    for i, (text, color, killer) in enumerate(advs):
-        row, col = i // 2, i % 2
-        x = cx0 + col * (cw + gap)
-        y = cy0 + row * (ch + gap)
+    step_cards = []
+    sw, sh = 3.7, 3.0
+    gap = 0.4
+    sx0 = (13.333 - 3 * sw - 2 * gap) / 2
+    sy0 = 2.0
+    for i, (num, title, desc, time, accent, killer) in enumerate(steps):
+        x = sx0 + i * (sw + gap)
+        y = sy0
         card = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
-                                  Inches(x), Inches(y), Inches(cw), Inches(ch))
+                                  Inches(x), Inches(y), Inches(sw), Inches(sh))
         card.fill.solid()
         card.fill.fore_color.rgb = WHITE
-        card.line.color.rgb = GOLD if killer else DIVIDER
-        card.line.width = Pt(3) if killer else Pt(1)
-        styled_text(s, x, y + 0.2, cw, ch - 0.4,
-                    text, size=16, color=color, bold=True)
-        cards.append(card)
+        card.line.color.rgb = GOLD if killer else accent
+        card.line.width = Pt(3) if killer else Pt(1.5)
+        # 大编号(左上方,80pt)
+        styled_text(s, x + 0.2, y + 0.1, 1.4, 1.4,
+                    num, font=FONT_EN, size=72,
+                    color=GOLD if killer else accent, bold=True)
+        # 标题
+        styled_text(s, x + 0.2, y + 1.5, sw - 0.4, 0.5,
+                    title, size=20, color=accent, bold=True)
+        # 描述
+        styled_text(s, x + 0.2, y + 2.0, sw - 0.4, 0.6,
+                    desc, size=13, color=TEXT_SECONDARY)
+        # 时间标签(底部)
+        tb_time = styled_text(s, x + 0.2, y + sh - 0.55, sw - 0.4, 0.4,
+                    time, size=14, color=GOLD if killer else accent, bold=True)
+        step_cards.append((card, tb_time))
 
-    # 配图:左侧 AI 编排小图(占左侧 7in 宽,4in 高,38% alpha)
+    # 配图:左侧 AI 编排小图(alpha=100% 避免 OnlyOffice 跳过半透明白底图)
     img_path = PPT_DIR / "images" / "ai" / "p4a-ai-orchestrate.png"
-    pic = _add_picture_with_alpha(s, img_path, 0.3, 2.4, 4.5, 4.0, alpha_pct=55)
+    pic = _add_picture_with_alpha(s, img_path, 0.4, 5.3, 2.5, 2.0, alpha_pct=100)
     spTree = s.shapes._spTree
     spTree.remove(pic._element)
     spTree.insert(2, pic._element)
 
-    # 6 动画:策略 A(标题入场 + 4 卡片 + 1 金脉冲)
+    # 8 动画:1 标题 + 3 步骤卡 + 1 .st 杀手锏 pulse + 3 时间标签
     add_anim(s, tb_t, "fade_in", delay_ms=0, dur_ms=500)
-    add_anim(s, cards[0], "fade_in", delay_ms=400, dur_ms=500)
-    add_anim(s, cards[1], "fade_in", delay_ms=700, dur_ms=500)
-    add_anim(s, cards[2], "fade_in", delay_ms=1000, dur_ms=500)  # Skill 杀手锏
-    add_anim(s, cards[3], "fade_in", delay_ms=1300, dur_ms=500)
-    add_anim(s, cards[2], "pulse", delay_ms=2500, dur_ms=1500, loop=True)
+    for i, (card, tb_time) in enumerate(step_cards):
+        add_anim(s, card, "fade_in", delay_ms=400 + i * 300, dur_ms=500)
+        add_anim(s, tb_time, "fade_in", delay_ms=400 + i * 300, dur_ms=500)
+    # .st 第 3 步杀手锏脉冲
+    add_anim(s, step_cards[2][0], "pulse", delay_ms=2000, dur_ms=1500, loop=True)
 
 
 def slide_4b_loom_modules(prs):
@@ -544,66 +558,74 @@ def slide_4b_loom_modules(prs):
 
 
 def slide_5a_forge_intro(prs):
-    """P5-a SQL工坊 · 整体定位(策略 A:6 动画=4 入场 + 1 循环 + 1 配图)"""
+    """P5-a SQL工坊 · 3 步进阶(演进路线)+ Calcite 联邦图作为视觉锚(alpha=100%)"""
     s = prs.slides.add_slide(prs.slide_layouts[6])
     s.background.fill.solid()
     s.background.fill.fore_color.rgb = BG_LIGHT
 
-    # 小标
-    styled_text(s, 0.5, 0.4, 12.333, 0.4,
+    # 标题
+    styled_text(s, 0.5, 0.3, 12.333, 0.4,
                 "SQL工坊 · SQL Forge",
                 font=FONT_EN, size=16, color=AI_PURPLE, bold=True)
 
-    # 主标
-    tb_t = styled_text(s, 0.5, 0.85, 12.333, 0.7,
-                       "JSON CRUD + Calcite 联邦 + Amis 低代码",
-                       size=32, bold=True)
+    tb_t = styled_text(s, 0.5, 0.7, 12.333, 0.7,
+                       "从 JDBC 散弹到 Calcite 联邦",
+                       size=28, bold=True)
 
     # 副标杀手锏
-    styled_text(s, 0.5, 1.45, 12.333, 0.4,
-                "★ 一套协议 5 method,跨库即写即用,数据不出企业",
-                size=16, color=GOLD, bold=True)
+    styled_text(s, 0.5, 1.4, 12.333, 0.4,
+                "★ 1 套协议代替 5 套 ORM,数据库迁移零改代码",
+                size=15, color=GOLD, bold=True)
 
-    # 4 特性卡(2x2,缩小,移到右侧)
-    advs = [
-        ("🔌 JSON CRUD\n一套协议 5 method", GOLD, True),
-        ("🌐 Calcite 联邦\n跨 MySQL+PG+H2", GOLD, True),
-        ("🎨 Amis 低代码\nJSON 模板 + Console", GOLD, True),
-        ("🔒 MCP 5 受限工具\n数据不出企业", JAVA_BLUE, False),
+    # 3 步进阶横排
+    steps = [
+        ("1", "裸 JDBC / MyBatis", "维护 N 套 CRUD\nN 套 ORM 配置", "30 天", DIVIDER, False),
+        ("2", "SQL 工坊 starter", "1 套 JSON 协议\n跨库自动 JOIN", "1 天", AI_PURPLE, False),
+        ("3", "sql-forge-mcp", "AI 5 受限通道\n数据不出企业", "0 直连", GOLD, True),
     ]
-    cards = []
-    cw, ch = 4.5, 1.3
-    gap = 0.25
-    cx0 = 8.0
-    cy0 = 2.4
-    for i, (text, color, killer) in enumerate(advs):
-        row, col = i // 2, i % 2
-        x = cx0 + col * (cw + gap)
-        y = cy0 + row * (ch + gap)
+    step_cards = []
+    sw, sh = 3.7, 3.0
+    gap = 0.4
+    sx0 = (13.333 - 3 * sw - 2 * gap) / 2
+    sy0 = 2.0
+    for i, (num, title, desc, time, accent, killer) in enumerate(steps):
+        x = sx0 + i * (sw + gap)
+        y = sy0
         card = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
-                                  Inches(x), Inches(y), Inches(cw), Inches(ch))
+                                  Inches(x), Inches(y), Inches(sw), Inches(sh))
         card.fill.solid()
         card.fill.fore_color.rgb = WHITE
-        card.line.color.rgb = GOLD if killer else DIVIDER
-        card.line.width = Pt(3) if killer else Pt(1)
-        styled_text(s, x, y + 0.2, cw, ch - 0.4,
-                    text, size=16, color=color, bold=True)
-        cards.append(card)
+        card.line.color.rgb = GOLD if killer else accent
+        card.line.width = Pt(3) if killer else Pt(1.5)
+        # 大编号
+        styled_text(s, x + 0.2, y + 0.1, 1.4, 1.4,
+                    num, font=FONT_EN, size=72,
+                    color=GOLD if killer else accent, bold=True)
+        # 标题
+        styled_text(s, x + 0.2, y + 1.5, sw - 0.4, 0.5,
+                    title, size=20, color=accent, bold=True)
+        # 描述
+        styled_text(s, x + 0.2, y + 2.0, sw - 0.4, 0.6,
+                    desc, size=13, color=TEXT_SECONDARY)
+        # 时间标签
+        tb_time = styled_text(s, x + 0.2, y + sh - 0.55, sw - 0.4, 0.4,
+                    time, size=14, color=GOLD if killer else accent, bold=True)
+        step_cards.append((card, tb_time))
 
-    # 配图:左侧 Calcite 联邦小图
+    # 配图:左侧 Calcite 联邦小图(alpha=100% 避免 OnlyOffice 跳过)
     img_path = PPT_DIR / "images" / "ai" / "p5a-calcite-federation.png"
-    pic = _add_picture_with_alpha(s, img_path, 0.3, 2.4, 4.5, 4.0, alpha_pct=55)
+    pic = _add_picture_with_alpha(s, img_path, 0.4, 5.3, 2.5, 2.0, alpha_pct=100)
     spTree = s.shapes._spTree
     spTree.remove(pic._element)
     spTree.insert(2, pic._element)
 
-    # 6 动画:策略 A(标题入场 + 4 卡片 + 1 金脉冲)
+    # 8 动画:1 标题 + 3 步骤卡 + 3 时间标签 + 1 杀手锏脉冲
     add_anim(s, tb_t, "fade_in", delay_ms=0, dur_ms=500)
-    add_anim(s, cards[0], "fade_in", delay_ms=400, dur_ms=500)
-    add_anim(s, cards[1], "fade_in", delay_ms=700, dur_ms=500)
-    add_anim(s, cards[2], "fade_in", delay_ms=1000, dur_ms=500)
-    add_anim(s, cards[3], "fade_in", delay_ms=1300, dur_ms=500)
-    add_anim(s, cards[3], "pulse", delay_ms=2500, dur_ms=1500, loop=True)  # 数据不出企业脉冲
+    for i, (card, tb_time) in enumerate(step_cards):
+        add_anim(s, card, "fade_in", delay_ms=400 + i * 300, dur_ms=500)
+        add_anim(s, tb_time, "fade_in", delay_ms=400 + i * 300, dur_ms=500)
+    # sql-forge-mcp 杀手锏脉冲
+    add_anim(s, step_cards[2][0], "pulse", delay_ms=2000, dur_ms=1500, loop=True)
 
 
 def slide_5b_forge_4plus6(prs):
@@ -817,72 +839,112 @@ def slide_7_demo2_workflow(prs):
 
 
 def slide_8_compare(prs):
-    """P8 实战对比 · 4 ✓ + 5 行对比表 + 杀手锏金脉冲(策略 B)"""
+    """P8 实战对比 · 左技术派 ✓ + 中 3 柱状图(传统/集成AI/JavaBrain) + 右商业派 5 项 + 杀手锏金脉冲(策略 B:11 动画)"""
     s = prs.slides.add_slide(prs.slide_layouts[6])
     s.background.fill.solid()
     s.background.fill.fore_color.rgb = BG_LIGHT
 
     # 标题
-    styled_text(s, 0.5, 0.4, 12.333, 0.6,
+    styled_text(s, 0.5, 0.3, 12.333, 0.5,
                  "实战测试 · 7 张表 / 0 漂移 / 节省 >80%",
-                 size=28, bold=True)
+                 size=24, bold=True)
 
     # 左半:技术派 4 行 ✓
-    styled_text(s, 0.5, 1.3, 5.5, 0.4,
+    styled_text(s, 0.3, 0.95, 4.0, 0.35,
                  "技术派 · 4 项测试",
-                 size=18, color=JAVA_BLUE, bold=True)
+                 size=15, color=JAVA_BLUE, bold=True)
 
     items_tech = [
-        "✓ 7 张表测试(简单/字典/自关联/多外键)",
-        "✓ 0 漂移 / 0 错误链接 / 0 中文乱码",
+        "✓ 7 张表测试(简单/字典/自关联)",
+        "✓ 0 漂移 / 0 错误链接 / 0 乱码",
         "✓ 5/5 AI 字段推断自检通过",
         "✓ 节省 CRUD 开发时间 >80%",
     ]
     tech_boxes = []
     for i, txt in enumerate(items_tech):
         is_killer = ">80%" in txt
-        tb = styled_text(s, 0.7, 1.9 + i * 0.7, 6.0, 0.5,
-                          txt, size=16,
+        tb = styled_text(s, 0.4, 1.5 + i * 0.55, 4.0, 0.4,
+                          txt, size=13,
                           color=GOLD if is_killer else TEXT_PRIMARY,
                           bold=is_killer)
         tech_boxes.append(tb)
 
+    # 中部:3 柱状图(传统 vs 集成 AI vs JavaBrain)
+    styled_text(s, 4.7, 0.95, 3.5, 0.35,
+                 "开发时间 · 3 种方案",
+                 size=15, color=AI_PURPLE, bold=True)
+
+    # 柱状图数据
+    bar_data = [
+        ("传统开发", 30, DIVIDER),
+        ("集成 AI", 10, SEMANTIC_RED),
+        ("JavaBrain", 1, SEMANTIC_GREEN),
+    ]
+    bar_shapes = []
+    bar_w = 0.9
+    bar_gap = 0.25
+    bar_x0 = 4.9
+    bar_baseline_y = 5.0  # 底部基线
+    bar_max_h = 2.8  # 30天 对应 2.8 in
+    bar_label_y = 5.15
+    bar_title_y = 5.55
+    for i, (label, days, color) in enumerate(bar_data):
+        h = (days / 30.0) * bar_max_h
+        x = bar_x0 + i * (bar_w + bar_gap)
+        y = bar_baseline_y - h
+        # 柱子
+        bar = s.shapes.add_shape(MSO_SHAPE.RECTANGLE,
+                                  Inches(x), Inches(y),
+                                  Inches(bar_w), Inches(h))
+        bar.fill.solid()
+        bar.fill.fore_color.rgb = color
+        bar.line.fill.background()
+        # 数字标签(柱子顶部)
+        styled_text(s, x, y - 0.35, bar_w, 0.3,
+                    f"{days}天", size=11, color=color, bold=True, center=True)
+        # 底部标签
+        styled_text(s, x, bar_label_y, bar_w, 0.3,
+                    label, size=11, color=TEXT_PRIMARY, bold=True, center=True)
+        bar_shapes.append(bar)
+
     # 右半:商业派 5 行对比表
-    styled_text(s, 7.0, 1.3, 5.5, 0.4,
+    styled_text(s, 8.3, 0.95, 4.8, 0.35,
                  "商业派 · 5 项对比",
-                 size=18, color=AI_PURPLE, bold=True)
+                 size=15, color=AI_PURPLE, bold=True)
 
     rows_biz = ["业务取数", "CRUD 页面", "跨库 JOIN", "私有化", "列名识别"]
     biz_boxes = []
     for i, txt in enumerate(rows_biz):
         # 行背景
         bg = s.shapes.add_shape(MSO_SHAPE.RECTANGLE,
-                                  Inches(7.0), Inches(1.9 + i * 0.5),
-                                  Inches(5.5), Inches(0.45))
+                                  Inches(8.3), Inches(1.5 + i * 0.5),
+                                  Inches(4.8), Inches(0.45))
         bg.fill.solid()
         bg.fill.fore_color.rgb = GREEN_BG if i % 2 == 0 else WHITE
         bg.line.color.rgb = DIVIDER
         bg.line.width = Pt(1)
         # 行文字
-        row_tb = styled_text(s, 7.2, 1.95 + i * 0.5, 3.5, 0.4,
-                              txt, size=16, center=False)
+        row_tb = styled_text(s, 8.5, 1.55 + i * 0.5, 3.0, 0.4,
+                              txt, size=14, center=False)
         # ✓
-        styled_text(s, 10.8, 1.95 + i * 0.5, 1.5, 0.4,
-                     "✓", font=FONT_EN, size=18, color=SEMANTIC_GREEN, bold=True)
+        styled_text(s, 11.7, 1.55 + i * 0.5, 1.2, 0.4,
+                     "✓", font=FONT_EN, size=16, color=SEMANTIC_GREEN, bold=True)
         biz_boxes.append(row_tb)
 
     # 底部金句
-    styled_text(s, 0.5, 6.0, 12.333, 0.5,
+    styled_text(s, 0.5, 6.3, 12.333, 0.5,
                  "★ JavaBrain 在 安全 + 智能 + 私有化 三角都做到",
-                 size=20, color=GOLD, bold=True)
+                 size=18, color=GOLD, bold=True)
 
-    # 10 动画:策略 B
+    # 11 动画:策略 B
     for i in range(4):
         add_anim(s, tech_boxes[i], "fade_in",
-                 delay_ms=i * 600, dur_ms=500)
+                 delay_ms=i * 400, dur_ms=500)
+    for i, bar in enumerate(bar_shapes):
+        add_anim(s, bar, "fade_in", delay_ms=1800 + i * 250, dur_ms=500)
     for i in range(5):
         add_anim(s, biz_boxes[i], "fade_in",
-                 delay_ms=3000 + i * 700, dur_ms=500)
+                 delay_ms=3000 + i * 500, dur_ms=500)
     add_anim(s, tech_boxes[3], "pulse", delay_ms=12000, dur_ms=1500, loop=True)
 
 
@@ -892,9 +954,9 @@ def slide_9_roadmap(prs):
     s.background.fill.solid()
     s.background.fill.fore_color.rgb = BG_LIGHT
 
-    # 标题分隔条:2.5D 时间轴(标题右侧,30% alpha,作为路线图视觉锚)
+    # 标题分隔条:2.5D 时间轴(标题右侧,100% alpha 避免 OnlyOffice 渲染跳过)
     img_path = PPT_DIR / "images" / "ai" / "p9-bg-timeline.png"
-    pic = _add_picture_with_alpha(s, img_path, 8.5, 0.2, 4.5, 0.8, alpha_pct=30)
+    pic = _add_picture_with_alpha(s, img_path, 9.5, 0.25, 3.5, 0.65, alpha_pct=100)
     spTree = s.shapes._spTree
     spTree.remove(pic._element)
     spTree.insert(2, pic._element)
@@ -993,10 +1055,15 @@ def slide_10_ending(prs):
     s.background.fill.solid()
     s.background.fill.fore_color.rgb = BG_LIGHT
 
-    # JavaBrain 大字
-    tb_t = styled_text(s, 0.5, 0.6, 12.333, 1.2,
+    # JavaBrain 大字(标题上方大脑小图标作为 logo,透明背景版避免被裁)
+    img_path = PPT_DIR / "images" / "ai" / "p10_brain_logo.png"
+    s.shapes.add_picture(str(img_path), Inches(5.9), Inches(0.05),
+                          width=Inches(1.5), height=Inches(0.6))
+
+    # JavaBrain 大字(下移以避开 logo)
+    tb_t = styled_text(s, 0.5, 0.75, 12.333, 1.2,
                         "JavaBrain",
-                        font=FONT_EN, size=72, color=TEXT_PRIMARY, bold=True)
+                        font=FONT_EN, size=60, color=TEXT_PRIMARY, bold=True)
 
     # 3 句话
     sentences = [
@@ -1068,6 +1135,9 @@ def main():
     slide_8_compare(prs)
     slide_9_roadmap(prs)
     slide_10_ending(prs)
+    # 统一加页码(右下角,"XX / 12"格式)
+    for i, slide in enumerate(prs.slides, 1):
+        add_page_number(slide, i, total=12)
     prs.save(str(OUTPUT))
     print(f"OK: {OUTPUT} (12 pages)")
 

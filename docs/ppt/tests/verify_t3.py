@@ -70,7 +70,8 @@ def test_p4a_key_text():
     prs = Presentation(str(PPTX))
     p4a = prs.slides[3]
     xml = unescape(etree.tostring(p4a._element).decode())
-    for text in ["LoomAgent", "Spring AI 一键启动", "6 大功能模块", ".st"]:
+    for text in ["LoomAgent", "从 Spring AI 裸用到 JavaBrain 一体化",
+                 "灵梭 starter", ".st 模板", "50 行配置"]:
         assert text in xml, f"P4-a 缺失: {text}"
 
 

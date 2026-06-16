@@ -35,10 +35,10 @@ def test_total_pages():
 
 
 def test_total_animations():
-    """12 页累计动画总数(P4-a/P5-a 增配图 + 4 动画后)。
+    """12 页累计动画总数(P4-a/P5-a 改成 3 步进阶 + P8 加柱状图后)。
 
     按实际 add_anim 调用累计:
-    - 77 fade_in + 14 pulse_loop(其中 5 个 chase)= 91 anim,14 indefinite
+    - 84 fade_in + 14 pulse_loop(其中 5 个 chase)= 98 anim,14 indefinite
     """
     prs = Presentation(str(PPTX))
     total = 0
@@ -48,7 +48,7 @@ def test_total_animations():
         total += xml.count("<p:timing")
         total_indefinite += xml.count('repeatCount="indefinite"')
     print(f"  total timings: {total}, indefinites: {total_indefinite}")
-    assert total == 91, f"期望 91 动画,实际 {total}"
+    assert total == 98, f"期望 98 动画,实际 {total}"
     assert total_indefinite == 14, f"期望 14 pulse_loop,实际 {total_indefinite}"
 
 
@@ -140,7 +140,7 @@ if __name__ == "__main__":
     test_total_pages()
     print("OK 12 pages")
     test_total_animations()
-    print("OK 91 animations + 14 indefinite")
+    print("OK 98 animations + 14 indefinite")
     test_p9_loom_future()
     print("OK P9 灵梭 4 future")
     test_p9_forge_future()
