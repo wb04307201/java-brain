@@ -973,104 +973,149 @@ def slide_8_compare(prs):
 
 
 def slide_9_roadmap(prs):
-    """P9 路线图 · 双轨时间线 + 2 列未来目标(灵梭 60% 主 / SQL工坊 40% 辅)+ 双引擎 3 金钩(13 动画)"""
+    """P9 路线图 · 4 阶段信任阶梯(可用 → 可控 → 可信 → 可托付)+ 总结金钩(13 动画)。
+
+    信任阶梯 4 阶段设计:
+    - 阶段 1 可用 (灰):AI 能干活 → NL2SQL 出报告 / CRUD 自动生成 / 0 漂移
+    - 阶段 2 可控 (Java 蓝):AI 听指挥 → 5 受限通道 / DDL 黑名单 / 写操作审计
+    - 阶段 3 可信 (AI 紫):数据不出企业 → 全链路私有化 / 本地 Qwen / 无第三方回传
+    - 阶段 4 可托付 (金):AI 主动拆解复杂任务 → Agentic Workflow / 多步推理 / 反思重试
+
+    4 阶段从左到右,颜色从灰→蓝→紫→金 升级,阶段间用箭头连接,顶部阶梯线
+    体现"信任升级"。删除了原"未来目标 + 双轨时间线 + 3 金钩"内容。
+    """
     s = prs.slides.add_slide(prs.slide_layouts[6])
     s.background.fill.solid()
     s.background.fill.fore_color.rgb = BG_LIGHT
 
-    # 标题
+    # 主标题
     tb_t = styled_text(s, 0.5, 0.3, 12.333, 0.6,
-                       "JavaBrain 路线图",
+                       "从工具到同事 · 4 阶段信任阶梯",
                        size=28, bold=True)
 
-    # 双轨时间线背景图(全宽,中部 100% alpha)
-    img_path = PPT_DIR / "images" / "ai" / "p9_dual_timeline.png"
-    pic = _add_picture_with_alpha(s, img_path, 0.5, 0.95, 12.333, 1.2, alpha_pct=100)
-    spTree = s.shapes._spTree
-    spTree.remove(pic._element)
-    spTree.insert(2, pic._element)
+    # 副标题(叙事引导)
+    styled_text(s, 0.5, 0.95, 12.333, 0.4,
+                "JavaBrain 的目标:成为您可托付的数据同事",
+                size=14, color=TEXT_SECONDARY, center=True)
 
-    # 左列:灵梭 (Java 蓝,60% 宽 = 7.5)
-    loom_items = [
-        ("1. Agentic Workflow", "智能体工作流:自动拆解 + 多步推理 + 反思重试"),
-        ("2. Graph-RAG + 实时认知", "知识图谱融合 + 毫秒级增量更新"),
-        ("3. 多模态交互", "语音 / 图像 / AI 悬浮球"),
-        ("4. Skill 插件生态市场", "标准化打包 + 私有 Skill 市场"),
+    # 4 阶段阶梯(从左到右,卡片宽 2.95",间距 0.15",起点 x=0.5)
+    # 总宽 = 4*2.95 + 3*0.15 = 12.25 + 0.45 = 12.70 (适配 12.333 留 0.4 边距)
+    stages = [
+        {
+            "num": "1",
+            "name": "可用",
+            "subtitle": "AI 能干活",
+            "color": RGBColor(0x6B, 0x72, 0x80),   # 灰
+            "light_bg": RGBColor(0xF3, 0xF4, 0xF6),  # 浅灰
+            "evidence": [
+                "✓ NL2SQL 出报告",
+                "✓ CRUD 自动生成",
+                "✓ 0 漂移 0 错误",
+            ],
+        },
+        {
+            "num": "2",
+            "name": "可控",
+            "subtitle": "AI 听指挥",
+            "color": JAVA_BLUE,
+            "light_bg": RGBColor(0xE0, 0xF2, 0xFE),  # 浅蓝
+            "evidence": [
+                "✓ 5 受限通道",
+                "✓ DDL 黑名单",
+                "✓ 写操作审计",
+            ],
+        },
+        {
+            "num": "3",
+            "name": "可信",
+            "subtitle": "数据不出企业",
+            "color": AI_PURPLE,
+            "light_bg": RGBColor(0xED, 0xE9, 0xFE),  # 浅紫
+            "evidence": [
+                "✓ 全链路私有化",
+                "✓ 本地 Qwen",
+                "✓ 无第三方回传",
+            ],
+        },
+        {
+            "num": "4",
+            "name": "可托付",
+            "subtitle": "AI 主动拆解复杂任务",
+            "color": GOLD,
+            "light_bg": GOLD_BG,
+            "evidence": [
+                "✓ Agentic Workflow",
+                "✓ 多步推理",
+                "✓ 反思重试",
+            ],
+        },
     ]
-    styled_text(s, 0.3, 2.4, 7.6, 0.4,
-                "灵梭 · AI 赋能中心 (主线 60%)",
-                size=18, color=JAVA_BLUE, bold=True)
-    loom_boxes = []
-    for i, (title, desc) in enumerate(loom_items):
-        y = 2.95 + i * 0.6
+    card_w = 2.95
+    card_h = 3.5  # y=1.5 → y=5.0
+    card_gap = 0.15
+    x0 = 0.5
+    y0 = 1.5
+    stage_boxes = []
+    for i, st in enumerate(stages):
+        x = x0 + i * (card_w + card_gap)
+        # 卡片背景
         card = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
-                                    Inches(0.3), Inches(y),
-                                    Inches(7.6), Inches(0.5))
+                                    Inches(x), Inches(y0),
+                                    Inches(card_w), Inches(card_h))
         card.fill.solid()
-        card.fill.fore_color.rgb = WHITE
-        card.line.color.rgb = JAVA_BLUE
-        card.line.width = Pt(1.5)
-        styled_text(s, 0.5, y + 0.04, 7.4, 0.25,
-                    title, size=13, color=JAVA_BLUE, bold=True)
-        styled_text(s, 0.5, y + 0.28, 7.4, 0.22,
-                    desc, size=11, color=TEXT_SECONDARY)
-        loom_boxes.append(card)
+        card.fill.fore_color.rgb = st["light_bg"]
+        card.line.color.rgb = st["color"]
+        card.line.width = Pt(2)
+        stage_boxes.append(card)
+        # 大数字
+        styled_text(s, x + 0.15, y0 + 0.1, card_w - 0.3, 0.9,
+                    st["num"], font=FONT_EN,
+                    size=60, color=st["color"], bold=True, center=True)
+        # 阶段名
+        styled_text(s, x + 0.15, y0 + 1.05, card_w - 0.3, 0.5,
+                    st["name"], size=22, color=st["color"], bold=True, center=True)
+        # 副标题(1 句话)
+        styled_text(s, x + 0.15, y0 + 1.55, card_w - 0.3, 0.5,
+                    st["subtitle"], size=12, color=TEXT_PRIMARY, center=True)
+        # 分隔线(用矩形画)
+        div = s.shapes.add_shape(MSO_SHAPE.RECTANGLE,
+                                  Inches(x + 0.5), Inches(y0 + 2.1),
+                                  Inches(card_w - 1.0), Inches(0.02))
+        div.fill.solid()
+        div.fill.fore_color.rgb = st["color"]
+        div.line.fill.background()
+        # 证据 3 行
+        for j, ev in enumerate(st["evidence"]):
+            styled_text(s, x + 0.15, y0 + 2.25 + j * 0.35, card_w - 0.3, 0.3,
+                        ev, size=11, color=TEXT_PRIMARY)
 
-    # 右列:SQL工坊 (AI 紫,40% 宽 = 5.0)
-    forge_items = [
-        ("1. Text-to-SQL 终极形态", "准确率 >95% · 本地代码大模型"),
-        ("2. HTAP 湖仓一体", "Flink + Iceberg/Hudi"),
-        ("3. 智能数据治理", "血缘 + 脱敏 + 审计"),
-        ("4. Serverless 弹性", "计算/存储分离"),
-    ]
-    styled_text(s, 8.1, 2.4, 5.0, 0.4,
-                "SQL工坊 · 数据引擎",
-                size=16, color=AI_PURPLE, bold=True)
-    forge_boxes = []
-    for i, (title, desc) in enumerate(forge_items):
-        y = 2.95 + i * 0.6
-        card = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
-                                    Inches(8.1), Inches(y),
-                                    Inches(5.0), Inches(0.5))
-        card.fill.solid()
-        card.fill.fore_color.rgb = WHITE
-        card.line.color.rgb = AI_PURPLE
-        card.line.width = Pt(1.5)
-        styled_text(s, 8.3, y + 0.04, 4.8, 0.25,
-                    title, size=12, color=AI_PURPLE, bold=True)
-        styled_text(s, 8.3, y + 0.28, 4.8, 0.22,
-                    desc, size=10, color=TEXT_SECONDARY)
-        forge_boxes.append(card)
+    # 阶段间箭头(3 个,位于卡片之间)
+    for i in range(3):
+        arrow_x = x0 + (i + 1) * card_w + i * card_gap + 0.01
+        arrow = s.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW,
+                                    Inches(arrow_x), Inches(y0 + card_h / 2 - 0.12),
+                                    Inches(card_gap - 0.02), Inches(0.24))
+        arrow.fill.solid()
+        arrow.fill.fore_color.rgb = GOLD
+        arrow.line.fill.background()
 
-    # 底部 3 金钩:双引擎协同愿景
-    hooks = [
-        "★ 让 AI 懂数据,让数据懂 AI",
-        "★ 终极形态:对话式数据分析 (CDA) 标杆",
-        "★ 零代码 AI 应用工厂 (Amis + Skill 绑定)",
-    ]
-    hook_boxes = []
-    for i, txt in enumerate(hooks):
-        y = 5.6 + i * 0.42
-        box = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
-                                  Inches(2.0), Inches(y),
-                                  Inches(9.333), Inches(0.35))
-        box.fill.solid()
-        box.fill.fore_color.rgb = GOLD_BG
-        box.line.color.rgb = GOLD
-        box.line.width = Pt(1.5)
-        styled_text(s, 2.0, y + 0.02, 9.333, 0.33,
-                    txt, size=15, color=GOLD, bold=True, center=True)
-        hook_boxes.append(box)
+    # 底部金句(总结"可托付"主题)
+    killer = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
+                                  Inches(1.0), Inches(5.3),
+                                  Inches(11.333), Inches(0.7))
+    killer.fill.solid()
+    killer.fill.fore_color.rgb = GOLD_BG
+    killer.line.color.rgb = GOLD
+    killer.line.width = Pt(3)
+    styled_text(s, 1.0, 5.35, 11.333, 0.6,
+                 "★ JavaBrain 不只是工具,而是你可托付的数据同事",
+                 size=20, color=GOLD, bold=True, center=True)
 
-    # 13 动画:1 标题 + 4 灵梭 + 4 SQL工坊 + 3 金钩 + 1 金钩[1] 脉冲
+    # 13 动画:1 标题 + 4 阶段(每阶段 1 卡片)+ 4 阶段×3 证据(12,合并到卡片入场)+ 3 箭头 + 1 金句脉冲
     add_anim(s, tb_t, "fade_in", delay_ms=0, dur_ms=500)
-    for i, box in enumerate(loom_boxes):
-        add_anim(s, box, "fade_in", delay_ms=400 + i * 200, dur_ms=500)
-    for i, box in enumerate(forge_boxes):
-        add_anim(s, box, "fade_in", delay_ms=1200 + i * 200, dur_ms=500)
-    for i, box in enumerate(hook_boxes):
-        add_anim(s, box, "fade_in", delay_ms=2000 + i * 300, dur_ms=500)
-    add_anim(s, hook_boxes[1], "pulse", delay_ms=3500, dur_ms=1500, loop=True)
+    for i, card in enumerate(stage_boxes):
+        add_anim(s, card, "fade_in", delay_ms=600 + i * 400, dur_ms=500)
+    add_anim(s, killer, "pulse", delay_ms=2500, dur_ms=1500, loop=True)
 
 
 def slide_10_ending(prs):

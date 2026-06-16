@@ -1,21 +1,21 @@
 """T7 验证:12 页完成,P9+P10 关键内容。
 
-累计动画统计(P9 重做为'未来目标'页后):
-- P1: 5 fade_in (no pulse)
-- P2: 7 fade_in + 1 pulse_loop = 8
-- P3: 3 fade_in + 1 pulse_loop = 4
-- P4-a: 3 fade_in + 1 pulse_loop = 4
-- P4-b: 6 fade_in + 2 pulse_loop (chase) = 8
-- P5-a: 3 fade_in + 1 pulse_loop = 4
-- P5-b: 10 fade_in + 3 pulse_loop (chase) = 13
-- P6: 5 fade_in + 1 pulse_loop = 6
-- P7: 5 fade_in + 1 pulse_loop = 6
-- P8: 9 fade_in + 1 pulse_loop = 10
-- P9: 12 fade_in + 1 pulse_loop (CDA 金钩) = 13  ← 新增未来目标,内容更密
-- P10: 5 fade_in + 1 pulse_loop (killer) = 6
+累计动画统计(P9 重做为'4 阶段信任阶梯'页后):
+- P1: 6 (5 fade_in + 1 zoom_in 模拟打字机)
+- P2: 8 (7 fade_in + 1 pulse_loop)
+- P3: 4 (3 fade_in + 1 pulse_loop)
+- P4-a: 4 (3 fade_in + 1 pulse_loop)
+- P4-b: 8 (6 fade_in + 2 pulse_loop chase)
+- P5-a: 4 (3 fade_in + 1 pulse_loop)
+- P5-b: 8 (6 fade_in + 2 pulse_loop chase)
+- P6: 8 (7 fade_in + 1 pulse_loop)
+- P7: 13 (10 fade_in + 3 pulse_loop chase)
+- P8: 6 (5 fade_in + 1 pulse_loop · 实战对比)
+- P9: 6 (5 fade_in + 1 pulse_loop · 4 阶段信任阶梯)
+- P10: 7 (5 fade_in + 1 spin loop + 1 pulse_loop)
 
-合计:73 fade_in + 14 pulse_loop = 87 anim,14 indefinite。
-(P9 重做前是 79,新增 8 个 fade_in 用于灵梭/SQL工坊各 4 张卡入场)
+合计:73 fade_in + 1 zoom_in + 1 spin + 14 pulse_loop = 93 anim,15 indefinite。
+(P9 信任阶梯改造后从 13 减到 6,删了灵梭/SQL工坊 8 卡入场)
 """
 import sys
 from pathlib import Path
@@ -49,42 +49,42 @@ def test_total_animations():
         total += xml.count("<p:animEffect")
         total_indefinite += xml.count('repeatCount="indefinite"')
     print(f"  total animEffects: {total}, indefinites: {total_indefinite}")
-    assert total == 100, f"期望 100 animEffect,实际 {total}"
+    assert total == 93, f"期望 93 animEffect,实际 {total}"
     assert total_indefinite == 15, f"期望 15 pulse_loop,实际 {total_indefinite}"
 
 
 def test_p9_loom_future():
-    """P9 灵梭 4 未来目标(Agentic Workflow / Graph-RAG / 多模态 / Skill 市场)。"""
+    """P9 阶段 1 可用 + 阶段 2 可控(灰+Java 蓝)。"""
     prs = Presentation(str(PPTX))
     p9 = prs.slides[10]
     xml = unescape(etree.tostring(p9._element).decode())
-    for text in ["灵梭", "Agentic Workflow", "Graph-RAG",
-                 "多模态", "Skill"]:
-        assert text in xml, f"P9 灵梭缺失: {text}"
+    for text in ["可用", "AI 能干活", "可控", "AI 听指挥",
+                 "5 受限通道", "DDL 黑名单", "0 漂移"]:
+        assert text in xml, f"P9 阶段 1/2 缺失: {text}"
 
 
 def test_p9_forge_future():
-    """P9 SQL工坊 4 未来目标(Text-to-SQL / HTAP / 数据治理 / Serverless)。"""
+    """P9 阶段 3 可信 + 阶段 4 可托付(AI 紫+金)。"""
     prs = Presentation(str(PPTX))
     p9 = prs.slides[10]
     xml = unescape(etree.tostring(p9._element).decode())
-    for text in ["SQL工坊", "Text-to-SQL", "HTAP",
-                 "Serverless", "数据治理"]:
-        assert text in xml, f"P9 SQL工坊缺失: {text}"
+    for text in ["可信", "数据不出企业", "可托付",
+                 "Agentic Workflow", "多步推理", "反思重试",
+                 "全链路私有化", "本地 Qwen"]:
+        assert text in xml, f"P9 阶段 3/4 缺失: {text}"
 
 
 def test_p9_dual_engine_vision():
-    """P9 底部双引擎协同 3 金钩。"""
+    """P9 底部金钩:JavaBrain 不只是工具,而是你可托付的数据同事。"""
     prs = Presentation(str(PPTX))
     p9 = prs.slides[10]
     xml = unescape(etree.tostring(p9._element).decode())
-    for text in ["AI 懂数据", "数据懂 AI", "CDA",
-                 "零代码 AI 应用工厂"]:
-        assert text in xml, f"P9 双引擎金钩缺失: {text}"
+    for text in ["从工具到同事", "可托付的数据同事", "4 阶段信任阶梯"]:
+        assert text in xml, f"P9 主标题/金钩缺失: {text}"
 
 
 def test_p9_pulse_indefinite():
-    """CDA 金钩脉冲。"""
+    """金钩持续脉冲。"""
     prs = Presentation(str(PPTX))
     p9 = prs.slides[10]
     xml = etree.tostring(p9._element).decode()
@@ -92,12 +92,12 @@ def test_p9_pulse_indefinite():
 
 
 def test_p9_animation_count():
-    """P9:13 动画(1 标题 + 4 灵梭 + 4 SQL工坊 + 3 金钩 fade + 1 金钩 pulse)。"""
+    """P9:6 动画(1 标题 fade + 4 阶段 fade + 1 金句 pulse)。"""
     prs = Presentation(str(PPTX))
     p9 = prs.slides[10]
     xml = etree.tostring(p9._element).decode()
     tc = xml.count("<p:animEffect")
-    assert tc == 13, f"P9 期望 13 animEffect,实际 {tc}"
+    assert tc == 6, f"P9 期望 6 animEffect,实际 {tc}"
 
 
 def test_p10_key_text():
@@ -141,17 +141,17 @@ if __name__ == "__main__":
     test_total_pages()
     print("OK 12 pages")
     test_total_animations()
-    print("OK 100 animEffects + 15 indefinite")
+    print("OK 93 animEffects + 15 indefinite")
     test_p9_loom_future()
-    print("OK P9 灵梭 4 future")
+    print("OK P9 阶段 1/2")
     test_p9_forge_future()
-    print("OK P9 SQL工坊 4 future")
+    print("OK P9 阶段 3/4")
     test_p9_dual_engine_vision()
-    print("OK P9 双引擎金钩")
+    print("OK P9 信任阶梯标题/金钩")
     test_p9_pulse_indefinite()
-    print("OK P9 CDA pulse")
+    print("OK P9 金句 pulse")
     test_p9_animation_count()
-    print("OK P9 13 anim")
+    print("OK P9 6 anim")
     test_p10_key_text()
     print("OK P10 key text")
     test_p10_three_sentences()
