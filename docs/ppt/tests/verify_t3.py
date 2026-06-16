@@ -40,12 +40,12 @@ def test_p3_pulse_indefinite():
 
 
 def test_p3_key_text():
-    """P3 4 行 ✓ 改为 README 营销句压缩版:灵梭 / SQL工坊 / SQL工坊 MCP / 单独服务。"""
+    """P3 4 行杀手锏:灵梭 / SQL工坊 / SQL工坊 MCP / 全部杀手锏。"""
     prs = Presentation(str(PPTX))
     p3 = prs.slides[2]
     xml = unescape(etree.tostring(p3._element).decode())
-    for text in ["JavaBrain", "灵梭", "SQL工坊", "SQL工坊 MCP",
-                 "Calcite", "Amis", "依赖库", "单独服务"]:
+    for text in ["JavaBrain", "灵梭杀手锏", "SQL工坊杀手锏", "SQL工坊 MCP 杀手锏",
+                 "全部杀手锏", "数据不出企业", "依赖库"]:
         assert text in xml, f"P3 缺失: {text}"
 
 
@@ -106,6 +106,7 @@ def test_p4b_modules_present():
     prs = Presentation(str(PPTX))
     p4b = prs.slides[4]
     xml = unescape(etree.tostring(p4b._element).decode())
+    # Row1 杀手锏(RAG★/MCP★/Skill★) + Row2 基础(对话/文件/工具)
     for text in ["RAG 知识库", "MCP", "Skill", "文件管理", "对话 UI", "内置工具"]:
         assert text in xml, f"P4-b 缺失模块: {text}"
 

@@ -239,12 +239,13 @@ def slide_1_cover(prs):
                 "3 分钟接入 AI",
                 font=FONT_CN, size=22, color=WHITE, bold=True)
 
-    # === 6) 5 动画(策略 A)===
-    add_anim(s, tb_title,      "fade_in", delay_ms=0,    dur_ms=500)
-    add_anim(s, tb_sub,        "fade_in", delay_ms=400,  dur_ms=500)
-    add_anim(s, sat_shapes[0], "fade_in", delay_ms=800,  dur_ms=500)
-    add_anim(s, sat_shapes[3], "fade_in", delay_ms=1000, dur_ms=500)
-    add_anim(s, hook_box,      "fade_in", delay_ms=1400, dur_ms=500)
+    # === 6) 6 动画(大脑 zoom_in 缩放入场 + 标题副标 + 3 组件 + 金钩 zoom_in 模拟打字机)===
+    add_anim(s, pic._element,  "zoom_in", delay_ms=0,    dur_ms=800)  # 大脑 0.9→1.0
+    add_anim(s, tb_title,      "fade_in", delay_ms=600,  dur_ms=500)
+    add_anim(s, tb_sub,        "fade_in", delay_ms=1000, dur_ms=500)
+    add_anim(s, sat_shapes[0], "fade_in", delay_ms=1400, dur_ms=500)
+    add_anim(s, sat_shapes[3], "fade_in", delay_ms=1600, dur_ms=500)
+    add_anim(s, hook_box,      "zoom_in", delay_ms=2000, dur_ms=600)  # 金钩 0.5x→1.0x 弹出
 
 
 def slide_2_pain(prs):
@@ -303,14 +304,14 @@ def slide_2_pain(prs):
     # 槽位配置:(img_filename, 数字, 文字, 颜色)
     # 6 张图已用 PIL 裁掉文字/边框/按钮
     slots = [
-        # 红段(传统)
-        ("p2-red-1-overwork.png",       "3 月",   "集成 AI",  SEMANTIC_RED),
-        ("p2-red-2-bureaucracy.png",    "5 天",   "训练数据",  SEMANTIC_RED),
+        # 红段(传统)— 2.5D 几何图标
+        ("p2-red-1-hourglass.png",      "3 月",   "集成 AI",  SEMANTIC_RED),
+        ("p2-red-2-bifurcation.png",    "5 天",   "训练数据",  SEMANTIC_RED),
         ("p2-red-3-tangled.png",        "3 天",   "上线联调",  SEMANTIC_RED),
         # 绿段(JavaBrain)
-        ("p2-green-3-dashboard.png",    "3 分",   "一键集成",  SEMANTIC_GREEN),
-        ("p2-green-2-rocket.png",       "90 秒",  "出报告",    SEMANTIC_GREEN),
-        ("p2-green-1-final.png",        "10 分",  "出页面",    SEMANTIC_GREEN),
+        ("p2-green-1-lightning.png",    "3 分",   "一键集成",  SEMANTIC_GREEN),
+        ("p2-green-2-stopwatch.png",    "90 秒",  "出报告",    SEMANTIC_GREEN),
+        ("p2-green-3-puzzle.png",       "10 分",  "出页面",    SEMANTIC_GREEN),
     ]
 
     anim_targets = []  # 用于动画的对象
@@ -391,28 +392,28 @@ def slide_3_position(prs):
                        "JavaBrain = 灵梭 + SQL工坊 + SQL工坊 MCP",
                        size=28, bold=True)
 
-    # 3 乐高横排(带标签)
-    lego_y = 1.5
-    lego_size = 0.9
-    lego_gap = 0.6
-    total_w = 3 * lego_size + 2 * lego_gap
-    lego_x0 = (13.333 - total_w) / 2
-    lego_labels = [("灵梭", JAVA_BLUE), ("SQL工坊", AI_PURPLE), ("SQL工坊 MCP", SEMANTIC_GREEN)]
-    legos = []
-    for i, (label, color) in enumerate(lego_labels):
-        x = lego_x0 + i * (lego_size + lego_gap)
-        lego = iso_lego(s, x, lego_y, lego_size, lego_size, color)
-        legos.append(lego)
-        # 标签
-        styled_text(s, x - 0.3, lego_y + lego_size + 0.05, lego_size + 0.6, 0.3,
-                    label, size=12, color=color, bold=True)
+    # 依赖关系图(全宽,中部,100% alpha)— 3 核心 + 6 周边 + 连线
+    dep_img = PPT_DIR / "images" / "ai" / "p3_dependency.png"
+    pic = _add_picture_with_alpha(s, dep_img, 3.5, 1.0, 6.333, 3.0, alpha_pct=100)
+    spTree = s.shapes._spTree
+    spTree.remove(pic._element)
+    spTree.insert(2, pic._element)
 
-    # 4 行 ✓ (从 README 营销句压缩:灵梭 / SQL工坊 / SQL工坊 MCP / 可单独服务)
+    # 3 组件标签(位置在图下方)
+    styled_text(s, 3.5, 4.0, 2.0, 0.3, "灵梭 (AI 编排)",
+                size=12, color=JAVA_BLUE, bold=True, center=True)
+    styled_text(s, 5.7, 4.0, 2.0, 0.3, "SQL工坊 (数据底座)",
+                size=12, color=AI_PURPLE, bold=True, center=True)
+    styled_text(s, 7.8, 4.0, 2.0, 0.3, "SQL工坊 MCP (桥)",
+                size=12, color=SEMANTIC_GREEN, bold=True, center=True)
+    legos = [pic._element]  # 复用动画对象
+
+    # 4 行杀手锏(4 个差异化优势,各对应 1 个组件的核心壁垒)
     items = [
-        ("✓ 灵梭:Spring Boot AI 加速器,零配置接入 RAG / MCP / Skill", GOLD, True),
-        ("✓ SQL工坊:JSON CRUD + Calcite 联邦 + Amis 低代码,数据开发效率 +300%", TEXT_PRIMARY, False),
-        ("✓ SQL工坊 MCP:打通 AI ↔ 业务数据库,数据不出企业", TEXT_SECONDARY, False),
-        ("✓ 3 个依赖库可单独引入;SQL工坊还可单独服务对接外部项目", TEXT_PRIMARY, False),
+        ("★ 灵梭杀手锏:零配置接入 RAG / MCP / Skill · 50 行配置 → 1 行模板", GOLD, True),
+        ("★ SQL工坊杀手锏:JSON CRUD + Calcite 联邦 + Amis 低代码 · 开发效率 +300%", TEXT_PRIMARY, False),
+        ("★ SQL工坊 MCP 杀手锏:5 受限通道 · 数据不出企业 · 私有化部署", AI_PURPLE, False),
+        ("★ 全部杀手锏:3 个依赖库可独立按需引入 · 不绑死 Spring Boot 生态", SEMANTIC_GREEN, False),
     ]
     item_boxes = []
     for i, (text, color, _) in enumerate(items):
@@ -482,9 +483,9 @@ def slide_4a_loom_intro(prs):
                     time, size=14, color=GOLD if killer else accent, bold=True)
         step_cards.append((card, tb_time))
 
-    # 配图:左侧 AI 编排小图(alpha=100% 避免 OnlyOffice 跳过半透明白底图)
+    # 配图:左下 AI 编排图(放大 30% — 从 2.5x2.0 改 3.3x2.4,作为视觉锚)
     img_path = PPT_DIR / "images" / "ai" / "p4a-ai-orchestrate.png"
-    pic = _add_picture_with_alpha(s, img_path, 0.4, 5.3, 2.5, 2.0, alpha_pct=100)
+    pic = _add_picture_with_alpha(s, img_path, 0.2, 5.1, 3.3, 2.4, alpha_pct=100)
     spTree = s.shapes._spTree
     spTree.remove(pic._element)
     spTree.insert(2, pic._element)
@@ -509,14 +510,16 @@ def slide_4b_loom_modules(prs):
                 "灵梭 · 6 大功能模块",
                 size=28, bold=True)
 
-    # 6 卡片(2x3)
+    # 6 卡片(2x3)— 杀手锏优先(Row1),基础能力(Row2)
     modules = [
-        ("📚 RAG 知识库", "Tika + JVector", JAVA_BLUE, False),
-        ("🔧 MCP ★", "8+ 服务可热插拔", GOLD, True),
-        ("🧠 Skill ★", ".st 模板即提示词", GOLD, True),
-        ("📁 文件管理", "磁盘 + H2 元数据", JAVA_BLUE, False),
-        ("💬 对话 UI", "SSE + 思维链折叠", JAVA_BLUE, False),
-        ("🛠️ 内置工具", "时间 / Git / Maven", JAVA_BLUE, False),
+        # Row 1:3 杀手锏(金边 + 金字)
+        ("📚 RAG 知识库 ★", "Tika + JVector\n文档向量化检索", GOLD, True),
+        ("🔧 MCP ★", "8+ 服务可热插拔\n工具热加载", GOLD, True),
+        ("🧠 Skill ★", ".st 模板即提示词\n改 1 行 AI 行为变", GOLD, True),
+        # Row 2:3 基础能力(浅灰边 + 蓝字)
+        ("💬 对话 UI", "SSE + 思维链折叠\n流式输出", JAVA_BLUE, False),
+        ("📁 文件管理", "磁盘 + H2 元数据\n会话持久化", JAVA_BLUE, False),
+        ("🛠️ 内置工具", "时间 / Git / Maven\n沙箱执行", JAVA_BLUE, False),
     ]
     cards = []
     cw, ch = 4.0, 1.8
@@ -612,9 +615,9 @@ def slide_5a_forge_intro(prs):
                     time, size=14, color=GOLD if killer else accent, bold=True)
         step_cards.append((card, tb_time))
 
-    # 配图:左侧 Calcite 联邦小图(alpha=100% 避免 OnlyOffice 跳过)
+    # 配图:左下 Calcite 联邦图(放大 30% — 视觉锚)
     img_path = PPT_DIR / "images" / "ai" / "p5a-calcite-federation.png"
-    pic = _add_picture_with_alpha(s, img_path, 0.4, 5.3, 2.5, 2.0, alpha_pct=100)
+    pic = _add_picture_with_alpha(s, img_path, 0.2, 5.1, 3.3, 2.4, alpha_pct=100)
     spTree = s.shapes._spTree
     spTree.remove(pic._element)
     spTree.insert(2, pic._element)
@@ -662,14 +665,14 @@ def slide_5b_forge_4plus6(prs):
                     name, font=FONT_MONO, size=11, color=WHITE, bold=True)
         starter_boxes.append(box)
 
-    # 6 功能卡(2x3)
+    # 6 功能卡(2x3)— Row1 杀手锏(金边金字),Row2 基础(浅灰边浅蓝字)
     funcs = [
         ("🔌 JSON CRUD ★", GOLD, True),
         ("🌐 Calcite ★", GOLD, True),
         ("🔒 MCP 5 受限 ★", GOLD, True),
-        ("🎨 Amis", JAVA_BLUE, False),
-        ("🏗️ 实体", JAVA_BLUE, False),
-        ("🛡️ 零直连", JAVA_BLUE, False),
+        ("🎨 Amis", TEXT_SECONDARY, False),
+        ("🏗️ 实体", TEXT_SECONDARY, False),
+        ("🛡️ 零直连", TEXT_SECONDARY, False),
     ]
     func_cards = []
     cw, ch = 4.0, 1.4
@@ -772,11 +775,11 @@ def slide_6_demo1_workflow(prs):
                  "▼ 接下来看 42 秒真实录屏",
                  size=18, color=AI_PURPLE, bold=True)
 
-    # 6 动画:5 步 0/1/2/3/4s 入场 + 末步 pulse
+    # 6 动画:5 步 0/0.4/0.8/1.2/1.6s 阶梯入场 + 末步 pulse(体现流程而非并列)
     for i in range(5):
         add_anim(s, step_boxes[i], "fade_in",
-                 delay_ms=i * 1000, dur_ms=500)
-    add_anim(s, step_boxes[4], "pulse", delay_ms=4500, dur_ms=1500, loop=True)
+                 delay_ms=i * 400, dur_ms=500)
+    add_anim(s, step_boxes[4], "pulse", delay_ms=2500, dur_ms=1500, loop=True)
 
 
 def slide_7_demo2_workflow(prs):
@@ -834,12 +837,12 @@ def slide_7_demo2_workflow(prs):
 
     for i in range(5):
         add_anim(s, step_boxes[i], "fade_in",
-                 delay_ms=i * 1000, dur_ms=500)
-    add_anim(s, step_boxes[4], "pulse", delay_ms=4500, dur_ms=1500, loop=True)
+                 delay_ms=i * 400, dur_ms=500)
+    add_anim(s, step_boxes[4], "pulse", delay_ms=2500, dur_ms=1500, loop=True)
 
 
 def slide_8_compare(prs):
-    """P8 实战对比 · 左技术派 ✓ + 中 3 柱状图(传统/集成AI/JavaBrain) + 右商业派 5 项 + 杀手锏金脉冲(策略 B:11 动画)"""
+    """P8 实战对比 · 左技术派 ✓ + 中 3 柱状图(传统/集成AI/JavaBrain) + 右商业派 5 项 + 杀手锏金脉冲(策略 C:13 动画,精简分组滑入 3.5s)"""
     s = prs.slides.add_slide(prs.slide_layouts[6])
     s.background.fill.solid()
     s.background.fill.fore_color.rgb = BG_LIGHT
@@ -936,86 +939,86 @@ def slide_8_compare(prs):
                  "★ JavaBrain 在 安全 + 智能 + 私有化 三角都做到",
                  size=18, color=GOLD, bold=True)
 
-    # 11 动画:策略 B
-    for i in range(4):
+    # 13 动画:策略 C(精简分组滑入 — 整组 3.5s 内完成,3 段紧贴)
+    for i in range(4):                                              # 技术派 4 项 0-900ms
         add_anim(s, tech_boxes[i], "fade_in",
-                 delay_ms=i * 400, dur_ms=500)
-    for i, bar in enumerate(bar_shapes):
-        add_anim(s, bar, "fade_in", delay_ms=1800 + i * 250, dur_ms=500)
-    for i in range(5):
+                 delay_ms=i * 225, dur_ms=400)
+    for i, bar in enumerate(bar_shapes):                            # 柱状图 3 项 1200-1800ms
+        add_anim(s, bar, "fade_in", delay_ms=1200 + i * 200, dur_ms=400)
+    for i in range(5):                                              # 商业派 5 项 2100-2900ms
         add_anim(s, biz_boxes[i], "fade_in",
-                 delay_ms=3000 + i * 500, dur_ms=500)
+                 delay_ms=2100 + i * 200, dur_ms=400)
     add_anim(s, tech_boxes[3], "pulse", delay_ms=12000, dur_ms=1500, loop=True)
 
 
 def slide_9_roadmap(prs):
-    """P9 路线图 · 2 列未来目标(灵梭 4 + SQL工坊 4) + 双引擎协同 3 金钩(策略 A:13 动画=12 入场 + 1 循环)"""
+    """P9 路线图 · 双轨时间线 + 2 列未来目标(灵梭 60% 主 / SQL工坊 40% 辅)+ 双引擎 3 金钩(13 动画)"""
     s = prs.slides.add_slide(prs.slide_layouts[6])
     s.background.fill.solid()
     s.background.fill.fore_color.rgb = BG_LIGHT
-
-    # 标题分隔条:2.5D 时间轴(标题右侧,100% alpha 避免 OnlyOffice 渲染跳过)
-    img_path = PPT_DIR / "images" / "ai" / "p9-bg-timeline.png"
-    pic = _add_picture_with_alpha(s, img_path, 9.5, 0.25, 3.5, 0.65, alpha_pct=100)
-    spTree = s.shapes._spTree
-    spTree.remove(pic._element)
-    spTree.insert(2, pic._element)
 
     # 标题
     tb_t = styled_text(s, 0.5, 0.3, 12.333, 0.6,
                        "JavaBrain 路线图",
                        size=28, bold=True)
 
-    # 左列:灵梭 (Java 蓝)
+    # 双轨时间线背景图(全宽,中部 100% alpha)
+    img_path = PPT_DIR / "images" / "ai" / "p9_dual_timeline.png"
+    pic = _add_picture_with_alpha(s, img_path, 0.5, 0.95, 12.333, 1.2, alpha_pct=100)
+    spTree = s.shapes._spTree
+    spTree.remove(pic._element)
+    spTree.insert(2, pic._element)
+
+    # 左列:灵梭 (Java 蓝,60% 宽 = 7.5)
     loom_items = [
         ("1. Agentic Workflow", "智能体工作流:自动拆解 + 多步推理 + 反思重试"),
         ("2. Graph-RAG + 实时认知", "知识图谱融合 + 毫秒级增量更新"),
         ("3. 多模态交互", "语音 / 图像 / AI 悬浮球"),
         ("4. Skill 插件生态市场", "标准化打包 + 私有 Skill 市场"),
     ]
-    styled_text(s, 0.3, 1.05, 6.2, 0.4,
-                "灵梭 · AI 赋能中心",
+    styled_text(s, 0.3, 2.4, 7.6, 0.4,
+                "灵梭 · AI 赋能中心 (主线 60%)",
                 size=18, color=JAVA_BLUE, bold=True)
     loom_boxes = []
     for i, (title, desc) in enumerate(loom_items):
-        y = 1.6 + i * 0.95
+        y = 2.95 + i * 0.6
         card = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
                                     Inches(0.3), Inches(y),
-                                    Inches(6.2), Inches(0.8))
+                                    Inches(7.6), Inches(0.5))
         card.fill.solid()
         card.fill.fore_color.rgb = WHITE
         card.line.color.rgb = JAVA_BLUE
         card.line.width = Pt(1.5)
-        styled_text(s, 0.5, y + 0.05, 6.0, 0.35,
-                    title, size=15, color=JAVA_BLUE, bold=True)
-        styled_text(s, 0.5, y + 0.42, 6.0, 0.35,
-                    desc, size=13, color=TEXT_SECONDARY)
+        styled_text(s, 0.5, y + 0.04, 7.4, 0.25,
+                    title, size=13, color=JAVA_BLUE, bold=True)
+        styled_text(s, 0.5, y + 0.28, 7.4, 0.22,
+                    desc, size=11, color=TEXT_SECONDARY)
         loom_boxes.append(card)
 
-    # 右列:SQL工坊 (AI 紫)
+    # 右列:SQL工坊 (AI 紫,40% 宽 = 5.0)
     forge_items = [
-        ("1. Text-to-SQL 终极形态", "准确率 >95% + 本地代码大模型 + Explain 优化"),
-        ("2. HTAP 湖仓一体", "Flink 实时流 + Iceberg / Hudi 湖仓格式"),
-        ("3. 智能数据治理", "血缘分析 + 动态脱敏 + 自动化审计"),
-        ("4. Serverless 弹性", "计算/存储分离 + 自动扩缩容"),
+        ("1. Text-to-SQL 终极形态", "准确率 >95% · 本地代码大模型"),
+        ("2. HTAP 湖仓一体", "Flink + Iceberg/Hudi"),
+        ("3. 智能数据治理", "血缘 + 脱敏 + 审计"),
+        ("4. Serverless 弹性", "计算/存储分离"),
     ]
-    styled_text(s, 6.833, 1.05, 6.2, 0.4,
-                "SQL工坊 · 数据管理引擎",
-                size=18, color=AI_PURPLE, bold=True)
+    styled_text(s, 8.1, 2.4, 5.0, 0.4,
+                "SQL工坊 · 数据引擎",
+                size=16, color=AI_PURPLE, bold=True)
     forge_boxes = []
     for i, (title, desc) in enumerate(forge_items):
-        y = 1.6 + i * 0.95
+        y = 2.95 + i * 0.6
         card = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
-                                    Inches(6.833), Inches(y),
-                                    Inches(6.2), Inches(0.8))
+                                    Inches(8.1), Inches(y),
+                                    Inches(5.0), Inches(0.5))
         card.fill.solid()
         card.fill.fore_color.rgb = WHITE
         card.line.color.rgb = AI_PURPLE
         card.line.width = Pt(1.5)
-        styled_text(s, 7.033, y + 0.05, 6.0, 0.35,
-                    title, size=15, color=AI_PURPLE, bold=True)
-        styled_text(s, 7.033, y + 0.42, 6.0, 0.35,
-                    desc, size=13, color=TEXT_SECONDARY)
+        styled_text(s, 8.3, y + 0.04, 4.8, 0.25,
+                    title, size=12, color=AI_PURPLE, bold=True)
+        styled_text(s, 8.3, y + 0.28, 4.8, 0.22,
+                    desc, size=10, color=TEXT_SECONDARY)
         forge_boxes.append(card)
 
     # 底部 3 金钩:双引擎协同愿景
@@ -1055,10 +1058,10 @@ def slide_10_ending(prs):
     s.background.fill.solid()
     s.background.fill.fore_color.rgb = BG_LIGHT
 
-    # JavaBrain 大字(标题上方大脑小图标作为 logo,透明背景版避免被裁)
+    # JavaBrain 大字(标题上方大脑小图标作为 logo,透明背景版避免被裁)+ 8s 慢转
     img_path = PPT_DIR / "images" / "ai" / "p10_brain_logo.png"
-    s.shapes.add_picture(str(img_path), Inches(5.9), Inches(0.05),
-                          width=Inches(1.5), height=Inches(0.6))
+    p10_logo = s.shapes.add_picture(str(img_path), Inches(5.9), Inches(0.05),
+                                     width=Inches(1.5), height=Inches(0.6))
 
     # JavaBrain 大字(下移以避开 logo)
     tb_t = styled_text(s, 0.5, 0.75, 12.333, 1.2,
@@ -1105,18 +1108,19 @@ def slide_10_ending(prs):
                  "github.com/wb04307201/spring-ai-loom-agent  ·  gitee.com/wb04307201/spring-ai-loom-agent",
                  font=FONT_MONO, size=12, color=TEXT_SECONDARY)
 
-    # 致谢
+    # 致谢(开源项目 — 用通用联系信息,留出占位供演讲者替换)
     styled_text(s, 0.5, 6.7, 12.333, 0.3,
-                 "感谢 [团队名] · 联系: [邮箱]",
+                 "感谢聆听 · Star 支持: github.com/wb04307201/spring-ai-loom-agent",
                  size=12, color=TEXT_SECONDARY)
 
-    # 6 动画:策略 B(5 入场 + 1 循环)
+    # 7 动画:logo 旋转 + 5 入场 + 1 金句循环
+    add_anim(s, p10_logo, "spin", delay_ms=0, dur_ms=8000, loop=True)  # 8s 慢转
     add_anim(s, tb_t, "fade_in", delay_ms=0, dur_ms=500)
     add_anim(s, sent_boxes[0], "fade_in", delay_ms=600, dur_ms=500)
     add_anim(s, sent_boxes[1], "fade_in", delay_ms=1200, dur_ms=500)
     add_anim(s, sent_boxes[2], "fade_in", delay_ms=1800, dur_ms=500)
     add_anim(s, killer, "pulse", delay_ms=6000, dur_ms=1500, loop=True)  # 金句持续脉冲
-    add_anim(s, term, "fade_in", delay_ms=10000, dur_ms=500)
+    add_anim(s, term, "fade_in", delay_ms=4000, dur_ms=500)
 
 
 def main():
