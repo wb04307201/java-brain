@@ -45,10 +45,11 @@ def test_total_animations():
     total_indefinite = 0
     for slide in prs.slides:
         xml = etree.tostring(slide._element).decode()
-        total += xml.count("<p:timing")
+        # 改用 animEffect 计数(累积式 add_anim 修复后每页只有 1 个 <p:timing>)
+        total += xml.count("<p:animEffect")
         total_indefinite += xml.count('repeatCount="indefinite"')
-    print(f"  total timings: {total}, indefinites: {total_indefinite}")
-    assert total == 100, f"期望 100 动画,实际 {total}"
+    print(f"  total animEffects: {total}, indefinites: {total_indefinite}")
+    assert total == 100, f"期望 100 animEffect,实际 {total}"
     assert total_indefinite == 15, f"期望 15 pulse_loop,实际 {total_indefinite}"
 
 
@@ -95,8 +96,8 @@ def test_p9_animation_count():
     prs = Presentation(str(PPTX))
     p9 = prs.slides[10]
     xml = etree.tostring(p9._element).decode()
-    tc = xml.count("<p:timing")
-    assert tc == 13, f"P9 期望 13 动画,实际 {tc}"
+    tc = xml.count("<p:animEffect")
+    assert tc == 13, f"P9 期望 13 animEffect,实际 {tc}"
 
 
 def test_p10_key_text():
@@ -132,15 +133,15 @@ def test_p10_animation_count():
     prs = Presentation(str(PPTX))
     p10 = prs.slides[11]
     xml = etree.tostring(p10._element).decode()
-    tc = xml.count("<p:timing")
-    assert tc == 7, f"P10 期望 7 动画,实际 {tc}"
+    tc = xml.count("<p:animEffect")
+    assert tc == 7, f"P10 期望 7 animEffect,实际 {tc}"
 
 
 if __name__ == "__main__":
     test_total_pages()
     print("OK 12 pages")
     test_total_animations()
-    print("OK 100 animations + 15 indefinite")
+    print("OK 100 animEffects + 15 indefinite")
     test_p9_loom_future()
     print("OK P9 灵梭 4 future")
     test_p9_forge_future()

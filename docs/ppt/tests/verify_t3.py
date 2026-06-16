@@ -27,8 +27,8 @@ def test_p3_animation_count():
     prs = Presentation(str(PPTX))
     p3 = prs.slides[2]
     xml = etree.tostring(p3._element).decode()
-    timing_count = xml.count("<p:timing")
-    assert timing_count >= 4, f"P3 期望 ≥4 动画,实际 {timing_count}"
+    anim_count = xml.count("<p:animEffect")
+    assert anim_count >= 4, f"P3 期望 ≥4 animEffect,实际 {anim_count}"
 
 
 def test_p3_pulse_indefinite():
@@ -54,8 +54,8 @@ def test_p4a_animation_count():
     prs = Presentation(str(PPTX))
     p4a = prs.slides[3]
     xml = etree.tostring(p4a._element).decode()
-    timing_count = xml.count("<p:timing")
-    assert timing_count >= 4, f"P4-a 期望 ≥4 动画,实际 {timing_count}"
+    anim_count = xml.count("<p:animEffect")
+    assert anim_count >= 4, f"P4-a 期望 ≥4 animEffect,实际 {anim_count}"
 
 
 def test_p4a_pulse_indefinite():
@@ -80,8 +80,8 @@ def test_p4b_animation_count():
     prs = Presentation(str(PPTX))
     p4b = prs.slides[4]
     xml = etree.tostring(p4b._element).decode()
-    timing_count = xml.count("<p:timing")
-    assert timing_count >= 8, f"P4-b 期望 ≥8 动画,实际 {timing_count}"
+    anim_count = xml.count("<p:animEffect")
+    assert anim_count >= 8, f"P4-b 期望 ≥8 animEffect,实际 {anim_count}"
 
 
 def test_p4b_chase_indefinite():

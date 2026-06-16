@@ -26,9 +26,12 @@ def test_p1_animations_count():
     prs = Presentation(str(PPTX))
     slide = prs.slides[0]  # P1 是第 1 页(索引 0)
     xml = etree.tostring(slide._element).decode()
-    # 6 个 timing 节点(大脑 zoom_in + 标题 + 副标 + 2 组件 + 金钩 zoom_in 模拟打字机)
+    # 6 个 animEffect 节点(大脑 zoom_in + 标题 + 副标 + 2 组件 + 金钩 zoom_in 模拟打字机)
+    anim_count = xml.count("<p:animEffect")
+    assert anim_count == 6, "expected 6 animEffects, got %d" % anim_count
+    # 同时保证每页只有 1 个 <p:timing> 元素(累积式 add_anim 正确性)
     timing_count = xml.count("<p:timing")
-    assert timing_count == 6, "expected 6 timings, got %d" % timing_count
+    assert timing_count == 1, "expected 1 timing, got %d" % timing_count
 
 
 def test_p1_key_text_present():
@@ -56,7 +59,7 @@ if __name__ == "__main__":
     test_p1_slide_count()
     print("[OK] 1 page")
     test_p1_animations_count()
-    print("[OK] 6 animations")
+    print("[OK] 6 animEffects + 1 timing")
     test_p1_key_text_present()
     print("[OK] key text")
     test_p1_colors_present()

@@ -21,8 +21,8 @@ def test_p8_animation_count():
     prs = Presentation(str(PPTX))
     p8 = prs.slides[9]
     xml = etree.tostring(p8._element).decode()
-    timing_count = xml.count("<p:timing")
-    assert timing_count >= 10, f"P8 期望 ≥10 动画,实际 {timing_count}"
+    anim_count = xml.count("<p:animEffect")
+    assert anim_count >= 10, f"P8 期望 ≥10 animEffect,实际 {anim_count}"
 
 
 def test_p8_pulse_indefinite():

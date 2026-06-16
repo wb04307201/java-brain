@@ -21,8 +21,8 @@ def test_p6_animation_count():
     prs = Presentation(str(PPTX))
     p6 = prs.slides[7]
     xml = etree.tostring(p6._element).decode()
-    timing_count = xml.count("<p:timing")
-    assert timing_count >= 6, f"P6 期望 ≥6 动画,实际 {timing_count}"
+    anim_count = xml.count("<p:animEffect")
+    assert anim_count >= 6, f"P6 期望 ≥6 animEffect,实际 {anim_count}"
 
 
 def test_p6_pulse_indefinite():
@@ -46,8 +46,8 @@ def test_p7_animation_count():
     prs = Presentation(str(PPTX))
     p7 = prs.slides[8]
     xml = etree.tostring(p7._element).decode()
-    timing_count = xml.count("<p:timing")
-    assert timing_count >= 6, f"P7 期望 ≥6 动画,实际 {timing_count}"
+    anim_count = xml.count("<p:animEffect")
+    assert anim_count >= 6, f"P7 期望 ≥6 animEffect,实际 {anim_count}"
 
 
 def test_p7_pulse_indefinite():
