@@ -408,22 +408,24 @@ def slide_3_position(prs):
                        size=28, bold=True)
 
     # 依赖关系图(全宽,中部,100% alpha)— 3 核心 + 6 周边 + 连线
+    # 高度压到 2.2 避免覆盖下面杀手锏(y=1.1-3.3)
     dep_img = PPT_DIR / "images" / "ai" / "p3_dependency.png"
-    pic = _add_picture_with_alpha(s, dep_img, 3.5, 1.0, 6.333, 3.0, alpha_pct=100)
+    pic = _add_picture_with_alpha(s, dep_img, 3.5, 1.1, 6.333, 2.2, alpha_pct=100)
     spTree = s.shapes._spTree
     spTree.remove(pic._element)
     spTree.insert(2, pic._element)
 
-    # 3 组件标签(位置在图下方)
-    styled_text(s, 3.5, 4.0, 2.0, 0.3, "灵梭 (AI 编排)",
+    # 3 组件标签(位置在图下方,y=3.3)
+    styled_text(s, 3.5, 3.3, 2.0, 0.3, "灵梭 (AI 编排)",
                 size=12, color=JAVA_BLUE, bold=True, center=True)
-    styled_text(s, 5.7, 4.0, 2.0, 0.3, "SQL工坊 (数据底座)",
+    styled_text(s, 5.7, 3.3, 2.0, 0.3, "SQL工坊 (数据底座)",
                 size=12, color=AI_PURPLE, bold=True, center=True)
-    styled_text(s, 7.8, 4.0, 2.0, 0.3, "SQL工坊 MCP (桥)",
+    styled_text(s, 7.8, 3.3, 2.0, 0.3, "SQL工坊 MCP (桥)",
                 size=12, color=SEMANTIC_GREEN, bold=True, center=True)
     legos = [pic._element]  # 复用动画对象
 
     # 4 行杀手锏(4 个差异化优势,各对应 1 个组件的核心壁垒)
+    # y=3.95 起点避免和上方组件标签重叠
     items = [
         ("★ 灵梭杀手锏:零配置接入 RAG / MCP / Skill · 50 行配置 → 1 行模板", GOLD, True),
         ("★ SQL工坊杀手锏:JSON CRUD + Calcite 联邦 + Amis 低代码 · 开发效率 +300%", TEXT_PRIMARY, False),
@@ -432,7 +434,7 @@ def slide_3_position(prs):
     ]
     item_boxes = []
     for i, (text, color, _) in enumerate(items):
-        tb = styled_text(s, 0.7, 3.5 + i * 0.55, 11.9, 0.5,
+        tb = styled_text(s, 0.7, 3.95 + i * 0.55, 11.9, 0.5,
                          text, size=16, color=color, bold=(i == 0))
         item_boxes.append(tb)
 
