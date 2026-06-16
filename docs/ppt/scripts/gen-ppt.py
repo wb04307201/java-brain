@@ -65,13 +65,14 @@ ANIM_PRESETS = {
 def add_anim(slide, shape, anim_type, *, delay_ms=0, dur_ms=500, loop=False):
     """注入 PowerPoint 动画节点(累积到 slide 唯一 <p:timing>)。
 
-    关键:PowerPoint / OnlyOffice 要求每张 slide 只能有 1 个 <p:timing> 元素,
-    所有动画必须嵌套在同一个 timing 的 tnLst 里。多次调用 add_anim 时
-    找到/创建 slide 的 <p:timing>,把新动画 par 追加到 tnLst 的内层 par 里。
+    关键:PowerPoint / OnlyOffice 要求每张 slide 只能有 1 个 <p:timing>,
+    所有动画必须嵌套在同一个 timing 的 tnLst 里,且顶层必须是
+    ``<p:par><p:cTn id="..." nodeType="tmRoot" pres="1">...<p:tnLst>...</p:tnLst></p:cTn></p:par>``
+    这种 3 层结构(time root → nested tnLst → anim cTn)。缺少 tmRoot cTn
+    会让 Office / OnlyOffice 拒绝整张 timing。
 
     anim_type: 见 ANIM_PRESETS 的 key
-    loop=True: 生成 repeatCount="indefinite"(持续到翻页,转视频核心)
-    fill="hold" 保持动画间形状可见;loop=True 时必需
+    loop=True: 生成 repeatCount="indefinite"
     """
     if anim_type not in ANIM_PRESETS:
         raise ValueError(
@@ -80,34 +81,37 @@ def add_anim(slide, shape, anim_type, *, delay_ms=0, dur_ms=500, loop=False):
     preset_class, preset_id = ANIM_PRESETS[anim_type]
     shape_id = shape.shape_id
     repeat_attr = ' repeatCount="indefinite"' if loop else ""
-
-    # 找 slide 已有的 <p:timing>(用 ns0 命名空间别名)
     nsmap = {"p": "http://schemas.openxmlformats.org/presentationml/2006/main"}
+
     timing = slide._element.find("p:timing", nsmap)
     if timing is None:
-        # 第一次调用:创建 <p:timing> + tnLst + 顶层 par(顺序播放)
-        timing_xml = f'''<p:timing xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+        # 第一次调用:创建 3 层标准 timing(time root + nested tnLst)
+        # id="1" 是 timing 根的 id,从 2 开始给动画(避免冲突)
+        timing_xml = '''<p:timing xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
   <p:tnLst>
     <p:par>
-      <p:pPr/>
+      <p:cTn id="1" nodeType="tmRoot" pres="1">
+        <p:tnLst/>
+      </p:cTn>
     </p:par>
   </p:tnLst>
 </p:timing>'''
         timing = etree.fromstring(timing_xml)
         slide._element.append(timing)
-    # 顶层 par(顺序容器,所有动画在此顺次排)
-    top_par = timing.find("p:tnLst/p:par", nsmap)
-    # 在 top_par 里追加一个并列 par(每个动画一个并列 par → 全部同时开始,各自带不同 begin)
-    anim_par_xml = f'''<p:par xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
-  <p:cond><p:tnCond val="0"/></p:cond>
-  <p:par>
-    <p:cTn id="{shape_id + 1}" nodeType="withEffect" dur="{dur_ms}" begin="{delay_ms}ms" fill="hold"{repeat_attr}>
-      <p:animEffect presetClass="{preset_class}" presetId="{preset_id}" dur="{dur_ms}"/>
-    </p:cTn>
-  </p:par>
+
+    # 找到内层 <p:tnLst/>(动画都追加到它里面)
+    inner_tnLst = timing.find("p:tnLst/p:par/p:cTn/p:tnLst", nsmap)
+
+    # 构造单个动画 par(标准 2 层:par 包裹 cTn)
+    # 用 shape_id + 1000 偏移避免和 timing root id=1 冲突,且保证唯一
+    anim_id = shape_id + 1000
+    anim_xml = f'''<p:par xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+  <p:cTn id="{anim_id}" nodeType="withEffect" dur="{dur_ms}" begin="{delay_ms}ms" fill="hold"{repeat_attr}>
+    <p:animEffect presetClass="{preset_class}" presetId="{preset_id}" dur="{dur_ms}"/>
+  </p:cTn>
 </p:par>'''
-    anim_par = etree.fromstring(anim_par_xml)
-    top_par.append(anim_par)
+    anim_par = etree.fromstring(anim_xml)
+    inner_tnLst.append(anim_par)
 
 
 def iso_lego(slide, x_in, y_in, w_in, h_in, color, *, studs=True, highlight=False):
