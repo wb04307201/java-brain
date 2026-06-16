@@ -421,7 +421,7 @@ def slide_3_position(prs):
 
 
 def slide_4a_loom_intro(prs):
-    """P4-a 灵梭 · 整体定位(策略 A:4 动画=3 入场 + 1 循环)"""
+    """P4-a 灵梭 · 整体定位(策略 A:6 动画=4 入场 + 1 循环 + 1 配图)"""
     s = prs.slides.add_slide(prs.slide_layouts[6])
     s.background.fill.solid()
     s.background.fill.fore_color.rgb = BG_LIGHT
@@ -431,12 +431,17 @@ def slide_4a_loom_intro(prs):
                 "灵梭 · LoomAgent",
                 font=FONT_EN, size=16, color=JAVA_BLUE, bold=True)
 
-    # 主标
-    tb_t = styled_text(s, 0.5, 1.0, 12.333, 1.0,
-                       "Spring AI 一键启动 · 改 .st 文件 AI 行为就变",
+    # 主标(拆 2 行,更精炼)
+    tb_t = styled_text(s, 0.5, 0.85, 12.333, 0.7,
+                       "Spring AI 一键启动",
                        size=32, bold=True)
 
-    # 4 特性卡(2x2)
+    # 副标杀手锏
+    styled_text(s, 0.5, 1.45, 12.333, 0.4,
+                "★ 改一个 .st 文件,AI 行为就变",
+                size=16, color=GOLD, bold=True)
+
+    # 4 特性卡(2x2,缩小,留出左侧放配图)
     advs = [
         ("📦 6 大功能模块\n一站集成", JAVA_BLUE, False),
         ("🔌 MCP 可热插拔\n8+ 服务", GOLD, True),
@@ -444,10 +449,11 @@ def slide_4a_loom_intro(prs):
         ("💬 流式对话 + 思维链\nSSE + 可折叠", JAVA_BLUE, False),
     ]
     cards = []
-    cw, ch = 5.0, 1.3
-    gap = 0.3
-    cx0 = (13.333 - 2 * cw - gap) / 2
-    cy0 = 2.5
+    cw, ch = 4.5, 1.3
+    gap = 0.25
+    # 卡片在右侧(8.0-12.5)
+    cx0 = 8.0
+    cy0 = 2.4
     for i, (text, color, killer) in enumerate(advs):
         row, col = i // 2, i % 2
         x = cx0 + col * (cw + gap)
@@ -458,16 +464,24 @@ def slide_4a_loom_intro(prs):
         card.fill.fore_color.rgb = WHITE
         card.line.color.rgb = GOLD if killer else DIVIDER
         card.line.width = Pt(3) if killer else Pt(1)
-        # 卡片文字(独立 textbox 因为有 emoji 多行)
         styled_text(s, x, y + 0.2, cw, ch - 0.4,
-                    text, size=18, color=color, bold=True)
+                    text, size=16, color=color, bold=True)
         cards.append(card)
 
-    # 4 动画:策略 A(标题入场 + 卡片入场 + Skill 金脉冲)
+    # 配图:左侧 AI 编排小图(占左侧 7in 宽,4in 高,38% alpha)
+    img_path = PPT_DIR / "images" / "ai" / "p4a-ai-orchestrate.png"
+    pic = _add_picture_with_alpha(s, img_path, 0.3, 2.4, 4.5, 4.0, alpha_pct=55)
+    spTree = s.shapes._spTree
+    spTree.remove(pic._element)
+    spTree.insert(2, pic._element)
+
+    # 6 动画:策略 A(标题入场 + 4 卡片 + 1 金脉冲)
     add_anim(s, tb_t, "fade_in", delay_ms=0, dur_ms=500)
-    add_anim(s, cards[0], "fade_in", delay_ms=600, dur_ms=500)
-    add_anim(s, cards[2], "fade_in", delay_ms=1200, dur_ms=500)  # Skill 杀手锏
-    add_anim(s, cards[2], "pulse", delay_ms=2000, dur_ms=1500, loop=True)
+    add_anim(s, cards[0], "fade_in", delay_ms=400, dur_ms=500)
+    add_anim(s, cards[1], "fade_in", delay_ms=700, dur_ms=500)
+    add_anim(s, cards[2], "fade_in", delay_ms=1000, dur_ms=500)  # Skill 杀手锏
+    add_anim(s, cards[3], "fade_in", delay_ms=1300, dur_ms=500)
+    add_anim(s, cards[2], "pulse", delay_ms=2500, dur_ms=1500, loop=True)
 
 
 def slide_4b_loom_modules(prs):
@@ -530,7 +544,7 @@ def slide_4b_loom_modules(prs):
 
 
 def slide_5a_forge_intro(prs):
-    """P5-a SQL工坊 · 整体定位(策略 A:3 入场 + 1 循环)"""
+    """P5-a SQL工坊 · 整体定位(策略 A:6 动画=4 入场 + 1 循环 + 1 配图)"""
     s = prs.slides.add_slide(prs.slide_layouts[6])
     s.background.fill.solid()
     s.background.fill.fore_color.rgb = BG_LIGHT
@@ -541,11 +555,16 @@ def slide_5a_forge_intro(prs):
                 font=FONT_EN, size=16, color=AI_PURPLE, bold=True)
 
     # 主标
-    tb_t = styled_text(s, 0.5, 1.0, 12.333, 1.0,
+    tb_t = styled_text(s, 0.5, 0.85, 12.333, 0.7,
                        "JSON CRUD + Calcite 联邦 + Amis 低代码",
                        size=32, bold=True)
 
-    # 4 特性卡(2x2)
+    # 副标杀手锏
+    styled_text(s, 0.5, 1.45, 12.333, 0.4,
+                "★ 一套协议 5 method,跨库即写即用,数据不出企业",
+                size=16, color=GOLD, bold=True)
+
+    # 4 特性卡(2x2,缩小,移到右侧)
     advs = [
         ("🔌 JSON CRUD\n一套协议 5 method", GOLD, True),
         ("🌐 Calcite 联邦\n跨 MySQL+PG+H2", GOLD, True),
@@ -553,10 +572,10 @@ def slide_5a_forge_intro(prs):
         ("🔒 MCP 5 受限工具\n数据不出企业", JAVA_BLUE, False),
     ]
     cards = []
-    cw, ch = 5.0, 1.3
-    gap = 0.3
-    cx0 = (13.333 - 2 * cw - gap) / 2
-    cy0 = 2.5
+    cw, ch = 4.5, 1.3
+    gap = 0.25
+    cx0 = 8.0
+    cy0 = 2.4
     for i, (text, color, killer) in enumerate(advs):
         row, col = i // 2, i % 2
         x = cx0 + col * (cw + gap)
@@ -568,14 +587,23 @@ def slide_5a_forge_intro(prs):
         card.line.color.rgb = GOLD if killer else DIVIDER
         card.line.width = Pt(3) if killer else Pt(1)
         styled_text(s, x, y + 0.2, cw, ch - 0.4,
-                    text, size=18, color=color, bold=True)
+                    text, size=16, color=color, bold=True)
         cards.append(card)
 
-    # 4 动画:策略 A
+    # 配图:左侧 Calcite 联邦小图
+    img_path = PPT_DIR / "images" / "ai" / "p5a-calcite-federation.png"
+    pic = _add_picture_with_alpha(s, img_path, 0.3, 2.4, 4.5, 4.0, alpha_pct=55)
+    spTree = s.shapes._spTree
+    spTree.remove(pic._element)
+    spTree.insert(2, pic._element)
+
+    # 6 动画:策略 A(标题入场 + 4 卡片 + 1 金脉冲)
     add_anim(s, tb_t, "fade_in", delay_ms=0, dur_ms=500)
-    add_anim(s, cards[0], "fade_in", delay_ms=600, dur_ms=500)
-    add_anim(s, cards[3], "fade_in", delay_ms=1200, dur_ms=500)
-    add_anim(s, cards[3], "pulse", delay_ms=2000, dur_ms=1500, loop=True)  # 数据不出企业脉冲
+    add_anim(s, cards[0], "fade_in", delay_ms=400, dur_ms=500)
+    add_anim(s, cards[1], "fade_in", delay_ms=700, dur_ms=500)
+    add_anim(s, cards[2], "fade_in", delay_ms=1000, dur_ms=500)
+    add_anim(s, cards[3], "fade_in", delay_ms=1300, dur_ms=500)
+    add_anim(s, cards[3], "pulse", delay_ms=2500, dur_ms=1500, loop=True)  # 数据不出企业脉冲
 
 
 def slide_5b_forge_4plus6(prs):
@@ -864,9 +892,16 @@ def slide_9_roadmap(prs):
     s.background.fill.solid()
     s.background.fill.fore_color.rgb = BG_LIGHT
 
+    # 标题分隔条:2.5D 时间轴(标题右侧,30% alpha,作为路线图视觉锚)
+    img_path = PPT_DIR / "images" / "ai" / "p9-bg-timeline.png"
+    pic = _add_picture_with_alpha(s, img_path, 8.5, 0.2, 4.5, 0.8, alpha_pct=30)
+    spTree = s.shapes._spTree
+    spTree.remove(pic._element)
+    spTree.insert(2, pic._element)
+
     # 标题
     tb_t = styled_text(s, 0.5, 0.3, 12.333, 0.6,
-                       "JavaBrain 未来 12 个月路线图",
+                       "JavaBrain 路线图",
                        size=28, bold=True)
 
     # 左列:灵梭 (Java 蓝)
