@@ -247,21 +247,25 @@ def add_page_number(slide, current, total=10, color=TEXT_SECONDARY, size=10):
              font=FONT_MONO, size=size, color=color, align=PP_ALIGN.RIGHT)
 
 
-def apply_hud_chrome(slide, page_num, total, section_text) -> None:
-    """v3 标准化 slide 装饰四件套:背景 + 网格 + HUD 角标 + 章节标。
+def apply_chrome(slide, page_num, total, section, *,
+                 bg=BG_DEEP, header='', pager='', section_prefix='',
+                 section_size=11, section_color=TEXT_SECONDARY):
+    """slide 装饰四件套:背景 + 网格 + HUD 角标 + 章节标。
 
-    等价于连续调用:
-        set_solid_bg(slide, BG_DEEP)
-        grid_bg(slide)
-        hud_corner(slide, page_num, total=total)
-        section_label(slide, section_text)
+    适合每页都套这层 chrome 的项目一次性调用。
 
-    适合 v3 / 后续版本每页都套这层 chrome。
+    Args:
+        bg: 背景色,默认 BG_DEEP(深色 HUD)
+        header: 左上 HUD 角标文字(同 hud_corner.header)
+        pager: 右下页码模板(同 hud_corner.pager)
+        section_prefix: 章节标装饰前缀(同 section_label.prefix)
+        section_size/color: 章节标字号/颜色
     """
-    set_solid_bg(slide, BG_DEEP)
+    set_solid_bg(slide, bg)
     grid_bg(slide)
-    hud_corner(slide, page_num, total=total)
-    section_label(slide, section_text)
+    hud_corner(slide, page_num, total=total, header=header, pager=pager)
+    section_label(slide, section, prefix=section_prefix,
+                  size=section_size, color=section_color)
 
 
 # ====================================================================
