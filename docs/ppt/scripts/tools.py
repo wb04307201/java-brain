@@ -1,4 +1,4 @@
-"""JavaBrain PPT 工具库 —— 跨版本(v1/v2/v3)可复用的工具函数。
+"""JavaBrain PPT 工具库 —— 可复用的工具函数。
 
 分组:
 A. 文本/形状:   add_text, set_text, add_rect, add_picture_with_alpha
