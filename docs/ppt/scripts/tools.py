@@ -1,13 +1,16 @@
 """JavaBrain PPT 工具库 —— 跨版本(v1/v2/v3)可复用的工具函数。
 
 分组:
-A. 文本/形状:   add_text, set_text, add_rect, styled_text
+A. 文本/形状:   add_text, set_text, add_rect, add_picture_with_alpha
 B. 布局/装饰:   set_solid_bg, grid_bg, hud_corner, section_label,
-                add_page_number
+                section_label_v1, corner_badge, add_page_number
 C. 复合元素:    kill_box, node_block, card, terminal_box, big_num,
                 iso_lego, arrow_line
-D. 文件 I/O:    replace_pptx_media, find_dominant_bg, cover_region
+D. 文件 I/O:    replace_pptx_media, find_dominant_bg, cover_region,
+                qa_image_check, new_presentation
 E. 万相 API:    wanx_generate, wanx_upload, wanx_edit, wanx_download
+
+排版常量(顶部集中 magic numbers):TEXT_MARGIN_*, STUD_*, QA_*
 
 注:动画逻辑见 scripts/pptx_anim.py(独立模块,可选)
 
@@ -62,6 +65,27 @@ ALERT_GOLD = RGBColor(0xFA, 0xCC, 0x15)    # 警示金(路线图当前)
 WHITE = RGBColor(0xFF, 0xFF, 0xFF)
 BLACK = RGBColor(0x00, 0x00, 0x00)
 
+# ====================================================================
+# 排版常量(集中 magic numbers)
+# ====================================================================
+
+# textbox 边距
+TEXT_MARGIN_LR_IN = 0.05
+TEXT_MARGIN_TB_IN = 0.02
+
+# 2.5D 乐高积木参数(iso_lego)
+STUD_RATIO = 0.16            # 圆钉半径 / 边长
+STUD_Y_OFFSET_RATIO = 0.5    # 圆钉 Y 偏移(向上突出积木顶部的比例)
+STUD_X_POSITIONS = (0.18, 0.40, 0.60, 0.82)  # 4 个圆钉 X 位置比例
+
+# QA 阈值(qa_image_check)
+QA_MIN_SHORT_SIDE = 720
+QA_MIN_FILE_BYTES = 200_000
+QA_MAX_FILE_BYTES = 2_000_000
+QA_MIN_STD = 30
+QA_MIN_RATIO = 0.5
+QA_MAX_RATIO = 3.0
+
 
 # ====================================================================
 # A. 文本 / 形状
@@ -86,10 +110,10 @@ def set_text(shape, text, *, font=FONT_MONO, size=18, color=TEXT_PRIMARY,
     """
     tf = shape.text_frame
     tf.text = text
-    tf.margin_left = Inches(0.05)
-    tf.margin_right = Inches(0.05)
-    tf.margin_top = Inches(0.02)
-    tf.margin_bottom = Inches(0.02)
+    tf.margin_left = Inches(TEXT_MARGIN_LR_IN)
+    tf.margin_right = Inches(TEXT_MARGIN_LR_IN)
+    tf.margin_top = Inches(TEXT_MARGIN_TB_IN)
+    tf.margin_bottom = Inches(TEXT_MARGIN_TB_IN)
     tf.word_wrap = True
     tf.vertical_anchor = MSO_ANCHOR.MIDDLE
     p = tf.paragraphs[0]
@@ -146,7 +170,7 @@ def add_picture_with_alpha(slide, image_path, x, y, w, h, alpha_pct):
 # C. 布局 / 装饰
 # ====================================================================
 
-def set_solid_bg(slide, color):
+def set_solid_bg(slide, color) -> None:
     """设置 slide 背景为纯色。"""
     bg = slide.background
     fill = bg.fill
@@ -155,7 +179,7 @@ def set_solid_bg(slide, color):
 
 
 def grid_bg(slide, cols=12, rows=8, color=GRID_LINE, weight_pt=0.5,
-            slide_w_in=13.333, slide_h_in=7.5):
+            slide_w_in=13.333, slide_h_in=7.5) -> None:
     """画 cols × rows 细网格背景(覆盖整张 slide)。"""
     for c in range(cols + 1):
         x = c * slide_w_in / cols
@@ -192,10 +216,46 @@ def section_label(slide, text):
              align=PP_ALIGN.LEFT)
 
 
+def section_label_v1(slide, text):
+    """v3 章节标(等宽 14pt,Java 蓝 + 钩子青绿混色,带 ── 装饰前缀)。"""
+    add_text(slide, 0.5, 0.55, 12.333, 0.3,
+             f"── {text}",
+             font=FONT_MONO, size=14, color=JAVA_BLUE, bold=True,
+             align=PP_ALIGN.LEFT)
+
+
+def corner_badge(slide, x, y, w, h, text, *,
+                 fill=BG_PANEL, color=HOOK_GREEN):
+    """角落徽章(钩子青绿边框 + 深底,标注场景/补充信息)。"""
+    rect = add_rect(slide, x, y, w, h,
+                     fill=fill, line_color=color, line_width_pt=1.5,
+                     shape=MSO_SHAPE.ROUNDED_RECTANGLE)
+    add_text(slide, x, y, w, h, text,
+             font=FONT_CN, size=11, color=color, bold=True)
+    return rect
+
+
 def add_page_number(slide, current, total=10, color=TEXT_SECONDARY, size=10):
     """右下角 'XX/total' 页码。"""
     add_text(slide, 11.6, 7.05, 1.4, 0.3, f"{current:02d} / {total}",
              font=FONT_MONO, size=size, color=color, align=PP_ALIGN.RIGHT)
+
+
+def apply_hud_chrome(slide, page_num, total, section_text) -> None:
+    """v3 标准化 slide 装饰四件套:背景 + 网格 + HUD 角标 + 章节标。
+
+    等价于连续调用:
+        set_solid_bg(slide, BG_DEEP)
+        grid_bg(slide)
+        hud_corner(slide, page_num, total=total)
+        section_label(slide, section_text)
+
+    适合 v3 / 后续版本每页都套这层 chrome。
+    """
+    set_solid_bg(slide, BG_DEEP)
+    grid_bg(slide)
+    hud_corner(slide, page_num, total=total)
+    section_label(slide, section_text)
 
 
 # ====================================================================
@@ -288,7 +348,7 @@ def _terminal_line_style(line: str) -> tuple[RGBColor, bool]:
 
 
 def big_num(slide, x_in, y_in, w_in, h_in, num, unit, label, *,
-            color=JAVA_BLUE, num_size=84):
+            color=JAVA_BLUE, num_size=84) -> None:
     """P2 三杀手数字芯片(P9 大数字也复用)。"""
     add_text(slide, x_in, y_in, w_in, h_in * 0.55, num,
              font=FONT_MONO, size=num_size, color=color, bold=True)
@@ -296,6 +356,99 @@ def big_num(slide, x_in, y_in, w_in, h_in, num, unit, label, *,
              font=FONT_MONO, size=20, color=color)
     add_text(slide, x_in, y_in + h_in * 0.75, w_in, h_in * 0.2, label,
              font=FONT_CN, size=14, color=TEXT_SECONDARY)
+
+
+def stat_card(slide, x_in, y_in, w_in, h_in, num, label, *,
+              color=ALERT_RED, num_size=56, label_size=14,
+              fill=BG_PANEL, border_pt=2) -> None:
+    """P2 痛点/反衬数字卡:大号 mono 数字 + 中文副标签,圆角矩形边框。
+
+    红(ALERT_RED)用于痛点,绿(HOOK_GREEN)用于反衬杀手锏。
+    """
+    add_rect(slide, x_in, y_in, w_in, h_in,
+             fill=fill, line_color=color, line_width_pt=border_pt,
+             shape=MSO_SHAPE.ROUNDED_RECTANGLE)
+    add_text(slide, x_in, y_in + 0.1, w_in, h_in * 0.5, num,
+             font=FONT_MONO, size=num_size, color=color, bold=True,
+             align=PP_ALIGN.CENTER)
+    add_text(slide, x_in, y_in + h_in * 0.6, w_in, h_in * 0.3, label,
+             font=FONT_CN, size=label_size, color=TEXT_SECONDARY,
+             align=PP_ALIGN.CENTER)
+
+
+def chip_text(slide, x_in, y_in, w_in, h_in, text, *,
+              color=HOOK_GREEN, fill=BG_PANEL, line_width_pt=1.5,
+              font=FONT_MONO, size=11, bold=True) -> None:
+    """小徽章 / 标签:圆角矩形 + 单行 mono 字。
+
+    用于:✓ 标记 / 章节金标 / 演示场景标注 / 路线图节点标签。
+    """
+    add_rect(slide, x_in, y_in, w_in, h_in,
+             fill=fill, line_color=color, line_width_pt=line_width_pt,
+             shape=MSO_SHAPE.ROUNDED_RECTANGLE)
+    add_text(slide, x_in, y_in, w_in, h_in, text,
+             font=font, size=size, color=color, bold=bold,
+             align=PP_ALIGN.CENTER)
+
+
+def feature_card(slide, x_in, y_in, w_in, h_in, icon, name, sub, *,
+                 color=JAVA_BLUE, fill=BG_PANEL,
+                 icon_size=18, name_size=15, sub_size=11,
+                 border_pt=2) -> None:
+    """功能卡(图标 + 标题 + 副标题,彩色边框)。通用架构/功能网格单元。
+
+    用于:P3 三个组件、P4 6 大功能、P5 4 starter、P9 3 仓库 等。
+    """
+    add_rect(slide, x_in, y_in, w_in, h_in,
+             fill=fill, line_color=color, line_width_pt=border_pt,
+             shape=MSO_SHAPE.ROUNDED_RECTANGLE)
+    add_text(slide, x_in, y_in + 0.05, w_in, 0.4, icon,
+             font=FONT_MONO, size=icon_size, color=color,
+             align=PP_ALIGN.LEFT)
+    add_text(slide, x_in, y_in + 0.35, w_in, 0.5, name,
+             font=FONT_CN, size=name_size, color=color, bold=True,
+             align=PP_ALIGN.LEFT)
+    add_text(slide, x_in, y_in + 0.85, w_in, h_in - 0.95, sub,
+             font=FONT_CN, size=sub_size, color=TEXT_SECONDARY,
+             align=PP_ALIGN.LEFT)
+
+
+def bullet_list(slide, x_in, y_in, w_in, line_h_in, items, *,
+                marker="✓", color=HOOK_GREEN, size=14,
+                text_color=None) -> None:
+    """竖向 ✓ 列表 / → 列表 / 数字列表。
+
+    items: 字符串列表(已含 marker 字符,或留空由本函数统一加)。
+    line_h_in: 行高(英寸)
+    text_color: 默认走 TEXT_PRIMARY
+    """
+    tc = text_color or TEXT_PRIMARY
+    for i, line in enumerate(items):
+        if marker and not line.startswith(marker) and not line.startswith(("→", "①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧")):
+            text = f"{marker} {line}"
+        else:
+            text = line
+        add_text(slide, x_in, y_in + i * line_h_in,
+                 w_in, line_h_in, text,
+                 font=FONT_MONO, size=size, color=color, bold=True,
+                 align=PP_ALIGN.LEFT)
+        # 第二行后续用 tc 渲染
+        # 注:为了简单,主色统一用 color;若需要区分,使用各自 add_text
+
+
+def with_alpha(shape, alpha_pct) -> None:
+    """给已添加的 shape 套 alpha(0-100),通过 a:solidFill/a:alpha 实现。
+
+    用于:iso_lego highlight、装饰水印、半透明覆盖层。
+    """
+    solidFill = shape._element.spPr.find(qn("a:solidFill"))
+    if solidFill is None:
+        return
+    # 删旧的 alpha
+    for old in solidFill.findall(qn("a:alpha")):
+        solidFill.remove(old)
+    a = etree.SubElement(solidFill, qn("a:alpha"))
+    a.set("val", str(int(alpha_pct * 1000)))
 
 
 def arrow_line(slide, x1, y1, x2, y2, *, color=TEXT_SECONDARY, weight_pt=1.0):
@@ -317,10 +470,9 @@ def iso_lego(slide, x_in, y_in, w_in, h_in, color, *, studs=True, highlight=Fals
                      fill=color, line_color=None,
                      shape=MSO_SHAPE.ROUNDED_RECTANGLE)
     if studs:
-        stud_r = min(w_in, h_in) * 0.16
-        stud_y = y_in - stud_r * 0.5
-        stud_xs = [x_in + w_in * 0.18, x_in + w_in * 0.40,
-                   x_in + w_in * 0.60, x_in + w_in * 0.82]
+        stud_r = min(w_in, h_in) * STUD_RATIO
+        stud_y = y_in - stud_r * STUD_Y_OFFSET_RATIO
+        stud_xs = [x_in + w_in * r for r in STUD_X_POSITIONS]
         for sx in stud_xs:
             stud = add_rect(slide, sx - stud_r / 2, stud_y,
                              stud_r, stud_r, fill=color,
@@ -344,16 +496,34 @@ def replace_pptx_media(src: Path, dst: Path, target: str, data: bytes) -> None:
     """解压 pptx 替换指定 media 文件后重新打包。
 
     target 形如 'ppt/media/image2.png'。
+    若 src == dst,先写到临时文件再 rename(避免同读同写错误)。
     """
-    if dst.exists():
-        dst.unlink()
-    with zipfile.ZipFile(src, "r") as zin:
-        with zipfile.ZipFile(dst, "w", zipfile.ZIP_DEFLATED) as zout:
-            for item in zin.infolist():
-                buf = zin.read(item.filename)
-                if item.filename == target:
-                    buf = data
-                zout.writestr(item, buf)
+    src = Path(src)
+    dst = Path(dst)
+    if src == dst:
+        # 同读同写:用临时文件
+        tmp = src.with_suffix(src.suffix + ".tmp")
+        with zipfile.ZipFile(src, "r") as zin:
+            with zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as zout:
+                for item in zin.infolist():
+                    buf = zin.read(item.filename)
+                    if item.filename == target:
+                        buf = data
+                    zout.writestr(item, buf)
+        # 原子替换
+        if dst.exists():
+            dst.unlink()
+        tmp.rename(dst)
+    else:
+        if dst.exists():
+            dst.unlink()
+        with zipfile.ZipFile(src, "r") as zin:
+            with zipfile.ZipFile(dst, "w", zipfile.ZIP_DEFLATED) as zout:
+                for item in zin.infolist():
+                    buf = zin.read(item.filename)
+                    if item.filename == target:
+                        buf = data
+                    zout.writestr(item, buf)
 
 
 def find_dominant_bg(image_path) -> tuple[int, int, int]:
@@ -389,12 +559,197 @@ def cover_region(img, region, bg_rgb, pad=8):
     return Image.alpha_composite(img.convert("RGBA"), overlay)
 
 
+def qa_image_check(path) -> tuple[bool, list[str]]:
+    """图片质量门 A:尺寸 / 文件大小 / 标准差 / 长宽比。
+
+    阈值(可在 tools 顶部常量调整):
+        - 短边 ≥ QA_MIN_SHORT_SIDE (720px)
+        - 文件 ≥ QA_MIN_FILE_BYTES, ≤ QA_MAX_FILE_BYTES
+        - 像素值标准差 ≥ QA_MIN_STD (避免纯色 / 全白 / 全黑)
+        - 宽高比 ∈ [QA_MIN_RATIO, QA_MAX_RATIO] (避免极窄 / 极扁)
+
+    Returns:
+        (passed: bool, reasons: list[str])
+    """
+    from PIL import Image
+    import numpy as np
+
+    p = Path(path)
+    reasons: list[str] = []
+
+    if not p.exists():
+        return False, [f"文件不存在: {p}"]
+
+    try:
+        img = Image.open(p).convert("RGB")
+    except Exception as e:
+        return False, [f"无法打开: {e}"]
+
+    w, h = img.size
+    short_side = min(w, h)
+    if short_side < QA_MIN_SHORT_SIDE:
+        reasons.append(f"短边过小: {short_side} < {QA_MIN_SHORT_SIDE}")
+
+    size = p.stat().st_size
+    if size < QA_MIN_FILE_BYTES:
+        reasons.append(f"文件过小: {size//1024}KB < {QA_MIN_FILE_BYTES//1024}KB")
+    if size > QA_MAX_FILE_BYTES:
+        reasons.append(f"文件过大: {size//1024}KB > {QA_MAX_FILE_BYTES//1024}KB")
+
+    arr = np.array(img)
+    std = float(arr.std())
+    if std < QA_MIN_STD:
+        reasons.append(f"图像过平(std={std:.1f}<{QA_MIN_STD}),疑似纯色/全黑")
+
+    ratio = w / max(h, 1)
+    if ratio < QA_MIN_RATIO or ratio > QA_MAX_RATIO:
+        reasons.append(f"宽高比异常: {ratio:.2f} (允许 {QA_MIN_RATIO}~{QA_MAX_RATIO})")
+
+    return len(reasons) == 0, reasons
+
+
 def new_presentation() -> Presentation:
     """创建一个 16:9 空 Presentation。"""
     prs = Presentation()
     prs.slide_width = Inches(13.333)
     prs.slide_height = Inches(7.5)
     return prs
+
+
+def find_media_target(prs, hint="image", ext="png") -> str | None:
+    """在 prs 全部 slide 中查找匹配的 media 路径。
+
+    hint: 'image' / 'image1' / 'logo' 等子串
+    ext: 后缀(默认 png)
+
+    Returns:
+        'ppt/media/image3.png' 这种完整路径,找不到返回 None。
+    """
+    for slide in prs.slides:
+        slide_part = slide.part
+        for shape in slide.shapes:
+            blip = shape._element.find(".//" + qn("a:blip"))
+            if blip is None:
+                continue
+            rid = blip.get(qn("r:embed"))
+            if not rid:
+                continue
+            try:
+                partname = str(slide_part.related_part(rid).partname)
+            except KeyError:
+                continue
+            if "media/" in partname and hint in partname and partname.endswith(f".{ext}"):
+                return partname
+    return None
+
+
+def qa_pptx_images(pptx_path) -> tuple[bool, list[tuple[int, str, list[str]]]]:
+    """把 pptx 内嵌的所有图片(去重)导出到临时目录,跑 qa_image_check。
+
+    Returns:
+        (passed, [(idx, filename, reasons), ...])
+    """
+    import tempfile
+    import shutil
+    import zipfile
+
+    p = Path(pptx_path)
+    if not p.exists():
+        return False, [(0, str(p), [f"文件不存在: {p}"])]
+
+    tmpdir = Path(tempfile.mkdtemp(prefix="qa_pptx_img_"))
+    try:
+        seen: set[str] = set()
+        with zipfile.ZipFile(p) as zf:
+            for name in zf.namelist():
+                if name.startswith("ppt/media/") and name.endswith((".png", ".jpg", ".jpeg")):
+                    base = name.split("/")[-1]
+                    if base in seen:
+                        continue
+                    seen.add(base)
+                    data = zf.read(name)
+                    (tmpdir / base).write_bytes(data)
+
+        failures: list[tuple[int, str, list[str]]] = []
+        for idx, fn in enumerate(sorted(seen), 1):
+            fpath = tmpdir / fn
+            ok, reasons = qa_image_check(fpath)
+            if not ok:
+                failures.append((idx, fn, reasons))
+
+        return len(failures) == 0, failures
+    finally:
+        shutil.rmtree(tmpdir, ignore_errors=True)
+
+
+def preview_grid(
+    images_dir: Path,
+    out_path: Path,
+    *,
+    pattern: str = "page-*.png",
+    cols: int = 2,
+    gap: int = 20,
+    label_h: int = 40,
+    bg: tuple[int, int, int] = (32, 32, 32),
+    label_format: str = "P{idx:02d}",
+) -> Path:
+    """把目录下匹配 pattern 的图片拼成 cols×N 网格,用于整体预览风格。
+
+    用法:
+        preview_grid(
+            Path("docs/ppt/images"),
+            Path("docs/ppt/preview/_grid.png"),
+        )
+        # 自动找 page-01-cover.png / page-02-pain.png / ... 拼 2x5 网格
+
+    Returns:
+        out_path(已写入磁盘)
+    """
+    from PIL import Image, ImageDraw, ImageFont
+
+    images_dir = Path(images_dir)
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    paths = sorted(images_dir.glob(pattern))
+    if not paths:
+        raise FileNotFoundError(
+            f"在 {images_dir} 找不到匹配 {pattern!r} 的图片"
+        )
+
+    imgs = [Image.open(p) for p in paths]
+    w, h = imgs[0].size
+    # 如果图片尺寸不一致,统一缩放到最小
+    sizes = {im.size for im in imgs}
+    if len(sizes) > 1:
+        imgs = [im.resize((w, h)) for im in imgs]
+
+    rows = (len(imgs) + cols - 1) // cols
+    W = cols * w + (cols + 1) * gap
+    H = rows * (h + label_h) + (rows + 1) * gap
+
+    canvas = Image.new("RGB", (W, H), bg)
+    draw = ImageDraw.Draw(canvas)
+
+    # 中文字体
+    try:
+        font = ImageFont.truetype("C:/Windows/Fonts/msyh.ttc", 24)
+    except Exception:
+        try:
+            font = ImageFont.truetype("C:/Windows/Fonts/msyh.ttc", 24)
+        except Exception:
+            font = ImageFont.load_default()
+
+    for i, im in enumerate(imgs, 1):
+        col = (i - 1) % cols
+        row = (i - 1) // cols
+        x = gap + col * (w + gap)
+        y = gap + row * (h + label_h + gap)
+        draw.text((x, y), label_format.format(idx=i), fill="white", font=font)
+        canvas.paste(im, (x, y + label_h))
+
+    canvas.save(str(out_path))
+    return out_path
 
 
 # ====================================================================
