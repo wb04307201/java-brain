@@ -3,7 +3,7 @@
 分组:
 A. 文本/形状:   add_text, set_text, add_rect, add_picture_with_alpha
 B. 布局/装饰:   set_solid_bg, grid_bg, hud_corner, section_label,
-                section_label_v1, corner_badge, add_page_number
+                corner_badge, add_page_number, apply_chrome
 C. 复合元素:    kill_box, node_block, card, terminal_box, big_num,
                 iso_lego, arrow_line
 D. 文件 I/O:    replace_pptx_media, find_dominant_bg, cover_region,
@@ -214,19 +214,20 @@ def hud_corner(slide, page_num, total=12, *, header='', pager='[ {n:02d} / {t} ]
              align=PP_ALIGN.RIGHT)
 
 
-def section_label(slide, text):
-    """顶部章节标(等宽 11pt,TEXT_SECONDARY,带 ─── 装饰)。"""
-    add_text(slide, 0.5, 0.55, 12.333, 0.3, text,
-             font=FONT_MONO, size=11, color=TEXT_SECONDARY,
-             align=PP_ALIGN.LEFT)
+def section_label(slide, text, *,
+                  size=11, color=TEXT_SECONDARY,
+                  prefix='', font=FONT_MONO, bold=False):
+    """顶部章节标。prefix 用于装饰前缀(如 '── ')。
 
-
-def section_label_v1(slide, text):
-    """v3 章节标(等宽 14pt,PRIMARY + SUCCESS 混色,带 ── 装饰前缀)。"""
+    Args:
+        prefix: 文本前拼接的装饰字符串(如 '── ')
+        size/color/font/bold: 透传给内部 add_text
+    """
     add_text(slide, 0.5, 0.55, 12.333, 0.3,
-             f"── {text}",
-             font=FONT_MONO, size=14, color=PRIMARY, bold=True,
-             align=PP_ALIGN.LEFT)
+             f"{prefix}{text}", font=font, size=size,
+             color=color, bold=bold, align=PP_ALIGN.LEFT)
+
+
 
 
 def corner_badge(slide, x, y, w, h, text, *,
