@@ -210,14 +210,14 @@ def hud_corner(slide, page_num, total=12):
 
 
 def section_label(slide, text):
-    """顶部章节标(等宽 11pt,冷灰蓝,带 ─── 装饰)。"""
+    """顶部章节标(等宽 11pt,TEXT_SECONDARY,带 ─── 装饰)。"""
     add_text(slide, 0.5, 0.55, 12.333, 0.3, text,
              font=FONT_MONO, size=11, color=TEXT_SECONDARY,
              align=PP_ALIGN.LEFT)
 
 
 def section_label_v1(slide, text):
-    """v3 章节标(等宽 14pt,Java 蓝 + 钩子青绿混色,带 ── 装饰前缀)。"""
+    """v3 章节标(等宽 14pt,PRIMARY + SUCCESS 混色,带 ── 装饰前缀)。"""
     add_text(slide, 0.5, 0.55, 12.333, 0.3,
              f"── {text}",
              font=FONT_MONO, size=14, color=PRIMARY, bold=True,
@@ -226,7 +226,7 @@ def section_label_v1(slide, text):
 
 def corner_badge(slide, x, y, w, h, text, *,
                  fill=BG_PANEL, color=SUCCESS):
-    """角落徽章(钩子青绿边框 + 深底,标注场景/补充信息)。"""
+    """角落徽章(SUCCESS 边框 + 深底,标注场景/补充信息)。"""
     rect = add_rect(slide, x, y, w, h,
                      fill=fill, line_color=color, line_width_pt=1.5,
                      shape=MSO_SHAPE.ROUNDED_RECTANGLE)
@@ -264,7 +264,7 @@ def apply_hud_chrome(slide, page_num, total, section_text) -> None:
 
 def kill_box(slide, x_in, y_in, w_in, h_in, text, *,
              size=20, color=SUCCESS, fill=BG_PANEL):
-    """金句框(钩子青绿边框 2.5pt,深底)。"""
+    """金句框(SUCCESS 边框 2.5pt,深底)。"""
     box = add_rect(slide, x_in, y_in, w_in, h_in,
                     fill=fill, line_color=color, line_width_pt=2.5)
     add_text(slide, x_in, y_in, w_in, h_in, text,
@@ -308,11 +308,11 @@ def terminal_box(slide, x_in, y_in, w_in, h_in, lines, *,
     """终端框(深底 + 等宽字体,多行)。lines 是字符串列表。
 
     行颜色启发式:
-      $   → 钩子青绿(命令)
-      >   → Java 蓝(输出)
-      ✓/READY → 钩子青绿加粗
-      ★  → 钩子青绿加粗
-      #   → 冷灰蓝(注释)
+      $   → SUCCESS(命令)
+      >   → PRIMARY(输出)
+      ✓/READY → SUCCESS 加粗
+      ★  → SUCCESS 加粗
+      #   → TEXT_SECONDARY(注释)
     """
     rect = add_rect(slide, x_in, y_in, w_in, h_in,
                      fill=BG_PANEL, line_color=DIVIDER, line_width_pt=1,
@@ -361,9 +361,9 @@ def big_num(slide, x_in, y_in, w_in, h_in, num, unit, label, *,
 def stat_card(slide, x_in, y_in, w_in, h_in, num, label, *,
               color=DANGER, num_size=56, label_size=14,
               fill=BG_PANEL, border_pt=2) -> None:
-    """P2 痛点/反衬数字卡:大号 mono 数字 + 中文副标签,圆角矩形边框。
+    """P2 警示/反衬数字卡:大号 mono 数字 + 中文副标签,圆角矩形边框。
 
-    红(DANGER)用于痛点,绿(SUCCESS)用于反衬杀手锏。
+    DANGER 用于警示场景,SUCCESS 用于反衬/正向场景。
     """
     add_rect(slide, x_in, y_in, w_in, h_in,
              fill=fill, line_color=color, line_width_pt=border_pt,
