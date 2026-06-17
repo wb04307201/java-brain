@@ -197,14 +197,19 @@ def grid_bg(slide, cols=12, rows=8, color=GRID_LINE, weight_pt=0.5,
         ln.line.width = Pt(weight_pt)
 
 
-def hud_corner(slide, page_num, total=12):
-    """左上 HUD 角标 + 右下页码(每页通用)。"""
-    add_text(slide, 0.3, 0.18, 9.0, 0.3,
-             "▓ JAVA / SPRING AI ▓ v1.0 ▓ SYS://OK ▓ 25.394s",
-             font=FONT_MONO, size=10, color=TEXT_SECONDARY,
-             align=PP_ALIGN.LEFT)
+def hud_corner(slide, page_num, total=12, *, header='', pager='[ {n:02d} / {t} ]'):
+    """HUD 角标(左上 + 右下页码)。header 为空时不显示左上文字。
+
+    Args:
+        header: 左上角文字(项目可填入自己的版本号 / 状态条 / 标语)
+        pager: 右下角页码模板,用 {n} {t} 占位
+    """
+    if header:
+        add_text(slide, 0.3, 0.18, 9.0, 0.3, header,
+                 font=FONT_MONO, size=10, color=TEXT_SECONDARY,
+                 align=PP_ALIGN.LEFT)
     add_text(slide, 10.5, 7.15, 2.5, 0.3,
-             f"[ {page_num:02d} / {total} ]   < BACK   NEXT >",
+             pager.format(n=page_num, t=total),
              font=FONT_MONO, size=10, color=TEXT_SECONDARY,
              align=PP_ALIGN.RIGHT)
 
