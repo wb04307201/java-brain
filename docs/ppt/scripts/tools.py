@@ -40,27 +40,27 @@ from pptx.util import Inches, Pt
 # ====================================================================
 
 # 字体
-FONT_CN = "阿里巴巴普惠体 3.0"
+FONT_CN = "Microsoft YaHei"
 FONT_EN = "Inter"
 FONT_MONO = "JetBrains Mono"
 
 # 暗色背景
-BG_DEEP = RGBColor(0x0A, 0x0E, 0x1A)       # 深空黑(主背景)
+BG_DEEP = RGBColor(0x0A, 0x0E, 0x1A)       # 主背景(深色 HUD)
 BG_PANEL = RGBColor(0x10, 0x17, 0x2A)      # 次级面板
 GRID_LINE = RGBColor(0x1A, 0x22, 0x38)     # 网格线 / 卡片描边
 DIVIDER = RGBColor(0x1A, 0x22, 0x38)
 
 # 文字
-TEXT_PRIMARY = RGBColor(0xE4, 0xE7, 0xF1)   # 冷白
-TEXT_SECONDARY = RGBColor(0x7C, 0x8A, 0xA8) # 冷灰蓝
+TEXT_PRIMARY = RGBColor(0xE4, 0xE7, 0xF1)   # 主文字
+TEXT_SECONDARY = RGBColor(0x7C, 0x8A, 0xA8) # 次级文字
 TEXT_DIM = RGBColor(0x4A, 0x55, 0x6E)       # 注脚
 
-# 品牌主色
-JAVA_BLUE = RGBColor(0x00, 0xD9, 0xFF)     # 电光蓝(灵梭)
-AI_PURPLE = RGBColor(0xA7, 0x8B, 0xFA)     # AI 紫(SQL 工坊)
-HOOK_GREEN = RGBColor(0x00, 0xFF, 0x9C)    # 钩子青绿(杀手锏)
-ALERT_RED = RGBColor(0xFF, 0x4D, 0x6D)     # 警示红(痛点)
-ALERT_GOLD = RGBColor(0xFA, 0xCC, 0x15)    # 警示金(路线图当前)
+# 语义主色(中性命名,不绑定项目)
+PRIMARY = RGBColor(0x00, 0xD9, 0xFF)       # 主色
+ACCENT = RGBColor(0xA7, 0x8B, 0xFA)        # 强调色
+SUCCESS = RGBColor(0x00, 0xFF, 0x9C)       # 成功 / 反衬
+DANGER = RGBColor(0xFF, 0x4D, 0x6D)        # 警示 / 痛点
+WARN = RGBColor(0xFA, 0xCC, 0x15)          # 警示金 / 重点
 
 WHITE = RGBColor(0xFF, 0xFF, 0xFF)
 BLACK = RGBColor(0x00, 0x00, 0x00)
@@ -220,12 +220,12 @@ def section_label_v1(slide, text):
     """v3 章节标(等宽 14pt,Java 蓝 + 钩子青绿混色,带 ── 装饰前缀)。"""
     add_text(slide, 0.5, 0.55, 12.333, 0.3,
              f"── {text}",
-             font=FONT_MONO, size=14, color=JAVA_BLUE, bold=True,
+             font=FONT_MONO, size=14, color=PRIMARY, bold=True,
              align=PP_ALIGN.LEFT)
 
 
 def corner_badge(slide, x, y, w, h, text, *,
-                 fill=BG_PANEL, color=HOOK_GREEN):
+                 fill=BG_PANEL, color=SUCCESS):
     """角落徽章(钩子青绿边框 + 深底,标注场景/补充信息)。"""
     rect = add_rect(slide, x, y, w, h,
                      fill=fill, line_color=color, line_width_pt=1.5,
@@ -263,7 +263,7 @@ def apply_hud_chrome(slide, page_num, total, section_text) -> None:
 # ====================================================================
 
 def kill_box(slide, x_in, y_in, w_in, h_in, text, *,
-             size=20, color=HOOK_GREEN, fill=BG_PANEL):
+             size=20, color=SUCCESS, fill=BG_PANEL):
     """金句框(钩子青绿边框 2.5pt,深底)。"""
     box = add_rect(slide, x_in, y_in, w_in, h_in,
                     fill=fill, line_color=color, line_width_pt=2.5)
@@ -273,14 +273,14 @@ def kill_box(slide, x_in, y_in, w_in, h_in, text, *,
 
 
 def node_block(slide, x_in, y_in, w_in, h_in, label, sublabel=None, *,
-               color=JAVA_BLUE, star=False, size_label=18, size_sub=11):
+               color=PRIMARY, star=False, size_label=18, size_sub=11):
     """节点方块(架构图用)。返回主形状。"""
     rect = add_rect(slide, x_in, y_in, w_in, h_in,
                      fill=BG_PANEL, line_color=color, line_width_pt=2,
                      shape=MSO_SHAPE.ROUNDED_RECTANGLE)
     if star:
         add_text(slide, x_in + w_in - 0.4, y_in + 0.05, 0.35, 0.3, "★",
-                 font=FONT_MONO, size=12, color=HOOK_GREEN,
+                 font=FONT_MONO, size=12, color=SUCCESS,
                  align=PP_ALIGN.RIGHT)
     add_text(slide, x_in, y_in + 0.15, w_in, 0.4, label,
              font=FONT_MONO, size=size_label, color=color, bold=True)
@@ -298,7 +298,7 @@ def card(slide, x_in, y_in, w_in, h_in, *, fill=BG_PANEL,
                      shape=MSO_SHAPE.ROUNDED_RECTANGLE)
     if star:
         add_text(slide, x_in + w_in - 0.4, y_in + 0.05, 0.35, 0.25, "★",
-                 font=FONT_MONO, size=12, color=HOOK_GREEN,
+                 font=FONT_MONO, size=12, color=SUCCESS,
                  align=PP_ALIGN.RIGHT)
     return rect
 
@@ -335,20 +335,20 @@ def terminal_box(slide, x_in, y_in, w_in, h_in, lines, *,
 def _terminal_line_style(line: str) -> tuple[RGBColor, bool]:
     """终端行颜色启发式(给 terminal_box 用)。"""
     if line.startswith("$"):
-        return HOOK_GREEN, False
+        return SUCCESS, False
     if line.startswith(">"):
-        return JAVA_BLUE, False
+        return PRIMARY, False
     if line.startswith("✓") or line.startswith("READY"):
-        return HOOK_GREEN, True
+        return SUCCESS, True
     if "★" in line:
-        return HOOK_GREEN, True
+        return SUCCESS, True
     if line.startswith("#"):
         return TEXT_SECONDARY, False
     return TEXT_PRIMARY, False
 
 
 def big_num(slide, x_in, y_in, w_in, h_in, num, unit, label, *,
-            color=JAVA_BLUE, num_size=84) -> None:
+            color=PRIMARY, num_size=84) -> None:
     """P2 三杀手数字芯片(P9 大数字也复用)。"""
     add_text(slide, x_in, y_in, w_in, h_in * 0.55, num,
              font=FONT_MONO, size=num_size, color=color, bold=True)
@@ -359,11 +359,11 @@ def big_num(slide, x_in, y_in, w_in, h_in, num, unit, label, *,
 
 
 def stat_card(slide, x_in, y_in, w_in, h_in, num, label, *,
-              color=ALERT_RED, num_size=56, label_size=14,
+              color=DANGER, num_size=56, label_size=14,
               fill=BG_PANEL, border_pt=2) -> None:
     """P2 痛点/反衬数字卡:大号 mono 数字 + 中文副标签,圆角矩形边框。
 
-    红(ALERT_RED)用于痛点,绿(HOOK_GREEN)用于反衬杀手锏。
+    红(DANGER)用于痛点,绿(SUCCESS)用于反衬杀手锏。
     """
     add_rect(slide, x_in, y_in, w_in, h_in,
              fill=fill, line_color=color, line_width_pt=border_pt,
@@ -377,7 +377,7 @@ def stat_card(slide, x_in, y_in, w_in, h_in, num, label, *,
 
 
 def chip_text(slide, x_in, y_in, w_in, h_in, text, *,
-              color=HOOK_GREEN, fill=BG_PANEL, line_width_pt=1.5,
+              color=SUCCESS, fill=BG_PANEL, line_width_pt=1.5,
               font=FONT_MONO, size=11, bold=True) -> None:
     """小徽章 / 标签:圆角矩形 + 单行 mono 字。
 
@@ -392,7 +392,7 @@ def chip_text(slide, x_in, y_in, w_in, h_in, text, *,
 
 
 def feature_card(slide, x_in, y_in, w_in, h_in, icon, name, sub, *,
-                 color=JAVA_BLUE, fill=BG_PANEL,
+                 color=PRIMARY, fill=BG_PANEL,
                  icon_size=18, name_size=15, sub_size=11,
                  border_pt=2) -> None:
     """功能卡(图标 + 标题 + 副标题,彩色边框)。通用架构/功能网格单元。
@@ -414,7 +414,7 @@ def feature_card(slide, x_in, y_in, w_in, h_in, icon, name, sub, *,
 
 
 def bullet_list(slide, x_in, y_in, w_in, line_h_in, items, *,
-                marker="✓", color=HOOK_GREEN, size=14,
+                marker="✓", color=SUCCESS, size=14,
                 text_color=None) -> None:
     """竖向 ✓ 列表 / → 列表 / 数字列表。
 
@@ -546,7 +546,7 @@ def cover_region(img, region, bg_rgb, pad=8):
     bg_rgb: (r, g, b) 覆盖色
     返回: 新 Image (RGBA)
     """
-    from PIL import ImageDraw, ImageFilter
+    from PIL import Image, ImageDraw, ImageFilter
     x1, y1, x2, y2 = region
     W, H = img.size
     x1, y1 = max(0, x1 - pad), max(0, y1 - pad)
