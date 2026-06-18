@@ -5,6 +5,51 @@
 
 ---
 
+## 使用示例
+
+### 自然语言查数据库
+
+在灵梭聊天界面输入:
+
+```text
+订单系统各分类商品数,画柱状图,保存HTML报告
+```
+
+执行链路:`nl2sql.st` → `getSystems` → `sqlForgeMetaDataTables` → `executeSQL` → AntV 图表 → HTML 报告。
+产物落地后控制台可下载。
+
+![img.png](img.png)
+![img_3.png](img_3.png)
+
+### 自然语言生成 CRUD 页面
+
+第 1 轮:
+
+```text
+帮我创建商品表的单表维护功能。
+```
+
+第 2 轮(确认):
+
+```text
+没问题,直接生成。
+```
+
+执行链路:`web.st` → `amisTemplateSave` → 落盘到 oms → 返回
+`http://localhost:8081/sql/forge/console?id=...` 预览地址。
+
+![img_1.png](img_1.png)
+![img_2.png](img_2.png)
+
+### 更多场景
+
+| Skill 提示词 | 触发场景 | 输出 |
+|---|---|---|
+| `nl2sql.st` | 自然语言查数据库 + 报表 | HTML / Markdown 报告 |
+| `web.st` | 生成 Amis CRUD JSON 模板 | 控制台预览页 |
+
+---
+
 ## 项目定位
 
 JavaBrain 是 **spring-ai-loom-agent** 与 **sql-forge** 两个上游仓库的组合演示,本仓库本身
@@ -164,51 +209,6 @@ curl -sf http://localhost:8080/spring/ai/loom | head -c 200
 |---|---|---|
 | `8081` | oms(sql-forge + 控制台) | `loom-agent` 的 `mcp-servers.json` 中 `sql-forge-mcp` 的 `--sql.forge.mcp.systems[0].url` |
 | `8080` | loom-agent(灵梭 UI + API) | 浏览器访问地址、`.st` 提示词里的 `localhost:8080` 字面量 |
-
----
-
-## 使用示例
-
-### 自然语言查数据库
-
-在灵梭聊天界面输入:
-
-```text
-订单系统各分类商品数,画柱状图,保存HTML报告
-```
-
-执行链路:`nl2sql.st` → `getSystems` → `sqlForgeMetaDataTables` → `executeSQL` → AntV 图表 → HTML 报告。
-产物落地后控制台可下载。
-
-![img.png](img.png)
-[category_product_count.html](category_product_count.html)
-
-### 自然语言生成 CRUD 页面
-
-第 1 轮:
-
-```text
-帮我创建商品表的单表维护功能。
-```
-
-第 2 轮(确认):
-
-```text
-没问题,直接生成。
-```
-
-执行链路:`web.st` → `amisTemplateSave` → 落盘到 oms → 返回
-`http://localhost:8081/sql/forge/console?id=...` 预览地址。
-
-![img_1.png](img_1.png)
-![img_2.png](img_2.png)
-
-### 更多场景
-
-| Skill 提示词 | 触发场景 | 输出 |
-|---|---|---|
-| `nl2sql.st` | 自然语言查数据库 + 报表 | HTML / Markdown 报告 |
-| `web.st` | 生成 Amis CRUD JSON 模板 | 控制台预览页 |
 
 ---
 
