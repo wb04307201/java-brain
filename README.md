@@ -203,10 +203,6 @@ curl -sf http://localhost:8080/spring/ai/loom | head -c 200
 |---|---|---|
 | `nl2sql.st` | 自然语言查数据库 + 报表 | HTML / Markdown 报告 |
 | `web.st` | 生成 Amis CRUD JSON 模板 | 控制台预览页 |
-| `news-watch.st` | 三阶段搜索 → HTML 报告 | HTML 报告(强调"禁自然语言自白") |
-| `e2e.st` | 浏览器端到端验证(登录 alice/123456) | `.md` 报告 |
-| `package-docker.st` | 多栈项目部署(maven/npm/pip) | Dockerfile + 启动命令 |
-| `http.st` | JSONPlaceholder 的 GET/POST/PUT/DELETE 自检 | 命令行输出 |
 
 ---
 
