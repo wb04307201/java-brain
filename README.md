@@ -180,12 +180,15 @@ curl -sf http://localhost:8080/spring/ai/loom | head -c 200
 执行链路:`nl2sql.st` → `getSystems` → `sqlForgeMetaDataTables` → `executeSQL` → AntV 图表 → HTML 报告。
 产物落地后控制台可下载。
 
+![img.png](img.png)
+[category_product_count.html](category_product_count.html)
+
 ### 自然语言生成 CRUD 页面
 
 第 1 轮:
 
 ```text
-帮我做一个商品分类的维护页。
+帮我创建商品表的单表维护功能。
 ```
 
 第 2 轮(确认):
@@ -196,6 +199,9 @@ curl -sf http://localhost:8080/spring/ai/loom | head -c 200
 
 执行链路:`web.st` → `amisTemplateSave` → 落盘到 oms → 返回
 `http://localhost:8081/sql/forge/console?id=...` 预览地址。
+
+![img_1.png](img_1.png)
+![img_2.png](img_2.png)
 
 ### 更多场景
 
