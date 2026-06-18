@@ -230,10 +230,10 @@ curl -sf http://localhost:8080/spring/ai/loom | head -c 200
 
 ## 上游仓库
 
-| 仓库 | 包含组件 | 说明 |
-|---|---|---|
-| [spring-ai-loom-agent](https://github.com/wb04307201/spring-ai-loom-agent) | 灵梭 AI Agent | 独立可用,只做 AI 编排 |
-| [sql-forge](https://github.com/wb04307201/sql-forge) | SQL 工坊 + SQL 工坊 MCP | 同一仓库不同模块 |
+| 仓库 | 包含组件 | 说明 | 镜像 |
+|---|---|---|---|
+| spring-ai-loom-agent | 灵梭 AI Agent | 独立可用,只做 AI 编排 | [GitHub](https://github.com/wb04307201/spring-ai-loom-agent) · [Gitee](https://gitee.com/wb04307201/spring-ai-loom-agent) |
+| sql-forge | SQL 工坊 + SQL 工坊 MCP | 同一仓库不同模块 | [GitHub](https://github.com/wb04307201/sql-forge) · [Gitee](https://gitee.com/wb04307201/sql-forge) |
 
 提交 issue 与功能请求请到对应上游仓库,本仓只做组合演示与脚手架维护。
 
