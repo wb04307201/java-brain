@@ -48,7 +48,7 @@
     },
     "sql-forge-mcp": {
       "args": [
-        "io.github.wb04307201:sql-forge-mcp:1.6.0",
+        "io.github.wb04307201:sql-forge-mcp:1.6.1",
         "--sql.forge.mcp.systems[0].name=order_system",
         "--sql.forge.mcp.systems[0].url=http://localhost:8081",
         "--sql.forge.mcp.systems[0].description=Order Management System",
