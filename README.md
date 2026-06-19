@@ -4,9 +4,9 @@
 
 **组成**（3 个组件）：
 
-- 🧠 **灵梭 AI Agent**：Spring AI 编排，零代码接入 RAG / MCP / Skill
-- 🛠️ **SQL 工坊**：CRUD + Calcite 联邦查询 + Amis 低代码
-- 🔗 **SQL 工坊 MCP**：让 AI 安全对话业务数据库
+-  [**灵梭 AI Agent**](https://github.com/wb04307201/spring-ai-loom-agent)：Spring AI 编排，零代码接入 RAG / MCP / Skill（[Gitee 镜像](https://gitee.com/wb04307201/spring-ai-loom-agent)）
+- 🛠️ [**SQL 工坊**](https://github.com/wb04307201/sql-forge)：CRUD + Calcite 联邦查询 + Amis 低代码（[Gitee 镜像](https://gitee.com/wb04307201/sql-forge)）
+- 🔗 **SQL 工坊 MCP**：让 AI 安全对话业务数据库（与 SQL 工坊同仓库）
 
 **为用户提供 3 个智能助手**：
 
