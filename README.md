@@ -1,123 +1,127 @@
+<div align="right">
+  <a href="README.zh-CN.md">中文</a> | English
+</div>
+
 # JavaBrain
 
-**企业数字化系统的智能化解决方案** —— 让业务系统快速具备"思考"与"执行"能力。
+**Intelligent Solution for Enterprise Digital Systems** — Empower your business systems with "thinking" and "execution" capabilities in minutes.
 
-**组成**（3 个组件）：
+**Components** (3 independent modules):
 
--  [**灵梭 AI Agent**](https://github.com/wb04307201/spring-ai-loom-agent)：Spring AI 编排，零代码接入 RAG / MCP / Skill（[Gitee 镜像](https://gitee.com/wb04307201/spring-ai-loom-agent)）
-- 🛠️ [**SQL 工坊**](https://github.com/wb04307201/sql-forge)：CRUD + Calcite 联邦查询 + Amis 低代码（[Gitee 镜像](https://gitee.com/wb04307201/sql-forge)）
-- 🔗 **SQL 工坊 MCP**：让 AI 安全对话业务数据库（与 SQL 工坊同仓库）
+- 🧠 [**Loom AI Agent**](https://github.com/wb04307201/spring-ai-loom-agent): Spring AI orchestration with zero-code RAG / MCP / Skill integration ([Gitee Mirror](https://gitee.com/wb04307201/spring-ai-loom-agent))
+- 🛠️ [**SQL Forge**](https://github.com/wb04307201/sql-forge): CRUD + Calcite Federated Queries + Amis Low-Code ([Gitee Mirror](https://gitee.com/wb04307201/sql-forge))
+- 🔗 **SQL Forge MCP**: Secure AI-to-Database bridge (same repo as SQL Forge)
 
-**为用户提供 3 个智能助手**：
+**3 Intelligent Assistants for Users**:
 
-- 💬 **对话智能体**：自然语言交互，智能问答，多轮对话
-- 📊 **数据智能分析助手**：自然语言查数据，90 秒出分析报告
-- 🎨 **智能化低代码助手**：一句话生成 CRUD 页面，10 分钟可用
+- 💬 **Conversational Agent**: Natural language interaction, intelligent Q&A, multi-turn dialogue
+-  **Data Analytics Assistant**: Natural language queries, 90-second analysis reports
+- 🎨 **Intelligent Low-Code Assistant**: Generate CRUD pages in one sentence, ready in 10 minutes
 
-三大核心能力：
+**Three Core Capabilities**:
 
-- **AI 对话业务数据**：自然语言提问，90 秒出分析报告（NL2SQL + 图表 + HTML 报告）
-- **一句话生成 CRUD 页面**：10 分钟出可用的维护页面（AI 语义推断 + Amis 低代码）
-- **LLM 可控**：LLM 不直连数据库，走 MCP 受限工具 + 模板化 API；可换本地模型实现完全私有化
+- **AI-Powered Business Data Queries**: Ask in natural language, get analysis reports in 90 seconds (NL2SQL + Charts + HTML Reports)
+- **One-Sentence CRUD Page Generation**: Production-ready maintenance pages in 10 minutes (AI semantic inference + Amis low-code)
+- **LLM Controllability**: LLM never connects directly to databases; goes through MCP restricted tools + templated APIs; switch to local models for full privatization
 
 ---
 
-## 使用示例
+## Usage Examples
 
-### 自然语言查数据库
+### Natural Language Database Queries
 
-在灵梭聊天界面输入：
+Enter in the Loom chat interface:
 
 ```text
-订单系统各分类商品数，画柱状图，保存 HTML 报告
+Show product counts by category in the order system, draw a bar chart, save as HTML report
 ```
 
-执行链路：`nl2sql.st` → `getSystems` → `sqlForgeMetaDataTables` → `executeSQL` → AntV 图表 → HTML 报告。
-产物落地后控制台可下载。
+Execution chain: `nl2sql.st` → `getSystems` → `sqlForgeMetaDataTables` → `executeSQL` → AntV Charts → HTML Report.
+Downloadable from the console after generation.
 
 ![img.png](img.png)
 ![img_3.png](img_3.png)
 
-### 自然语言生成 CRUD 页面
+### Natural Language CRUD Page Generation
 
-第 1 轮：
-
-```text
-帮我创建商品表的单表维护功能。
-```
-
-第 2 轮（确认）：
+Round 1:
 
 ```text
-没问题，直接生成。
+Help me create a single-table maintenance page for the products table.
 ```
 
-执行链路：`web.st` → `amisTemplateSave` → 落盘到 oms → 返回
-`http://localhost:8081/sql/forge/console?id=...` 预览地址。
+Round 2 (confirmation):
+
+```text
+Looks good, generate it directly.
+```
+
+Execution chain: `web.st` → `amisTemplateSave` → saved to oms → returns
+`http://localhost:8081/sql/forge/console?id=...` preview URL.
 
 ![img_1.png](img_1.png)
 ![img_2.png](img_2.png)
 
-### 更多场景
+### More Scenarios
 
-| Skill 提示词 | 触发场景 | 输出 |
+| Skill Template | Trigger Scenario | Output |
 |---|---|---|
-| `nl2sql.st` | 自然语言查数据库 + 报表 | HTML / Markdown 报告 |
-| `web.st` | 生成 Amis CRUD JSON 模板 | 控制台预览页 |
+| `nl2sql.st` | Natural language database queries + reports | HTML / Markdown reports |
+| `web.st` | Generate Amis CRUD JSON templates | Console preview page |
 
 ---
 
-## 项目定位
+## Project Positioning
 
-JavaBrain 是面向企业数字化系统的智能化解决方案，由 3 个独立组件按需组合：
+JavaBrain is an intelligent solution for enterprise digital systems, composed of 3 independent components that can be combined on demand:
 
-| 组件 | 角色 | 上游仓库 | 是否在本仓 |
+| Component | Role | Upstream Repo | In This Repo |
 |---|---|---|---|
-| 灵梭 AI Agent | 聊天界面 + Spring AI 编排（RAG / MCP / Skill / 文件），**本次演示中的调度中枢**：承载对话 UI、根据用户意图调用 Skill、通过 MCP 对接 oms 及其他外部服务 | `spring-ai-loom-agent` | 否 |
-| SQL 工坊 | 数据管理（类型安全 CRUD / Calcite 联邦查询 / Amis 低代码），**演示中的数据底座**：搭建 oms，承载订单/商品/用户数据 | `sql-forge` | 否 |
-| SQL 工坊 MCP | AI ↔ DB 桥（stdio 子进程，被 Agent 调用） | `sql-forge`（同仓库不同模块） | 否 |
-| `oms` | 业务底座（演示载体）+ 鉴权 + 元数据 + 控制台 UI 承载 | — | 是 |
-| `loom-agent` | Agent 前端入口，引用灵梭 starter | — | 是 |
+| Loom AI Agent | Chat UI + Spring AI orchestration (RAG / MCP / Skill / Files), **orchestration hub in this demo**: hosts chat UI, invokes Skills by user intent, connects to oms and other external services via MCP | `spring-ai-loom-agent` | No |
+| SQL Forge | Data management (type-safe CRUD / Calcite federated queries / Amis low-code), **data foundation in this demo**: builds oms, hosts order/product/user data | `sql-forge` | No |
+| SQL Forge MCP | AI ↔ DB bridge (stdio subprocess, invoked by Agent) | `sql-forge` (same repo, different module) | No |
+| `oms` | Business foundation (demo carrier) + authentication + metadata + console UI | — | Yes |
+| `loom-agent` | Agent frontend entry, references Loom starter | — | Yes |
 
-> 仓库 = 2（灵梭 / SQL 工坊），组件 = 3（灵梭 / SQL 工坊 / SQL 工坊 MCP）。
+> Repos = 2 (Loom / SQL Forge), Components = 3 (Loom / SQL Forge / SQL Forge MCP).
 
 ---
 
-## 仓库结构
+## Repository Structure
 
 ```
 java-brain/
-├── oms/                # 业务底座，默认 8081
-│   ├── src/main/resources/db/migration/   # Flyway：H2/MySQL/PostgreSQL
-│   ├── src/main/java/cn/wubo/oms/         # 自定义 JDBC 存储 / IExecute 拦截
-│   └── src/main/resources/model.json      # Calcite 联邦查询配置
-└── loom-agent/         # AI 前端，默认 8080
-    ├── src/main/resources/mcp-servers.json   # 注册 Bing / Playwright / sql-forge-mcp 等
+├── oms/                # Business foundation, default port 8081
+│   ├── src/main/resources/db/migration/   # Flyway: H2/MySQL/PostgreSQL
+│   ├── src/main/java/cn/wubo/oms/         # Custom JDBC storage / IExecute interceptors
+│   └── src/main/resources/model.json      # Calcite federated query configuration
+└── loom-agent/         # AI frontend, default port 8080
+    ├── src/main/resources/mcp-servers.json   # Registers Bing / Playwright / sql-forge-mcp etc.
     └── src/main/resources/skills/*.st        # nl2sql / web / news-watch / e2e / http / package-docker
 ```
 
-两模块**没有**父级 `pom.xml`，Maven 命令必须 `-f` 指定模块，详见 `oms/pom.xml` 与 `loom-agent/pom.xml`。
+The two modules have **no parent** `pom.xml`. All Maven commands must specify the module with `-f`, see `oms/pom.xml` and `loom-agent/pom.xml`.
 
 ---
 
-## 架构与数据流
+## Architecture & Data Flow
 
 ```
                          ┌──────────────────────────────┐
-   浏览器  ◀── chat UI ─▶│       loom-agent            │
-   :8080/spring/ai/loom  │  (灵梭 Spring AI 编排)      │
+   Browser  ◀── chat UI ─▶│       loom-agent            │
+   :8080/spring/ai/loom  │  (Loom Spring AI Orchestration)│
                          │  ┌──────────────────────┐   │
-                         │  │ Skill 提示词(.st)   │──┼──▶ 自然语言 → 工具调用
+                         │  │ Skill Templates(.st) │──┼──▶ Natural Language → Tool Calls
                          │  └──────────────────────┘   │
                          │  ┌──────────────────────┐   │
-                         │  │ MCP 客户端(stdio)  │──┼──▶ npx / jbang 子进程
+                         │  │ MCP Client(stdio)   │──┼──▶ npx / jbang subprocesses
                          │  └──────────────────────┘   │
                          └────────┬─────────────────────┘
                                   │ HTTP / MCP
                                   ▼
                          ┌──────────────────────────────┐
-                         │     sql-forge-mcp 子进程     │
-                         │  (jbang 拉起,指向 oms)      │
+                         │     sql-forge-mcp subprocess │
+                         │  (launched by jbang, points to oms)│
                          └────────┬─────────────────────┘
                                   │ /sql/forge/api/json/{method}/{table}
                                   ▼
@@ -125,38 +129,38 @@ java-brain/
                          │            oms                │
                          │  (Spring Boot + sql-forge)   │
                          │  IUserStorage / IExecute /   │
-                         │  Calcite 联邦                 │
+                         │  Calcite Federation          │
                          └────────┬─────────────────────┘
                                   │ JDBC
                   ┌───────────────┼───────────────┐
                   ▼               ▼               ▼
                  H2           MySQL         PostgreSQL
-              (默认)         (演示库)        (演示库)
+              (default)     (demo db)       (demo db)
 ```
 
-变更触点（改这几处时必须联动）：
+**Change Touchpoints** (must update together):
 
-1. 改表结构 → `oms` 模块的 `V*__schema.sql`（H2），必要时同步 `resources/mysql/` 与 `resources/postgresql/`。
-2. 改 sql-forge API 协议 → `oms` 的 `Jdbc*Storage` / `Log*Execute` / `CustomTemplate*Storage` 与 `loom-agent` 的 `*.st` 提示词里的 JSON 协议样例。
-3. 改 AI 模型/供应商 → 同时调 `loom-agent/pom.xml` 与 `application.yml`（dashscope 段）。
-4. 改端口 → `oms` 的 `server.port`、`loom-agent` 的 `mcp-servers.json` 中 `sql-forge-mcp` 的 `--sql.forge.mcp.systems[0].url`、以及 README / `.st` 里的 `localhost:8080/8081` 字面量。
+1. Schema changes → `oms` module's `V*__schema.sql` (H2), sync `resources/mysql/` and `resources/postgresql/` if needed.
+2. sql-forge API protocol changes → `oms`'s `Jdbc*Storage` / `Log*Execute` / `CustomTemplate*Storage` and `loom-agent`'s `*.st` template JSON protocol examples.
+3. AI model/vendor changes → both `loom-agent/pom.xml` and `application.yml` (dashscope section).
+4. Port changes → `oms`'s `server.port`, `loom-agent`'s `mcp-servers.json` `sql-forge-mcp`'s `--sql.forge.mcp.systems[0].url`, and `localhost:8080/8081` literals in README / `.st` files.
 
 ---
 
-## 先决条件
+## Prerequisites
 
-| 工具 | 版本 | 用途 | 缺失时表现 |
+| Tool | Version | Purpose | Symptom if Missing |
 |---|---|---|---|
-| JDK | 17+ | 编译/运行两模块 | Maven 直接报错 |
-| Maven | 3.8+ | 构建 | 启动失败 |
-| `jbang` | 最新 | 拉起 `sql-forge-mcp` 子进程 | 首次调用 SQL 报 `jbang not found` |
-| Node.js | 18+（可选） | 拉起 Playwright / Chrome DevTools 等 MCP | 不调用这些 Skill 时无需 |
-| `DASHSCOPE_API_KEY` | 阿里云百炼 qwen key | 灵梭调用 qwen3.7-plus | 启动直接 fail |
+| JDK | 17+ | Compile/run both modules | Maven errors immediately |
+| Maven | 3.8+ | Build | Startup fails |
+| `jbang` | Latest | Launch `sql-forge-mcp` subprocess | `jbang not found` on first SQL call |
+| Node.js | 18+ (optional) | Launch Playwright / Chrome DevTools MCPs | Not needed if not using these Skills |
+| `DASHSCOPE_API_KEY` | Alibaba Cloud Bailian qwen key | Loom calls qwen3.7-plus | Startup fails directly |
 
-`jbang` 安装：
+**jbang Installation**:
 
 ```powershell
-# Windows（PowerShell）
+# Windows (PowerShell)
 iex "& { $(iwr https://ps.jbang.dev) } app setup"
 ```
 
@@ -165,12 +169,12 @@ iex "& { $(iwr https://ps.jbang.dev) } app setup"
 curl -Ls https://sh.jbang.dev | bash -s - app setup
 ```
 
-`DASHSCOPE_API_KEY` 设置：
+**DASHSCOPE_API_KEY Setup**:
 
 ```powershell
-# Windows（PowerShell，当前会话）
+# Windows (PowerShell, current session)
 $env:DASHSCOPE_API_KEY = "sk-..."
-# 永久：setx DASHSCOPE_API_KEY "sk-..."
+# Permanent: setx DASHSCOPE_API_KEY "sk-..."
 ```
 
 ```bash
@@ -180,106 +184,104 @@ export DASHSCOPE_API_KEY="sk-..."
 
 ---
 
-## 启动
+## Startup
 
-> 启动顺序：`oms` 先（被 `loom-agent` 通过 MCP 调用），`loom-agent` 后。
+> Startup order: `oms` first (called by `loom-agent` via MCP), then `loom-agent`.
 
-### 1. 启动 oms（默认 `8081`）
+### 1. Start oms (default `8081`)
 
 ```bash
 mvn -f oms/pom.xml spring-boot:run
 ```
 
-启动后可访问：
+After startup, access:
 
-- `http://localhost:8081/sql/forge/web/home.html` — sql-forge 控制台（未登录自动跳 `/login.html`）
-- 控制台默认账号：`admin` / `admin123`
+- `http://localhost:8081/sql/forge/web/home.html` — sql-forge console (auto-redirects to `/login.html` if not logged in)
+- Console default credentials: `admin` / `admin123`
 
-### 2. 启动 loom-agent（默认 `8080`）
+### 2. Start loom-agent (default `8080`)
 
-新开一个终端：
+Open a new terminal:
 
 ```bash
 mvn -f loom-agent/pom.xml spring-boot:run
 ```
 
-启动后访问：
+After startup, access:
 
-- `http://localhost:8080/spring/ai/loom` — 灵梭聊天界面
+- `http://localhost:8080/spring/ai/loom` — Loom chat interface
 
-### 3. 验证
+### 3. Verify
 
 ```bash
-# oms 健康
+# oms health
 curl -sf http://localhost:8081/sql/forge/api/json/list/USER_INFO | head -c 200
 
-# loom-agent 健康
+# loom-agent health
 curl -sf http://localhost:8080/spring/ai/loom | head -c 200
 ```
 
 ---
 
-## 端口清单
+## Port List
 
-| 端口 | 服务 | 改端口要同步改 |
+| Port | Service | Sync Changes Required |
 |---|---|---|
-| `8081` | oms（sql-forge + 控制台） | `loom-agent` 的 `mcp-servers.json` 中 `sql-forge-mcp` 的 `--sql.forge.mcp.systems[0].url` |
-| `8080` | loom-agent（灵梭 UI + API） | 浏览器访问地址、`.st` 提示词里的 `localhost:8080` 字面量 |
+| `8081` | oms (sql-forge + console) | `loom-agent`'s `mcp-servers.json` `sql-forge-mcp`'s `--sql.forge.mcp.systems[0].url` |
+| `8080` | loom-agent (Loom UI + API) | Browser access URL, `localhost:8080` literals in `.st` templates |
 
 ---
 
-## 故障排查
+## Troubleshooting
 
-| 现象 | 根因 | 处置 |
+| Symptom | Root Cause | Resolution |
 |---|---|---|
-| loom-agent 启动报 `DASHSCOPE_API_KEY not set` | 环境变量未注入 | 见「先决条件」一节设置后重启 |
-| 聊天界面调 SQL 时 `jbang not found` | `jbang` 未装 / PATH 没生效 | 按「先决条件」装 jbang 后重开终端 |
-| `BindException: 8081 already in use` | oms 端口被占 | `oms/src/main/resources/application.yml` 改 `server.port`，并同步改 `mcp-servers.json` |
-| 启动后 `sql-forge-mcp` 子进程反复重启 | oms 还没起来 / 端口指向错 | 确认 oms 监听 8081，且 `mcp-servers.json` 中 url 指向正确端口 |
-| Flyway 报错 `Migration checksum mismatch` | 本地 H2 状态文件残留 | 删除 `oms/data/testdb.mv.db` 与 `loom-agent/.local/datasource/db*` 后重启 |
-| MCP 子进程首次拉起超时 | 首次下载 `sql-forge-mcp` 镜像慢 | 等待或配置镜像源；只发生在首次调用对应 Skill 时 |
+| loom-agent startup fails with `DASHSCOPE_API_KEY not set` | Environment variable not injected | Set per "Prerequisites" section and restart |
+| `jbang not found` when calling SQL from chat | `jbang` not installed / PATH not生效 | Install jbang per "Prerequisites" and reopen terminal |
+| `BindException: 8081 already in use` | oms port occupied | Change `server.port` in `oms/src/main/resources/application.yml`, sync `mcp-servers.json` |
+| `sql-forge-mcp` subprocess repeatedly restarts after startup | oms not ready / wrong port | Confirm oms listens on 8081 and `mcp-servers.json` url points to correct port |
+| Flyway error `Migration checksum mismatch` | Local H2 state file残留 | Delete `oms/data/testdb.mv.db` and `loom-agent/.local/datasource/db*` then restart |
+| MCP subprocess timeout on first launch | Slow initial download of `sql-forge-mcp` image | Wait or configure mirror; only happens on first Skill call |
 
-> 本地 H2 文件 `oms/data/testdb.mv.db` 与 `loom-agent/.local/datasource/db*` 已被
-> `.gitignore` 排除；清理可删目录后重启。
+> Local H2 files `oms/data/testdb.mv.db` and `loom-agent/.local/datasource/db*` are excluded by `.gitignore`; delete directories and restart to clean.
 
 ---
 
-## 上游仓库
+## Upstream Repositories
 
-| 仓库 | 包含组件 | 说明 | 镜像 |
+| Repository | Components | Description | Mirror |
 |---|---|---|---|
-| spring-ai-loom-agent | 灵梭 AI Agent | 独立可用，只做 AI 编排 | [GitHub](https://github.com/wb04307201/spring-ai-loom-agent) · [Gitee](https://gitee.com/wb04307201/spring-ai-loom-agent) |
-| sql-forge | SQL 工坊 + SQL 工坊 MCP | 同一仓库不同模块 | [GitHub](https://github.com/wb04307201/sql-forge) · [Gitee](https://gitee.com/wb04307201/sql-forge) |
+| spring-ai-loom-agent | Loom AI Agent | Independently usable, AI orchestration only | [GitHub](https://github.com/wb04307201/spring-ai-loom-agent) · [Gitee](https://gitee.com/wb04307201/spring-ai-loom-agent) |
+| sql-forge | SQL Forge + SQL Forge MCP | Same repo, different modules | [GitHub](https://github.com/wb04307201/sql-forge) · [Gitee](https://gitee.com/wb04307201/sql-forge) |
 
-提交 issue 与功能请求请到对应上游仓库，本仓只做组合演示与脚手架维护。
+Submit issues and feature requests to the corresponding upstream repositories. This repo is for combination demo and scaffold maintenance only.
 
 ---
 
-## 开发
+## Development
 
 ```bash
-# 构建
+# Build
 mvn -f oms/pom.xml clean install -DskipTests
 mvn -f loom-agent/pom.xml clean install -DskipTests
 
-# 测试
+# Test
 mvn -f oms/pom.xml test
 mvn -f loom-agent/pom.xml test
 
-# 单测：限定方法/类
+# Single test: limit to method/class
 mvn -f oms/pom.xml test -Dtest=OmsApplicationTests
 mvn -f loom-agent/pom.xml test -Dtest=LoomAgentApplicationTests#contextLoads
 
-# 打包可执行 jar
+# Package executable jar
 mvn -f oms/pom.xml package
 mvn -f loom-agent/pom.xml package
 ```
 
-> 本机 Maven 跑在 JDK 25 上仍能编译（`<java.version>17</java.version>`），不要把
-> `--release 25` 写进命令，除非同步调两边的 `<java.version>`。
+> Local Maven runs on JDK 25 but still compiles (`<java.version>17</java.version>`). Do not add `--release 25` to commands unless you also adjust `<java.version>` in both pom files.
 
 ---
 
-## 许可
+## License
 
-本仓库代码以演示与脚手架为目的，业务组件依赖遵循各自上游许可证。
+This repository code is for demo and scaffold purposes. Business component dependencies follow their respective upstream licenses.
